@@ -9,14 +9,11 @@ The project was developed as part of a **first-year engineering / biotechnology 
 - Simulating microbial growth and product formation
 - Practicing scientific programming, version control, and model documentation
 
-The present code is based on and adapted from a pre-existing implementation developed by Irene and Juan-Camilo in the context of the work presented in:
+The present code is based on and adapted from a pre-existing implementation developed by David-Camilo in the context of the work presented in:
 
-Flavio Manenti, Gintaras V. Reklaitis (Eds.), *Proceedings of the 34th European Symposium on Computer Aided Process Engineering / 15th International Symposium on Process Systems Engineering (ESCAPE34/PSE24)*, June 2–6, 2024, Florence, Italy.  
-**Dynamic Hybrid Model for Nanobody-based Antivenom Production (scorpion antivenom) with *E. coli* CH10-12 and *E. coli* NbF12-10.**  
+Corrales, D. C., Villela, S. M. A., Bouhaouala-Zahar, B., Cescut, J., Daboussi, F., O’donohue, M., ... & Aceves-Lara, C. A. (2024). Dynamic Hybrid Model for Nanobody-based Antivenom Production (scorpion antivenon) with E. coli CH10-12 and E. coli NbF12-10. Computer Aided Chemical Engineering, 53, pp. 145-150. 
 
-
-Corrales, D. C., Villela, S. M. A., Bouhaouala-Zahar, B., Cescut, J., Daboussi, F., O’donohue, M., ... & Aceves-Lara, C. A. (2024). Dynamic Hybrid Model for Nanobody-based Antivenom Production (scorpion antivenon) with E. coli CH10-12 and E. coli NbF12-10. In Computer Aided Chemical Engineering (Vol. 53, pp. 145-150). Elsevier.
-
+---
 
 ## Repository Structure
 ```
@@ -65,6 +62,7 @@ dynamic_model_coli_Nb_Antivenom_01/
 ├── requirements.txt                            # Python dependencies
 └── .gitignore                                  # Files ignored by Git
 ```
+---
 ## Model Description
 
 The model is based on ordinary differential equations (ODEs):
@@ -115,30 +113,6 @@ Where:
 - $q_P$ is the specific product formation rate
 
 ---
-
-## Installation
-
-### Prerequisites
-- Python ≥ 3.9
-- Git
-
-### Clone the repository
-```bash
-git clone https://github.com/jucam9810/dynamic_model_coli_Nb_Antivenom_01.git
-cd dynamic_model_coli_Nb_Antivenom_01
-```
-
-### Create a virtual environment
-```bash
-python -m venv venv
-venv\Scripts\activate   # Windows
-```
-
-### Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
 ### Usage
  - For dynamic model simulation run script:
 ```bash
