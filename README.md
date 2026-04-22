@@ -13,7 +13,9 @@ The present code is based on and adapted from a pre-existing implementation deve
 
 Flavio Manenti, Gintaras V. Reklaitis (Eds.), *Proceedings of the 34th European Symposium on Computer Aided Process Engineering / 15th International Symposium on Process Systems Engineering (ESCAPE34/PSE24)*, June 2–6, 2024, Florence, Italy.  
 **Dynamic Hybrid Model for Nanobody-based Antivenom Production (scorpion antivenom) with *E. coli* CH10-12 and *E. coli* NbF12-10.**  
-© 2024 Elsevier B.V. All rights reserved.
+
+
+Corrales, D. C., Villela, S. M. A., Bouhaouala-Zahar, B., Cescut, J., Daboussi, F., O’donohue, M., ... & Aceves-Lara, C. A. (2024). Dynamic Hybrid Model for Nanobody-based Antivenom Production (scorpion antivenon) with E. coli CH10-12 and E. coli NbF12-10. In Computer Aided Chemical Engineering (Vol. 53, pp. 145-150). Elsevier.
 
 
 ## Repository Structure
