@@ -1,5 +1,5 @@
 # Dynamic Model of *E. coli* Nanobody Antivenom Production
-
+---
 ## Overview
 
 This repository contains a **Python-based dynamic model** describing the growth of *Escherichia coli* and the **production of nanobody (Nb) antivenoms** in a bioprocess context.
