@@ -1,0 +1,234 @@
+bioreactor:
+  BR02:
+    Sf: # ??? código de JCA difiere de tesis para todos los #
+      value: 286 # 298 
+      units: g/L
+    S0:
+      value: 10
+      units: g/L
+    t_ind:
+      value: 8
+      units: h
+  BR03:
+    Sf:
+      value: 286 # 298 
+      units: g/L
+    S0:
+      value: 10.5 # 10
+      units: g/L
+    t_ind:
+      value: 10.5 # 10
+      units: h
+  BR04:
+    Sf:
+      value: 286 # 326 
+      units: g/L
+    S0:
+      value: 10
+      units: g/L
+    t_ind:
+      value: 9.933 # 9
+      units: h
+  BR05:
+    Sf:
+      value: 286 # 326 
+      units: g/L
+    S0:
+      value: 10
+      units: g/L
+    t_ind:
+      value: 9.933 # 9.1
+      units: h
+  BR06:
+    Sf:
+      value: 286 # 305 
+      units: g/L
+    S0:
+      value: 12.5
+      units: g/L
+    t_ind:
+      value: 10.07 # 9
+      units: h
+  BR07:
+    Sf:
+      value: 286 # 305 
+      units: g/L
+    S0:
+      value: 7.5
+      units: g/L
+    t_ind:
+      value: 12.82 # 12
+      units: h
+
+kinetics:
+  mu_max_p:
+    value: 0.01836 # 0.0106
+    units: 1/[h*C]
+  mu_max_0:
+    value: 0.8698 # 0.7208
+    units: 1/[h]
+  Ks:
+    value: 0.00012376 # 0.00010339
+    units: g/L
+  b:
+    value: 0.05618 # 0.0468
+    units: 1/h
+  m:
+    value: 0 # 0.001 # 0.0726
+    units: 1/h
+  Y_XS:
+    value: 0.43575 # 0.4322 # 0.2361
+    units: g/g
+  alpha:
+    value: 3.35  # 0.134 # 3.35 
+    units: none
+  gamma_1:
+    value: 0.57 # 0.0028 # 0.57
+    units: 1/h
+  Ap_1:
+    value: 34.55
+    units: C
+  gamma_2:
+    value: 2.52 # 0.1 # 2.52
+    units: 1/h
+  Ap_2:
+    value: 30.67
+    units: C
+  sigma:
+    value: 0.76 # 0.03 # 0.76
+    units: 1/h
+
+feeds:
+  BR02:
+    feed_S:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 3.4, 0.0, 0.0]
+        - [3.4, 8.0, 0.013, 0.0015]
+        - [8.0, 100.0, 0.0001, 0.0015]
+      unit: h, h, L/h, L
+
+    feed_A:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 3.4, 0.0, 0.0]
+        - [3.4, 8.0, 0.0, 0.0]
+        - [8.0, 100.0, 0.0, 0.0]
+      unit: h, h, uL/h2, uL/h
+
+  BR03:
+    feed_S:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 4.8, 0.0, 0.0]
+        - [4.8, 9.3, 0.011, 0.0015]
+        - [9.3, 100.0, 0.0006, 0.0015]
+      unit: h, h, L/h, L
+
+    feed_A:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 4.8, 0.0, 0.0]
+        - [4.8, 9.3, 0.0, 0.0]
+        - [9.3, 100.0, 0.0, 0.0]
+      unit: h, h, uL/h2, uL/h
+
+  BR04:
+    feed_S:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 5.6, 0.0, 0.0]
+        - [5.6, 9.1, 0.006, 0.0015]
+        - [9.1, 100.0, 0.00005, 0.0015]
+      unit: h, h, L/h, L
+
+    feed_A:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 4.45, 0.0, 0.0]
+        - [4.45, 9.0, 0.0, 0.0]
+        - [9.0, 100.0, 0.0, 0.0]
+      unit: h, h, uL/h2, uL/h
+
+  BR05:
+    feed_S:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 5.6, 0.0, 0.0]
+        - [5.6, 9.1, 0.006, 0.0015]
+        - [9.1, 100.0, 0.00005, 0.0015]
+      unit: h, h, L/h, L
+
+    feed_A:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 5.6, 0.0, 0.0]
+        - [5.6, 9.1, 0.0, 0.0]
+        - [9.1, 100.0, 0.0, 0.0]
+      unit: h, h, uL/h2, uL/h
+
+  BR06:
+    feed_S:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 4.3, 0.0, 0.0]
+        - [4.3, 9.0, 0.013, 0.0015]
+        - [9.0, 100.0, 0.0003, 0.0015]
+      unit: h, h, L/h, L
+
+    feed_A:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 4.3, 0.0, 0.0]
+        - [4.3, 9.0, 0.0, 0.0]
+        - [9.0, 100.0, 0.0, 0.0]
+      unit: h, h, uL/h2, uL/h
+
+  BR07:
+    feed_S:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 3.9, 0.0, 0.0]
+        - [3.9, 9.0, 0.01, 0.0015]
+        - [9.0, 100.0, 0.0002, 0.0015]
+      unit: h, h, L/h, L
+
+    feed_A:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 3.9, 0.0, 0.0]
+        - [3.9, 9.0, 0.0, 0.0]
+        - [9.0, 2100.0, 0.0, 0.0]
+      unit: h, h, uL/h2, uL/h
+
+  # BR08:
+  #   feed_S:
+  #     type: OnOffFeed_Linear
+  #     value:
+  #       - [0.0, 3.6, 0.0, 0.0]
+  #       - [3.6, 10.0, 0.01, 0.0015]
+  #       - [10.0, 20.0, 0.0002, 0.0015]
+  #     unit: h, h, L/h, L
+
+  #   feed_A:
+  #     type: OnOffFeed_Linear
+  #     value:
+  #       - [0.0, 3.6, 0.0, 0.0]
+  #       - [3.6, 10.0, 0.01, 0.0015]
+  #       - [10.0, 20.0, 0.0002, 0.0015]
+  #     unit: h, h, L/h, L
+
+simulation:
+  # t_span: 
+  #   value: [0, 20]
+  #   units: h
+  # n_points: 
+  #   400
+  method_ode: 
+    type : BDF #  Radau
+  rtol_ode: 
+    value: 1.0e-6
+  atol_ode: 
+    value: 1.0e-8
+
+

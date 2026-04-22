@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [  
+        {
+            "name": "Debug estimate_parameter.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/execution/estimate_parameters.py",
+            "console": "integratedTerminal",
+            // "redirectOutput": true,
+            "justMyCode": true,
+            // "stopOnEntry": false,
+            "env": {
+                    "PYTHONPATH": "${workspaceFolder}"
+                }
+
+        },
+        {
+            "name": "Debug model_profile.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/execution/model_profile.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        }
+
+    ]
+}
