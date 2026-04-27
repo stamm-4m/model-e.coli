@@ -1,11 +1,13 @@
 
 import pandas as pd
 from glob import glob
-from fedbatch.data_analysis.preprocessing import unificar_xls, run_EAD, timeseries_per_run, scatter_fun
+from fedbatch.data_analysis.preprocessing import (
+    unificar_xls, run_EAD, timeseries_per_run, scatter_fun, agregar_T_ind )
 
 # Import and Unification of data
 dataset_files = sorted(glob("data/raw/BR*.xls"))
 df = unificar_xls(dataset_files)
+df = agregar_T_ind(df)
 df.to_csv("data/processed/BR_unified.csv", index=False)
 
 # EAD

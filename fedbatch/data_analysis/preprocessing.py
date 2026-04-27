@@ -108,6 +108,24 @@ def calcular_mu_qp(df):
 
     return df
 
+
+def agregar_T_ind(df):
+
+    # Asegurar orden temporal
+    last_T = (
+        df
+        .sort_values("time")
+        .groupby("Run_ID")["T"]
+        .last()
+        .astype(str)  # convertir a no numérico
+    )
+
+    # Asignar a todas las filas
+    df["T_ind"] = df["Run_ID"].map(last_T)
+    df["Run_T"] = df["Run_ID"].astype(str) + "_T_" + df["T_ind"]
+
+    return df
+
 #------------- Heatmaps ------------------
 
 def heatmap_global(df,save_dir=None, threshold=0.8):
@@ -143,7 +161,7 @@ def heatmap_global(df,save_dir=None, threshold=0.8):
 def heatmap_per_run(df,save_dir=None, threshold=0.8):
     num_cols = get_numeric_columns(df)
 
-    for run_id, sub in df.groupby("Run_ID"):
+    for run_id, sub in df.groupby("Run_T"):
         corr = sub[num_cols].corr()
 
         fig, ax = plt.subplots(figsize=(8, 6))
@@ -196,12 +214,12 @@ def pca_global(df,save_dir=None):
     plt.close()
     # plt.show()
 
-    print("Varianza explicada:", pca.explained_variance_ratio_)
+    print("*PCA* Varianza explicada:", pca.explained_variance_ratio_)
 
 def pca_per_run(df,save_dir=None):
     num_cols = get_numeric_columns(df)
 
-    for run_id, sub in df.groupby("Run_ID"):
+    for run_id, sub in df.groupby("Run_T"):
         sub = sub[num_cols].dropna()
         if len(sub) < 2:
             continue
@@ -244,7 +262,7 @@ def boxplot_por_run(df,save_dir=None):
 
     for col in num_cols:
         plt.figure(figsize=(8, 5))
-        sns.boxplot(x="Run_ID", y=col, data=df)
+        sns.boxplot(x="Run_T", y=col, data=df)
         plt.title(f"Boxplot of {col}")
         plt.xticks(rotation=45)
         plt.tight_layout()
@@ -264,7 +282,7 @@ def get_numeric_columns(df):
 # -------------  Series temporales superpuestas --------------
 def timeseries_per_run(df, variable, save_dir=None):
     plt.figure(figsize=(8, 5))
-    for run_id, sub in df.groupby("Run_ID"):
+    for run_id, sub in df.groupby("Run_T"):
         plt.plot(sub["time"], sub[variable], label=run_id)
 
     plt.xlabel("Time")
@@ -288,7 +306,7 @@ def scatter_fun(df, x, y, save_dir=None):
         data=df,
         x=x,
         y=y,
-        hue="Run_ID",
+        hue="Run_T",
         ax=ax
     )
 
