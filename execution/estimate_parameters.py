@@ -20,7 +20,7 @@ cfg = load_yaml("fedbatch/config/default_parameters.yaml")
 
 #--------------Load Datasets--------------------
 
-dataset_files = sorted( glob("data/processed/BR*.xls") )
+dataset_files = sorted( glob("data/raw/BR*.xls") )
 datasets = [ExperimentDataset(f) for f in dataset_files]
 
 # Full parameter set from YAML (fixed defaults)

@@ -15,7 +15,7 @@ def build_experiments(cfg, kin):
     """
     Build datasets, simulators and initial conditions for all BR experiments.
     """
-    dataset_files = sorted(glob("data/processed/BR*.xls"))
+    dataset_files = sorted(glob("data/raw/BR*.xls"))
     datasets = [ExperimentDataset(f) for f in dataset_files]
 
     simulators = []

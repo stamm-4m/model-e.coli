@@ -14,10 +14,13 @@ class ExperimentDataset:
             "Glucose": "S",
             "Biomass": "X",
             "Protein": "P",
+            "Acetate": "A",
             "Vreal": "V",
             "Temperature": "T",
             "Induction": "I"
         })
+
+        self.df = df 
 
         self.t = df["time"].values
 
