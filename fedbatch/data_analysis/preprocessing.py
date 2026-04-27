@@ -109,15 +109,17 @@ def calcular_mu_qp(df):
     return df
 
 
-def agregar_T_ind(df):
+def agregar_T_ind(df,n_ultimos=4):
 
     # Asegurar orden temporal
     last_T = (
         df
         .sort_values("time")
-        .groupby("Run_ID")["T"]
-        .last()
-        .astype(str)  # convertir a no numérico
+        .groupby("Run_ID")["T"] 
+        # .last()
+        .apply(lambda s: s.tail(n_ultimos).mean()) # últimos 4 valores
+        .round(1)
+        .astype(str)  # convertir a str
     )
 
     # Asignar a todas las filas
@@ -281,25 +283,33 @@ def get_numeric_columns(df):
 
 # -------------  Series temporales superpuestas --------------
 def timeseries_per_run(df, variable, save_dir=None):
-    plt.figure(figsize=(8, 5))
-    for run_id, sub in df.groupby("Run_T"):
-        plt.plot(sub["time"], sub[variable], label=run_id)
 
-    plt.xlabel("Time")
-    plt.ylabel(variable)
-    plt.title(f"{variable} vs tiempo")
-    plt.legend()
-    plt.grid(True)
+    # plt.figure(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    for run_id, sub in df.groupby("Run_T"):   
+        ax.scatter(sub["time"], sub[variable], label = run_id, s=20, alpha=0.7)
+        # ax.plot(sub["time"], sub[variable], label=run_id)
+    
+    ax.set_title(f"{variable} vs tiempo")
+    ax.set_xlabel("Time")
+    ax.set_ylabel(variable)
+    ax.legend()
+    ax.grid(True)
+    plt.tight_layout()
+
     if save_dir:
             savepath = f"{save_dir}/timeseries_{variable}.png"
             plt.savefig(savepath, dpi=300, bbox_inches="tight")
-    plt.close()
+
+    plt.close(fig)
+
     # Ejemplo uso:
     # timeseries_per_run(df, "X")
 
 # ------------- Scatter para pares de variables --------------
 def scatter_fun(df, x, y, save_dir=None):
-    plt.figure(figsize=(6, 5))
+    # plt.figure(figsize=(6, 5))
 
     fig, ax = plt.subplots(figsize=(8, 5))
     sns.scatterplot(
@@ -317,6 +327,7 @@ def scatter_fun(df, x, y, save_dir=None):
     if save_dir:
             savepath = f"{save_dir}/scatter_{x}_{y}.png"
             plt.savefig(savepath, dpi=300, bbox_inches="tight")
+
     plt.close(fig)
 
     # Ejemplo uso:
