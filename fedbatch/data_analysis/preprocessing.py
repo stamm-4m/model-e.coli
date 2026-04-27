@@ -81,15 +81,6 @@ def calcular_mu_qp(df):
 
     # Última fila 
         elif i == n - 1:
-            h = t[i+1] - t[i]
-            h2 = t[i] - t[i-1]
-            alpha = h2/h
-
-            dXdt = (1/h) * (1/alpha) * (1/(1+alpha)) * ( (alpha**2 * X[i+1]) + (1-alpha**2) * X[i] - X[i-1] )
-            dVdt = (1/h) * (1/alpha) * (1/(1+alpha)) * ( (alpha**2 * V[i+1]) + (1-alpha**2) * V[i] - V[i-1] )
-            dPdt = (1/h) * (1/alpha) * (1/(1+alpha)) * ( (alpha**2 * P[i+1]) + (1-alpha**2) * P[i] - P[i-1] )
-    # Datos intermedios
-        else:
             h =  t[i] - t[i-1]
             h2 = t[i] - t[i-2]
             alpha = h2/h
@@ -97,6 +88,15 @@ def calcular_mu_qp(df):
             dXdt = (1/h) * (1/alpha) * (1/(alpha-1)) * ( (alpha**2-1) * X[i] - (alpha**2 * X[i-1]) + X[i-2] )
             dVdt = (1/h) * (1/alpha) * (1/(alpha-1)) * ( (alpha**2-1) * V[i] - (alpha**2 * V[i-1]) + V[i-2] )
             dPdt = (1/h) * (1/alpha) * (1/(alpha-1)) * ( (alpha**2-1) * P[i] - (alpha**2 * P[i-1]) + P[i-2] )
+    # Datos intermedios
+        else:
+            h = t[i+1] - t[i]
+            h2 = t[i] - t[i-1]
+            alpha = h2/h
+
+            dXdt = (1/h) * (1/alpha) * (1/(1+alpha)) * ( (alpha**2 * X[i+1]) + (1-alpha**2) * X[i] - X[i-1] )
+            dVdt = (1/h) * (1/alpha) * (1/(1+alpha)) * ( (alpha**2 * V[i+1]) + (1-alpha**2) * V[i] - V[i-1] )
+            dPdt = (1/h) * (1/alpha) * (1/(1+alpha)) * ( (alpha**2 * P[i+1]) + (1-alpha**2) * P[i] - P[i-1] )
 
         mu[i]     = (1/X[i]) * ( dXdt ) + (1/V[i]) * ( dVdt )
         qp_old[i] = (1/X[i]) * ( dPdt )
