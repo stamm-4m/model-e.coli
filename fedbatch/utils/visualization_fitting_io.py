@@ -494,7 +494,7 @@ def plot_parity_mc(
         axes[i].set_ylabel(f"{label} MC pred")
         axes[i].grid(True)
 
-    fig.suptitle(f"Monte‑Carlo parity — {dataset.path}")
+    fig.suptitle(f"Monte-Carlo parity — {dataset.path}")
 
     if savepath:
         plt.savefig(savepath, dpi=300, bbox_inches="tight")
