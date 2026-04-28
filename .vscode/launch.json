@@ -28,6 +28,17 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
+        },
+        {
+            "name": "Debug data_analysis.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/execution/data_analysis.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
         }
 
     ]
