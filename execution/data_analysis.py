@@ -16,13 +16,13 @@ run_EAD(df, save_dir)
 
 # Time series overlaped
 save_dir="results/data_analysis/time_series"
-variables = ["X", "S", "V", "mu", "qP", "I", "T", "A"]
+variables = ["X", "S", "V", "mu", "qP", "qP_old", "I", "T", "A"]
 for variable in variables:
         timeseries_per_run(df, variable, save_dir)
 
 # Scatter
 save_dir="results/data_analysis/scatter"
-variables = ["X", "S", "V", "mu", "qP", "I", "T", "A"]
+variables = ["X", "S", "V", "mu", "qP", "qP_old", "I", "T", "A"]
 for i, x in enumerate(variables):
     for y in variables[i+1:]:
         scatter_fun(df, x, y, save_dir)

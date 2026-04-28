@@ -119,7 +119,8 @@ def agregar_T_ind(df,n_ultimos=4):
         # .last()
         .apply(lambda s: s.tail(n_ultimos).mean()) # últimos 4 valores
         .round(1)
-        .astype(str)  # convertir a str
+        .astype(int)  
+        .astype(str) 
     )
 
     # Asignar a todas las filas
@@ -155,7 +156,7 @@ def heatmap_global(df,save_dir=None, threshold=0.8):
     plt.tight_layout()
 
     if save_dir:
-            savepath = f"{save_dir}/heatmap_global.png"
+            savepath = f"{save_dir}/Heatmap/heatmap_global.png"
             plt.savefig(savepath, dpi=300, bbox_inches="tight")
     plt.close(fig)
     #plt.show()
@@ -187,7 +188,7 @@ def heatmap_per_run(df,save_dir=None, threshold=0.8):
         plt.tight_layout()
 
         if save_dir:
-            savepath = f"{save_dir}/heatmap_{run_id}.png"
+            savepath = f"{save_dir}/Heatmap/heatmap_{run_id}.png"
             plt.savefig(savepath, dpi=300, bbox_inches="tight")
         plt.close(fig)
         #plt.show()
@@ -211,7 +212,7 @@ def pca_global(df,save_dir=None):
     plt.grid(True)
 
     if save_dir:
-            savepath = f"{save_dir}/PCA_global.png"
+            savepath = f"{save_dir}/PCA/PCA_global.png"
             plt.savefig(savepath, dpi=300, bbox_inches="tight")
     plt.close()
     # plt.show()
@@ -238,7 +239,7 @@ def pca_per_run(df,save_dir=None):
         plt.ylabel("PC2")
         plt.grid(True)
         if save_dir:
-            savepath = f"{save_dir}/PCA_{run_id}.png"
+            savepath = f"{save_dir}/PCA/PCA_{run_id}.png"
             plt.savefig(savepath, dpi=300, bbox_inches="tight")
         plt.close()
         # plt.show()
@@ -248,15 +249,16 @@ def pca_per_run(df,save_dir=None):
 def boxplot_global(df,save_dir=None):
     num_cols = get_numeric_columns(df)
 
-    df[num_cols].plot(kind="box", figsize=(10, 6))
-    plt.title("Boxplot Global")
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    if save_dir:
-            savepath = f"{save_dir}/boxplot_global.png"
-            plt.savefig(savepath, dpi=300, bbox_inches="tight")
-    plt.close()
-        # plt.show()
+    for col in num_cols:
+        df[col].plot(kind="box", figsize=(10, 6))
+        plt.title(f"Boxplot Global of {col}")
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        if save_dir:
+                savepath = f"{save_dir}/Boxplot/boxplot_global_{col}.png"
+                plt.savefig(savepath, dpi=300, bbox_inches="tight")
+        plt.close()
+            # plt.show()
 
 
 def boxplot_por_run(df,save_dir=None):
@@ -269,7 +271,7 @@ def boxplot_por_run(df,save_dir=None):
         plt.xticks(rotation=45)
         plt.tight_layout()
         if save_dir:
-            savepath = f"{save_dir}/boxplot_{col}.png"
+            savepath = f"{save_dir}/Boxplot/boxplot_{col}.png"
             plt.savefig(savepath, dpi=300, bbox_inches="tight")
         plt.close()
         # plt.show()
@@ -291,8 +293,8 @@ def timeseries_per_run(df, variable, save_dir=None):
         ax.scatter(sub["time"], sub[variable], label = run_id, s=20, alpha=0.7)
         # ax.plot(sub["time"], sub[variable], label=run_id)
     
-    ax.set_title(f"{variable} vs tiempo")
-    ax.set_xlabel("Time")
+    ax.set_title(f"{variable} vs time")
+    ax.set_xlabel("time (h)")
     ax.set_ylabel(variable)
     ax.legend()
     ax.grid(True)
