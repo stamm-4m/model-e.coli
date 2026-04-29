@@ -1,64 +1,96 @@
 bioreactor:
   BR02:
-    Sf:
-      value: 286
+    Sf: # ??? código de JCA difiere de tesis para todos los #
+      value: 286 # 298 
       units: g/L
     S0:
       value: 10
       units: g/L
+    t_sb:
+      value: 3.4
+      units: h
     t_ind:
       value: 8
       units: h
   BR03:
     Sf:
-      value: 286
+      value: 286 # 298 
       units: g/L
     S0:
-      value: 10.5
+      value: 10.5 # 10
       units: g/L
+    t_sb:
+      value: 4.8
+      units: h  
     t_ind:
-      value: 10.5
+      value: 9.3 # 10.5 # 9.3
       units: h
   BR04:
     Sf:
-      value: 286
+      value: 286 # 326 
       units: g/L
     S0:
       value: 10
       units: g/L
+    t_sb:
+      value: 4.45 # 5.6
+      units: h
     t_ind:
-      value: 9.933
+      value: 9.9 # 9.933 # 9.1
       units: h
   BR05:
     Sf:
-      value: 286
+      value: 286 # 326 
       units: g/L
     S0:
       value: 10
       units: g/L
+    t_sb:
+      value: 5.6
+      units: h
     t_ind:
-      value: 9.933
+      value: 9.1 # 9.933 # 9.1
       units: h
   BR06:
     Sf:
-      value: 286
+      value: 286 # 305 
       units: g/L
     S0:
       value: 12.5
       units: g/L
+    t_sb:
+      value: 4.3
+      units: h
     t_ind:
-      value: 10.07
+      value: 9 # 10.07 # 9
       units: h
   BR07:
     Sf:
-      value: 286
+      value: 286 # 305 
       units: g/L
     S0:
       value: 7.5
       units: g/L
-    t_ind:
-      value: 12.82
+    t_sb:
+      value: 3.9
       units: h
+    t_ind:
+      value: 9 # 12.82 # 9
+      units: h
+  BR08:
+    Sf:
+      value: 286 # 305 
+      units: g/L
+    S0:
+      value: 7.5
+      units: g/L
+    t_sb:
+      value: 3.6
+      units: h
+    t_ind:
+      value: 10 # 12.82 # 10
+      units: h
+
 kinetics:
   mu_max_p:
     value: 0.017427081144490875
@@ -168,14 +200,14 @@ feeds:
       type: OnOffFeed_Linear
       value:
       - - 0.0
-        - 5.6
+        - 4.45
         - 0.0
         - 0.0
-      - - 5.6
-        - 9.1
+      - - 4.45
+        - 9.9
         - 0.006
         - 0.0015
-      - - 9.1
+      - - 9.9
         - 100.0
         - 5.0e-05
         - 0.0015
@@ -188,10 +220,10 @@ feeds:
         - 0.0
         - 0.0
       - - 4.45
-        - 9.0
+        - 9.9
         - 0.0
         - 0.0
-      - - 9.0
+      - - 9.9
         - 100.0
         - 0.0
         - 0.0

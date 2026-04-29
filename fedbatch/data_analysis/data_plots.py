@@ -1,4 +1,5 @@
 
+# import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -8,8 +9,8 @@ from sklearn.decomposition import PCA
 
 #------------- Heatmaps ------------------
 
-def heatmap_global(df,save_dir=None, threshold=0.8):
-    num_cols = get_numeric_columns(df)
+def heatmap_global(df, variables ,save_dir=None, threshold=0.8):
+    num_cols = get_numeric_columns(df, variables)
     corr = df[num_cols].corr()
 
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -38,8 +39,8 @@ def heatmap_global(df,save_dir=None, threshold=0.8):
     plt.close(fig)
     #plt.show()
 
-def heatmap_per_run(df,save_dir=None, threshold=0.8):
-    num_cols = get_numeric_columns(df)
+def heatmap_per_run(df, variables ,save_dir=None, threshold=0.8):
+    num_cols = get_numeric_columns(df, variables)
 
     for run_id, sub in df.groupby("Run_T"):
         corr = sub[num_cols].corr()
@@ -72,8 +73,8 @@ def heatmap_per_run(df,save_dir=None, threshold=0.8):
 
 #------------- PCA ------------------
 
-def pca_global(df,save_dir=None):
-    num_cols = get_numeric_columns(df)
+def pca_global(df, variables,save_dir=None):
+    num_cols = get_numeric_columns(df, variables)
 
     df = df.dropna()
     df = df.sort_values("time")
@@ -103,7 +104,7 @@ def pca_global(df,save_dir=None):
 
     if save_dir:
             scree_plot(
-                 pca, 
+                 pca,
                  savepath = f"{save_dir}/PCA/PCA_global_scree.png",
                  title="Global PCA - Scree plot"
                  )
@@ -114,8 +115,8 @@ def pca_global(df,save_dir=None):
     # plt.show()
     print("Explained variance ratio (PCA):", pca.explained_variance_ratio_)
 
-def pca_per_run(df,save_dir=None):
-    num_cols = get_numeric_columns(df)
+def pca_per_run(df, variables,save_dir=None):
+    num_cols = get_numeric_columns(df, variables)
 
     for run_id, sub in df.groupby("Run_T"):
         sub = sub[num_cols].dropna()
@@ -207,8 +208,8 @@ def draw_biplot_vectors(ax, pca, feature_names, scale=3):
 
 #------------- Boxplots ------------------
 
-def boxplot_global(df,save_dir=None):
-    num_cols = get_numeric_columns(df)
+def boxplot_global(df, variables,save_dir=None):
+    num_cols = get_numeric_columns(df, variables)
 
     for col in num_cols:
         df[col].plot(kind="box", figsize=(10, 6))
@@ -222,8 +223,8 @@ def boxplot_global(df,save_dir=None):
             # plt.show()
 
 
-def boxplot_por_run(df,save_dir=None):
-    num_cols = get_numeric_columns(df)
+def boxplot_por_run(df, variables, save_dir=None):
+    num_cols = get_numeric_columns(df, variables)
 
     for col in num_cols:
         plt.figure(figsize=(8, 5))
@@ -239,8 +240,13 @@ def boxplot_por_run(df,save_dir=None):
 
 # --------- función para obtener las columnas numericas -----------
 
-def get_numeric_columns(df):
-    return df.select_dtypes(include=[np.number]).columns.tolist()
+def get_numeric_columns(df, variables):
+    # return df.select_dtypes(include=[np.number]).columns.tolist()
+    return [
+        col for col in variables
+        if col in df.columns # and pd.api.types.is_numeric_dtype(df[col])
+    ]
+
 
 # ------------- Otras funciones que pueden ser utiles--------------
 
