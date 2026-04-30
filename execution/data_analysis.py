@@ -252,7 +252,7 @@ outlier_global_yaml = {
     },
 }
 
-save_yaml(outlier_global_yaml,"results/data_analysis/global/yaml_files/global_outliers_analysis.yaml")
+save_yaml(outlier_global_yaml,"results/data_analysis/global/yaml_files/outliers_global_analysis.yaml")
 
 # ------------per phase ------------------
 
@@ -300,7 +300,7 @@ outliers_yaml_data = {
     },
 }
 
-save_yaml(outliers_yaml_data,"results/data_analysis/global/yaml_files/outliers_analysis.yaml")
+save_yaml(outliers_yaml_data,"results/data_analysis/global/yaml_files/outliers_phase_analysis.yaml")
 
 # -------------------- Runs stability (4) -------------
 
