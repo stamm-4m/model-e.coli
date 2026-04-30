@@ -1,0 +1,153 @@
+step: outliers_and_influence
+outlier_method:
+  method: IQR
+  k: 1.5
+  defined_per: phase
+outliers:
+  phase_A:
+    X:
+      pct_outliers: 0.0714
+      lower_bound: -1.6556
+      upper_bound: 3.7212
+    S:
+      pct_outliers: 0.0714
+      lower_bound: 0.8617
+      upper_bound: 13.7058
+    V:
+      pct_outliers: 0.0
+      lower_bound: 1.2293
+      upper_bound: 2.0128
+    P:
+      pct_outliers: 0.0
+      lower_bound: 0.0
+      upper_bound: 0.0
+    mu:
+      pct_outliers: 0.0952
+      lower_bound: -0.0386
+      upper_bound: 1.6035
+    qP:
+      pct_outliers: 0.0
+      lower_bound: 0.0
+      upper_bound: 0.0
+    T:
+      pct_outliers: 0.0714
+      lower_bound: 36.945
+      upper_bound: 37.065
+    A:
+      pct_outliers: 0.0238
+      lower_bound: -0.1361
+      upper_bound: 0.5549
+    I:
+      pct_outliers: 0.0
+      lower_bound: 0.0
+      upper_bound: 0.0
+  phase_B:
+    X:
+      pct_outliers: 0.0
+      lower_bound: -6.4402
+      upper_bound: 37.2955
+    S:
+      pct_outliers: 0.1795
+      lower_bound: 0.0
+      upper_bound: 0.0
+    V:
+      pct_outliers: 0.0513
+      lower_bound: 1.3288
+      upper_bound: 2.0708
+    P:
+      pct_outliers: 0.0
+      lower_bound: 0.0
+      upper_bound: 0.0
+    mu:
+      pct_outliers: 0.0
+      lower_bound: 0.0719
+      upper_bound: 0.683
+    qP:
+      pct_outliers: 0.0
+      lower_bound: 0.0
+      upper_bound: 0.0
+    T:
+      pct_outliers: 0.2564
+      lower_bound: 36.9038
+      upper_bound: 37.1138
+    A:
+      pct_outliers: 0.1795
+      lower_bound: 0.0
+      upper_bound: 0.0
+    I:
+      pct_outliers: 0.0
+      lower_bound: 0.0
+      upper_bound: 0.0
+  phase_C:
+    X:
+      pct_outliers: 0.0
+      lower_bound: 18.9946
+      upper_bound: 42.3042
+    S:
+      pct_outliers: 0.0
+      lower_bound: 0.0
+      upper_bound: 0.0
+    V:
+      pct_outliers: 0.0
+      lower_bound: 0.8403
+      upper_bound: 3.0512
+    P:
+      pct_outliers: 0.1233
+      lower_bound: -0.4213
+      upper_bound: 1.1598
+    mu:
+      pct_outliers: 0.1507
+      lower_bound: -0.0074
+      upper_bound: 0.0372
+    qP:
+      pct_outliers: 0.0959
+      lower_bound: -0.0029
+      upper_bound: 0.0058
+    T:
+      pct_outliers: 0.137
+      lower_bound: 24.4725
+      upper_bound: 36.5325
+    A:
+      pct_outliers: 0.0
+      lower_bound: 0.0
+      upper_bound: 0.0
+    I:
+      pct_outliers: 0.0411
+      lower_bound: 1.0
+      upper_bound: 1.0
+influence_on_target:
+  target: qP
+  by_phase:
+    phase_C:
+      X:
+        corr_all: -0.1544
+        corr_no_outliers: -0.1544
+        delta_corr: 0.0
+      S:
+        corr_all: .nan
+        corr_no_outliers: .nan
+        delta_corr: .nan
+      V:
+        corr_all: -0.4782
+        corr_no_outliers: -0.4782
+        delta_corr: 0.0
+      P:
+        corr_all: 0.703
+        corr_no_outliers: 0.181
+        delta_corr: -0.522
+      mu:
+        corr_all: -0.169
+        corr_no_outliers: -0.0049
+        delta_corr: 0.1641
+      T:
+        corr_all: -0.2088
+        corr_no_outliers: -0.1824
+        delta_corr: 0.0265
+      A:
+        corr_all: .nan
+        corr_no_outliers: .nan
+        delta_corr: .nan
+      I:
+        corr_all: 0.0854
+        corr_no_outliers: .nan
+        delta_corr: .nan

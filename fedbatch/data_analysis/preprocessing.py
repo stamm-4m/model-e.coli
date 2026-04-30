@@ -45,7 +45,7 @@ def unificar_xls(dataset_files, yaml_path, save_dir = False):
         df["Run_ID"] = br_id
         df.insert(0, "Run_ID", df.pop("Run_ID"))
         time_sb, time_ind = get_time_ranges(yaml_params, br_id)
-        feed_S = None # create_feed(yaml_params["feeds"][br_id]["feed_S"])
+        feed_S = create_feed(yaml_params["feeds"][br_id]["feed_S"]) # None # 
 
         # mu and qp calculation
         df = calcular_mu_qp(df,time_ind, feed_S, plot_splines=True, save_dir=save_dir, id=br_id)
@@ -337,3 +337,265 @@ def _plot_spline_comparison(
     plt.close(fig)
 
     # plt.show()
+
+# ---------------------Phases comparation ------------------------------
+
+def phase_numeric_summary(dfs_by_phase, numeric_features):
+    records = []
+
+    for phase, df in dfs_by_phase.items():
+        stats = df[numeric_features].agg(["mean", "std"])
+        cv = stats.loc["std"] / stats.loc["mean"]
+
+        for col in numeric_features:
+            records.append({
+                "phase": phase,
+                "feature": col,
+                "mean": stats.loc["mean", col],
+                "std": stats.loc["std", col],
+                "cv": cv[col],
+            })
+
+    return pd.DataFrame(records)
+
+
+def mean_ratio_by_phase(phase_summary, ref_phase):
+    ref = phase_summary[phase_summary["phase"] == ref_phase][
+        ["feature", "mean"]
+    ].rename(columns={"mean": "ref_mean"})
+
+    merged = phase_summary.merge(ref, on="feature")
+    merged["mean_ratio"] = merged["mean"] / merged["ref_mean"]
+
+    return merged
+
+
+def mean_ratios_to_dict(df_mean_ratios):
+    return (
+        df_mean_ratios
+        .set_index("feature")["mean_ratio"]
+        .round(3)
+        .to_dict()
+    )
+
+def within_phase_temporal_drift(df, time_col, numeric_features, window=50, min_windows=3,):
+    df_sorted = df.sort_values(time_col)
+
+    if len(df_sorted) < window * min_windows:
+            return None  # or an empty dict / flagged result
+ 
+    roll = (
+        df_sorted[numeric_features]
+        .rolling(window)
+        .mean()
+    )
+    return roll.std() / roll.mean()
+
+def drift_to_dict(drift):
+    if hasattr(drift, "to_dict"):
+        return drift.round(3).to_dict()
+    return drift
+
+
+def feature_target_corr_by_phase(
+    dfs_by_phase,
+    numeric_features,
+    target="qP",
+    method="pearson"
+):
+    records = []
+
+    for phase, df in dfs_by_phase.items():
+        for feature in numeric_features:
+            if feature == target:
+                continue
+            with np.errstate(divide="ignore", invalid="ignore"):
+                corr = df[feature].corr(df[target], method=method)
+
+            records.append({
+                "phase": phase,
+                "feature": feature,
+                "target": target,
+                "correlation": corr
+            })
+
+    return pd.DataFrame(records)
+
+# --------- outliers ----------------------
+
+def iqr_bounds(series, k=1.5):
+    q1 = series.quantile(0.25)
+    q3 = series.quantile(0.75)
+    iqr = q3 - q1
+    return q1 - k * iqr, q3 + k * iqr
+
+def global_outliers(df, numeric_features, k=1.5):
+    records = []
+
+    for feature in numeric_features:
+        low, high = iqr_bounds(df[feature], k)
+        mask = (df[feature] < low) | (df[feature] > high)
+
+        records.append({
+            "feature": feature,
+            "n_outliers": int(mask.sum()),
+            "pct_outliers": mask.mean(),
+            "lower_bound": low,
+            "upper_bound": high
+        })
+
+    return pd.DataFrame(records)
+
+def outliers_by_phase(
+    dfs_by_phase,
+    numeric_features,
+    k=1.5
+):
+    records = []
+
+    for phase, df in dfs_by_phase.items():
+        for feature in numeric_features:
+            low, high = iqr_bounds(df[feature], k)
+            mask = (df[feature] < low) | (df[feature] > high)
+
+            records.append({
+                "phase": phase,
+                "feature": feature,
+                "n_outliers": int(mask.sum()),
+                "pct_outliers": mask.mean(),
+                "lower_bound": low,
+                "upper_bound": high
+            })
+
+    return pd.DataFrame(records)
+
+# def global_influence_check(df, feature, target, k=1.5):
+#     low, high = iqr_bounds(df[feature], k)
+#     mask = (df[feature] < low) | (df[feature] > high)
+
+#     corr_all = df[feature].corr(df[target])
+#     corr_no_outliers = df.loc[~mask, feature].corr(df.loc[~mask, target])
+
+#     return corr_all, corr_no_outliers
+
+def influence_check(df,feature,target,k=1.5):
+    low, high = iqr_bounds(df[feature], k)
+    mask = (df[feature] < low) | (df[feature] > high)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        corr_all = df[feature].corr(df[target])
+        corr_no_outliers = df.loc[~mask, feature].corr(df.loc[~mask, target])
+
+    return corr_all, corr_no_outliers
+
+def global_outliers_to_dict(df):
+    return {
+        row["feature"]: {
+            "pct_outliers": round(row["pct_outliers"], 4),
+            "lower_bound": round(row["lower_bound"], 4),
+            "upper_bound": round(row["upper_bound"], 4),
+        }
+        for _, row in df.iterrows()
+    }
+
+def outlier_summary_to_dict(outlier_summary):
+    result = {}
+
+    for _, row in outlier_summary.iterrows():
+        phase = row["phase"]
+        feature = row["feature"]
+
+        result.setdefault(phase, {})
+        result[phase][feature] = {
+            "pct_outliers": round(row["pct_outliers"], 4),
+            "lower_bound": round(row["lower_bound"], 4),
+            "upper_bound": round(row["upper_bound"], 4),
+        }
+
+    return result
+
+def global_influence_to_dict(df):
+    return {
+        row["feature"]: {
+            "corr_all": round(row["corr_all"], 4)
+                if row["corr_all"] is not None else None,
+            "corr_no_outliers": round(row["corr_no_outliers"], 4)
+                if row["corr_no_outliers"] is not None else None,
+            "delta_corr": round(row["delta_corr"], 4)
+                if row["delta_corr"] is not None else None,
+        }
+        for _, row in df.iterrows()
+    }
+
+def influence_to_dict(influence_df):
+    result = {}
+
+    for _, row in influence_df.iterrows():
+        phase = row["phase"]
+        feature = row["feature"]
+
+        result.setdefault(phase, {})
+        result[phase][feature] = {
+            "corr_all": round(row["corr_all"], 4) if row["corr_all"] is not None else None,
+            "corr_no_outliers": round(row["corr_no_outliers"], 4) if row["corr_no_outliers"] is not None else None,
+            "delta_corr": round(row["delta_corr"], 4) if row["delta_corr"] is not None else None,
+        }
+
+    return result
+
+# ------------run stability ----------------------
+def stability_bootstrap(
+    df,
+    features,
+    target,
+    n_runs=100,
+    sample_frac=0.8,
+    random_state=42,
+):
+    rng = np.random.default_rng(random_state)
+    records = []
+
+    for run in range(n_runs):
+        sample_idx = rng.choice(
+            df.index,
+            size=int(len(df) * sample_frac),
+            replace=True,
+        )
+        sample = df.loc[sample_idx]
+
+        for feature in features:
+            if feature == target:
+                continue
+
+            with np.errstate(divide="ignore", invalid="ignore"):
+                corr = sample[feature].corr(sample[target])
+                records.append({
+                    "run": run,
+                    "feature": feature,
+                    "correlation": corr,
+                })
+
+    return pd.DataFrame(records)
+
+
+def stability_summary(stability_df):
+    return (
+        stability_df
+        .groupby("feature")["correlation"]
+        .agg(
+            mean_corr="mean",
+            std_corr="std",
+            sign_consistency=lambda x: np.mean(np.sign(x) == np.sign(x.mean()))
+        )
+        .reset_index()
+    )
+
+
+def stability_to_yaml(summary_df):
+    return {
+        row["feature"]: {
+            "mean_correlation": round(row["mean_corr"], 4),
+            "std_correlation": round(row["std_corr"], 4),
+            "sign_consistency": round(row["sign_consistency"], 3),
+        }
+        for _, row in summary_df.iterrows()
+    }

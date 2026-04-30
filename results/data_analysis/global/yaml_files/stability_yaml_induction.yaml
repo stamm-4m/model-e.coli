@@ -1,0 +1,39 @@
+step: stability_between_runs
+phase: phase_C
+target: qP
+method: bootstrap
+n_runs: 200
+sample_fraction: 0.8
+stability_metrics:
+  A:
+    mean_correlation: .nan
+    std_correlation: .nan
+    sign_consistency: 0.0
+  I:
+    mean_correlation: 0.0949
+    std_correlation: 0.0386
+    sign_consistency: 0.9
+  P:
+    mean_correlation: 0.6634
+    std_correlation: 0.1652
+    sign_consistency: 0.99
+  S:
+    mean_correlation: .nan
+    std_correlation: .nan
+    sign_consistency: 0.0
+  T:
+    mean_correlation: -0.2153
+    std_correlation: 0.0663
+    sign_consistency: 1.0
+  V:
+    mean_correlation: -0.4851
+    std_correlation: 0.0781
+    sign_consistency: 1.0
+  X:
+    mean_correlation: -0.1677
+    std_correlation: 0.0695
+    sign_consistency: 1.0
+  mu:
+    mean_correlation: -0.1584
+    std_correlation: 0.1033
+    sign_consistency: 0.93

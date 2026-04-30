@@ -1,0 +1,39 @@
+step: stability_between_runs
+phase: Global
+target: qP
+method: bootstrap
+n_runs: 200
+sample_fraction: 0.8
+stability_metrics:
+  A:
+    mean_correlation: -0.1832
+    std_correlation: 0.0278
+    sign_consistency: 1.0
+  I:
+    mean_correlation: 0.3605
+    std_correlation: 0.0535
+    sign_consistency: 1.0
+  P:
+    mean_correlation: 0.7158
+    std_correlation: 0.1067
+    sign_consistency: 1.0
+  S:
+    mean_correlation: -0.1805
+    std_correlation: 0.0285
+    sign_consistency: 1.0
+  T:
+    mean_correlation: -0.4056
+    std_correlation: 0.056
+    sign_consistency: 1.0
+  V:
+    mean_correlation: -0.1418
+    std_correlation: 0.0713
+    sign_consistency: 0.965
+  X:
+    mean_correlation: 0.2604
+    std_correlation: 0.0416
+    sign_consistency: 1.0
+  mu:
+    mean_correlation: -0.246
+    std_correlation: 0.0353
+    sign_consistency: 1.0

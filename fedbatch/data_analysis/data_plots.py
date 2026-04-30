@@ -2,6 +2,7 @@
 # import pandas as pd
 import numpy as np
 import seaborn as sns
+from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from sklearn.preprocessing import StandardScaler
@@ -301,3 +302,25 @@ def scatter_fun(df, x, y, save_dir=None):
 
     # Ejemplo uso:
     # scatter_ode(df, "V", "qP")
+
+# ----------Otro boxplot----------------------
+    
+def boxplots_by_phase(
+    dfs_by_phase,
+    numeric_features,
+    output_dir
+):
+    
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+    for phase, df in dfs_by_phase.items():
+        fig, ax = plt.subplots(figsize=(12, 6))
+
+        df[numeric_features].boxplot(ax=ax)
+        ax.set_title(f"Boxplots - {phase}")
+        ax.set_ylabel("Value")
+        ax.tick_params(axis="x", rotation=45)
+
+        plt.tight_layout()
+        fig.savefig(f"{output_dir}/boxplot_{phase}.png")
+        plt.close(fig)

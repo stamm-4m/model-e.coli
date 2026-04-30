@@ -1,0 +1,25 @@
+
+step: domain_filter
+target: qP
+
+regime_defining:
+    - S
+    - A
+    - V
+
+decisions:
+  keep:
+    - T
+    - I
+    - X
+
+  conditional:
+    P:
+      reason: strong but outlier-dependent
+    mu:
+      reason: derived variable, risk of redundancy
+
+  exclude:
+    - S
+    - A
+    - V
