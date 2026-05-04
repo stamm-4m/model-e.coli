@@ -29,6 +29,10 @@ outliers:
       pct_outliers: 0.0
       lower_bound: 0.0
       upper_bound: 0.0
+    rP:
+      pct_outliers: 0.0
+      lower_bound: 0.0
+      upper_bound: 0.0
     T:
       pct_outliers: 0.0714
       lower_bound: 36.945
@@ -63,6 +67,10 @@ outliers:
       lower_bound: 0.0719
       upper_bound: 0.683
     qP:
+      pct_outliers: 0.0
+      lower_bound: 0.0
+      upper_bound: 0.0
+    rP:
       pct_outliers: 0.0
       lower_bound: 0.0
       upper_bound: 0.0
@@ -103,6 +111,10 @@ outliers:
       pct_outliers: 0.0959
       lower_bound: -0.0029
       upper_bound: 0.0058
+    rP:
+      pct_outliers: 0.0959
+      lower_bound: -0.0666
+      upper_bound: 0.1453
     T:
       pct_outliers: 0.137
       lower_bound: 24.4725
@@ -116,38 +128,42 @@ outliers:
       lower_bound: 1.0
       upper_bound: 1.0
 influence_on_target:
-  target: qP
+  target: rP
   by_phase:
     phase_C:
       X:
-        corr_all: -0.1544
-        corr_no_outliers: -0.1544
+        corr_all: -0.1175
+        corr_no_outliers: -0.1175
         delta_corr: 0.0
       S:
         corr_all: .nan
         corr_no_outliers: .nan
         delta_corr: .nan
       V:
-        corr_all: -0.4782
-        corr_no_outliers: -0.4782
+        corr_all: -0.4662
+        corr_no_outliers: -0.4662
         delta_corr: 0.0
       P:
-        corr_all: 0.703
-        corr_no_outliers: 0.181
-        delta_corr: -0.522
+        corr_all: 0.7087
+        corr_no_outliers: 0.2513
+        delta_corr: -0.4575
       mu:
-        corr_all: -0.169
-        corr_no_outliers: -0.0049
-        delta_corr: 0.1641
+        corr_all: -0.1755
+        corr_no_outliers: 0.0025
+        delta_corr: 0.1781
+      qP:
+        corr_all: 0.9982
+        corr_no_outliers: 0.9785
+        delta_corr: -0.0197
       T:
-        corr_all: -0.2088
-        corr_no_outliers: -0.1824
-        delta_corr: 0.0265
+        corr_all: -0.2045
+        corr_no_outliers: -0.1709
+        delta_corr: 0.0336
       A:
         corr_all: .nan
         corr_no_outliers: .nan
         delta_corr: .nan
       I:
-        corr_all: 0.0854
+        corr_all: 0.0874
         corr_no_outliers: .nan
         delta_corr: .nan

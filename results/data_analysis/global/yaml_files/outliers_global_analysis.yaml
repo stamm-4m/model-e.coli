@@ -29,6 +29,10 @@ outliers:
     pct_outliers: 0.0844
     lower_bound: -0.002
     upper_bound: 0.0034
+  rP:
+    pct_outliers: 0.0779
+    lower_bound: -0.0613
+    upper_bound: 0.1022
   T:
     pct_outliers: 0.0
     lower_bound: 19.4925
@@ -42,37 +46,41 @@ outliers:
     lower_bound: -1.5
     upper_bound: 2.5
 influence_on_target:
-  target: qP
+  target: rP
   global:
     X:
-      corr_all: 0.2461
-      corr_no_outliers: 0.2461
+      corr_all: 0.254
+      corr_no_outliers: 0.254
       delta_corr: 0.0
     S:
       corr_all: -0.1721
       corr_no_outliers: -0.0795
       delta_corr: 0.0926
     V:
-      corr_all: -0.1498
-      corr_no_outliers: -0.1498
+      corr_all: -0.1415
+      corr_no_outliers: -0.1415
       delta_corr: 0.0
     P:
-      corr_all: 0.7321
-      corr_no_outliers: 0.465
-      delta_corr: -0.2671
+      corr_all: 0.7365
+      corr_no_outliers: 0.4985
+      delta_corr: -0.2381
     mu:
-      corr_all: -0.2293
-      corr_no_outliers: -0.2655
-      delta_corr: -0.0362
+      corr_all: -0.2295
+      corr_no_outliers: -0.2658
+      delta_corr: -0.0363
+    qP:
+      corr_all: 0.9984
+      corr_no_outliers: 0.9854
+      delta_corr: -0.013
     T:
-      corr_all: -0.3841
-      corr_no_outliers: -0.3841
+      corr_all: -0.3819
+      corr_no_outliers: -0.3819
       delta_corr: 0.0
     A:
       corr_all: -0.1729
       corr_no_outliers: -0.153
       delta_corr: 0.0199
     I:
-      corr_all: 0.3395
-      corr_no_outliers: 0.3395
+      corr_all: 0.34
+      corr_no_outliers: 0.34
       delta_corr: 0.0

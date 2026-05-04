@@ -84,6 +84,7 @@ def calcular_mu_qp(df,t_ind=None, feed_S=None,
     mu = np.zeros(n)
     # qp_old = np.zeros(n)
     qp = np.zeros(n)
+    rp = np.zeros(n)
 
     t = df["time"].values
     X = df["X"].values
@@ -149,11 +150,14 @@ def calcular_mu_qp(df,t_ind=None, feed_S=None,
         for i in range(n):
             if t[i] < t_ind:
                 qp[i] = 0
+                rp[i] = 0
             else:
                 qp[i] = (1/X[i]) * ( dPdt[i] + (dVdt[i] * P[i] / V[i]) ) # - (mu*P_s) )
+                rp[i] = dPdt[i] + (dVdt[i] * P[i] / V[i]) 
     else: 
         # qp_old = (1/X_s) * ( dPdt )
         qp    = (1/X) * ( dPdt + (dVdt * P / V) )
+        rp    =  dPdt + (dVdt * P / V) 
     
     mu    = (1/X) * ( dXdt ) + (1/V) * ( dVdt )
 
@@ -206,6 +210,7 @@ def calcular_mu_qp(df,t_ind=None, feed_S=None,
     df["mu"] = mu
     # df["qP_old"] = qp_old
     df["qP"] = qp
+    df["rP"] = rp
 
     return df
 

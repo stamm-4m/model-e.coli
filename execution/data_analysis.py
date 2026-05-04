@@ -18,91 +18,91 @@ yaml_path = "fedbatch/config/default_parameters.yaml"
 
 df_global, df_batch, df_fedbatch, df_induction = unificar_xls(dataset_files, yaml_path, save_dir)
 
-# # Save global dataframe
-# df_global.to_csv("data/processed/BR_unified.csv", index=False)
-# df_global.to_excel("data/processed/BR_unified.xlsx",index=False,engine="openpyxl")
+# Save global dataframe
+df_global.to_csv("data/processed/BR_unified.csv", index=False)
+df_global.to_excel("data/processed/BR_unified.xlsx",index=False,engine="openpyxl")
 
-# # -----------------Global Analysis based on EAD (1) ------------------------------
-# # EAD
-# variables = ["time","X", "S", "V", "P", "mu", "qP", "I", "T", "A"] # qp_Old
+# -----------------Global Analysis based on EAD (1) ------------------------------
+# EAD
+variables = ["time","X", "S", "V", "P", "mu", "qP","rP", "I", "T", "A"] # qp_Old
 
-# save_dir="results/data_analysis/global/EAD"
-# run_EAD(df_global, variables, save_dir)
+save_dir="results/data_analysis/global/EAD"
+run_EAD(df_global, variables, save_dir)
 
-# variables = ["X", "S", "V", "P", "mu", "qP", "I", "T", "A"] # qp_Old
+variables = ["X", "S", "V", "P", "mu", "qP", "rP", "I", "T", "A"] # qp_Old
 
-# # Time series overlaped
-# save_dir="results/data_analysis/global/time_series"
-# for variable in variables:
-#         timeseries_per_run(df_global, variable, save_dir)
+# Time series overlaped
+save_dir="results/data_analysis/global/time_series"
+for variable in variables:
+        timeseries_per_run(df_global, variable, save_dir)
 
-# # Scatter
-# save_dir="results/data_analysis/global/scatter"
-# for i, x in enumerate(variables):
-#     for y in variables[i+1:]:
-#         scatter_fun(df_global, x, y, save_dir)
+# Scatter
+save_dir="results/data_analysis/global/scatter"
+for i, x in enumerate(variables):
+    for y in variables[i+1:]:
+        scatter_fun(df_global, x, y, save_dir)
 
-# # -----------------Batch Analysis------------------------------
-# # EAD
-# variables = ["time", "X", "S", "V", "mu", "T", "A"] # qp_Old # I , P, qP
+# -----------------Batch Analysis------------------------------
+# EAD
+variables = ["time", "X", "S", "V", "mu", "T", "A"] # qp_Old # I , P, qP
 
-# save_dir="results/data_analysis/batch/EAD"
-# run_EAD(df_batch, variables, save_dir)
+save_dir="results/data_analysis/batch/EAD"
+run_EAD(df_batch, variables, save_dir)
 
-# variables = ["X", "S", "V", "mu", "T", "A"] # qp_Old # I , P, qP
+variables = ["X", "S", "V", "mu", "T", "A"] # qp_Old # I , P, qP
 
-# # Time series overlaped
-# save_dir="results/data_analysis/batch/time_series"
-# for variable in variables:
-#         timeseries_per_run(df_batch, variable, save_dir)
+# Time series overlaped
+save_dir="results/data_analysis/batch/time_series"
+for variable in variables:
+        timeseries_per_run(df_batch, variable, save_dir)
 
-# # Scatter
-# save_dir="results/data_analysis/batch/scatter"
-# for i, x in enumerate(variables):
-#     for y in variables[i+1:]:
-#         scatter_fun(df_batch, x, y, save_dir)
+# Scatter
+save_dir="results/data_analysis/batch/scatter"
+for i, x in enumerate(variables):
+    for y in variables[i+1:]:
+        scatter_fun(df_batch, x, y, save_dir)
         
-# # -----------------Fedbatch Analysis------------------------------
-# # EAD
-# variables = ["time", "X", "S", "V", "mu", "T", "A"] # qp_Old # I, P, qP
+# -----------------Fedbatch Analysis------------------------------
+# EAD
+variables = ["time", "X", "S", "V", "mu", "T", "A"] # qp_Old # I, P, qP
 
-# save_dir="results/data_analysis/fed-batch/EAD"
-# run_EAD(df_fedbatch, variables, save_dir)
+save_dir="results/data_analysis/fed-batch/EAD"
+run_EAD(df_fedbatch, variables, save_dir)
 
-# variables = ["X", "S", "V", "mu", "T", "A"] # qp_Old # I, P, qP
+variables = ["X", "S", "V", "mu", "T", "A"] # qp_Old # I, P, qP
 
-# # Time series overlaped
-# save_dir="results/data_analysis/fed-batch/time_series"
-# for variable in variables:
-#         timeseries_per_run(df_fedbatch, variable, save_dir)
+# Time series overlaped
+save_dir="results/data_analysis/fed-batch/time_series"
+for variable in variables:
+        timeseries_per_run(df_fedbatch, variable, save_dir)
 
-# # Scatter
-# save_dir="results/data_analysis/fed-batch/scatter"
-# for i, x in enumerate(variables):
-#     for y in variables[i+1:]:
-#         scatter_fun(df_fedbatch, x, y, save_dir)
+# Scatter
+save_dir="results/data_analysis/fed-batch/scatter"
+for i, x in enumerate(variables):
+    for y in variables[i+1:]:
+        scatter_fun(df_fedbatch, x, y, save_dir)
         
-# # -----------------Induction Analysis------------------------------
-# # EAD
-# variables = ["time", "X", "V", "P", "mu", "qP", "T"] # qp_Old # S, A , I
+# -----------------Induction Analysis------------------------------
+# EAD
+variables = ["time", "X", "V", "P", "mu", "qP", "rP", "T"] # qp_Old # S, A , I
 
-# save_dir="results/data_analysis/induction/EAD"
-# run_EAD(df_induction, variables, save_dir)
+save_dir="results/data_analysis/induction/EAD"
+run_EAD(df_induction, variables, save_dir)
 
-# variables = ["X", "V", "P", "mu", "qP", "T"] # qp_Old # S, A , I
+variables = ["X", "V", "P", "mu", "qP", "rP", "T"] # qp_Old # S, A , I
 
-# # Time series overlaped
-# save_dir="results/data_analysis/induction/time_series"
-# for variable in variables:
-#         timeseries_per_run(df_induction, variable, save_dir)
+# Time series overlaped
+save_dir="results/data_analysis/induction/time_series"
+for variable in variables:
+        timeseries_per_run(df_induction, variable, save_dir)
 
-# # Scatter
-# save_dir="results/data_analysis/induction/scatter"
-# for i, x in enumerate(variables):
-#     for y in variables[i+1:]:
-#         scatter_fun(df_induction, x, y, save_dir)
+# Scatter
+save_dir="results/data_analysis/induction/scatter"
+for i, x in enumerate(variables):
+    for y in variables[i+1:]:
+        scatter_fun(df_induction, x, y, save_dir)
 
-# # ----------  Phases' analysis and temporality (2) ---------------------
+# ----------  Phases' analysis and temporality (2) ---------------------
 
 dfs_by_phase = {
     "phase_A": df_batch,
@@ -111,7 +111,7 @@ dfs_by_phase = {
 }
 
 numeric_features = [
-    "X", "S", "V", "P", "mu", "qP", "T", "A", "I"
+    "X", "S", "V", "P", "mu", "qP", "rP", "T", "A", "I"
 ]
 
 phase_summary = phase_numeric_summary(dfs_by_phase, numeric_features)
@@ -195,7 +195,7 @@ boxplots_by_phase(dfs_by_phase, numeric_features, "results/data_analysis/global"
 corr_df = feature_target_corr_by_phase(
     dfs_by_phase = {"phase_C": df_induction},
     numeric_features = numeric_features,
-    target="qP"
+    target="rP" # "qP"
 )
 
 corr_by_phase = (
@@ -207,7 +207,7 @@ corr_by_phase = (
 )
 
 phase_yaml_data["feature_target_correlation"] = {
-    "target": "qP",
+    "target": "rP", # "qP",
     "by_phase": corr_by_phase
 }
 
@@ -219,10 +219,10 @@ global_outlier_summary = global_outliers(df_global, numeric_features)
 
 records = []
 for feature in numeric_features:
-    if feature == "qP":
+    if feature == "rP": # "qP",
         continue
 
-    corr_all, corr_clean = influence_check(df_global,feature,target="qP")
+    corr_all, corr_clean = influence_check(df_global,feature,target="rP") # "qP"
 
     records.append({
         "feature": feature,
@@ -247,7 +247,7 @@ outlier_global_yaml = {
     },
     "outliers": global_outliers_yaml,
     "influence_on_target": {
-        "target": "qP",
+        "target": "rP", # "qP",
         "global": global_influence_yaml,
     },
 }
@@ -263,13 +263,13 @@ records = []
 df = df_induction
 phase = "phase_C"
 for feature in numeric_features:
-        if feature == "qP":  # target
+        if feature =="rP": # "qP" # target
             continue
 
         corr_all, corr_clean = influence_check(
             df,
             feature,
-            target="qP"
+            target="rP" # "qP"
         )
 
         records.append({
@@ -295,7 +295,7 @@ outliers_yaml_data = {
     },
     "outliers": outliers_yaml,
     "influence_on_target": {
-        "target": "qP",
+        "target": "rP", # "qP",
         "by_phase": influence_yaml,
     },
 }
@@ -307,7 +307,7 @@ save_yaml(outliers_yaml_data,"results/data_analysis/global/yaml_files/outliers_p
 stability_df = stability_bootstrap(
     df=df_global,
     features=numeric_features,
-    target="qP",
+    target="rP", #"qP"
     n_runs=200,
     sample_frac=0.8,
 )
@@ -318,7 +318,7 @@ stability_yaml = stability_to_yaml(summary_df_global)
 gloabl_yaml_data = {
     "step": "stability_between_runs",
     "phase": "Global",
-    "target": "qP",
+    "target": "rP", #"qP",
     "method": "bootstrap",
     "n_runs": 200,
     "sample_fraction": 0.8,
@@ -330,7 +330,7 @@ save_yaml(gloabl_yaml_data,"results/data_analysis/global/yaml_files/stability_ya
 stability_df = stability_bootstrap(
     df=dfs_by_phase["phase_C"],
     features=numeric_features,
-    target="qP",
+    target="rP", #"qP",
     n_runs=200,
     sample_frac=0.8,
 )
@@ -341,7 +341,7 @@ stability_yaml = stability_to_yaml(summary_df_induction)
 induction_yaml_data = {
     "step": "stability_between_runs",
     "phase": "phase_C",
-    "target": "qP",
+    "target": "rP", #"qP",
     "method": "bootstrap",
     "n_runs": 200,
     "sample_fraction": 0.8,
