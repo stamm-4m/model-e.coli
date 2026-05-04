@@ -1,5 +1,7 @@
 
 import pandas as pd
+import matplotlib.pyplot as plt
+
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
@@ -16,7 +18,8 @@ from sklearn.ensemble import RandomForestRegressor
 df = pd.read_csv("training_set.csv")  #  it is not created yet
 
 X = df[['X', 'V', 'mu', 'T', 'I']] # S, A, V
-y = df['qP']
+y = df['rP']
+# y = df['qP']
 
 cv = KFold(n_splits=5, shuffle=True, random_state=42)
 
@@ -30,26 +33,41 @@ selector.fit(X, y)
 selected_features = X.columns[selector.support_]
 print(selected_features)
 
-# ---------------------SVR---------------------------------
-pipe = Pipeline([
-    ('scaler', StandardScaler()),
-    ('rfe', RFE(SVR(kernel='linear'), n_features_to_select=3))
-])
-
-pipe.fit(X, y)
-
 # ---------------------CART---------------------------------
 tree = DecisionTreeRegressor(random_state=42)
 rfe_tree = RFE(tree, n_features_to_select=3)
 
 rfe_tree.fit(X, y)
 
+# ---------------------SVR---------------------------------
+pipe = Pipeline(
+    [
+        ('scaler', StandardScaler()),
+        ('rfe', RFE(SVR(kernel='linear'), n_features_to_select=3))
+    ]
+)
+
+pipe.fit(X, y)
+ranking = pipe.named_steps["rfe"].ranking_
+
+plt.matshow(ranking, cmap=plt.cm.Blues)
+# Add annotations for pixel numbers
+for i in range(ranking.shape[0]):
+    for j in range(ranking.shape[1]):
+        plt.text(j, i, str(ranking[i, j]), ha="center", va="center", color="black")
+
+plt.colorbar()
+plt.title("Ranking with RFE\n(Logistic Regression)")
+plt.show()
+
 # ----------------------MLP-----------------------------
-pipe = Pipeline([
-    ('scaler', StandardScaler()),
-    ('rfe', RFE(LinearRegression(), n_features_to_select=3)),
-    ('mlp', MLPRegressor(hidden_layer_sizes=(50,), max_iter=2000))
-])
+pipe = Pipeline(
+    [
+        ('scaler', StandardScaler()),
+        ('rfe', RFE(LinearRegression(), n_features_to_select=3)),
+        ('mlp', MLPRegressor(hidden_layer_sizes=(50,), max_iter=2000))
+    ]
+)
 
 #------- Embedded Feature Selection -------------
 # ------------------LASSO-------------------
