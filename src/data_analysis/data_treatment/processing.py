@@ -21,7 +21,8 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
     df_semibatch_all = []
     df_induction_all = []
 
-    df_calc = calculate_features()
+    df_calc = calculate_features(BR09=True)
+
     var_calc = ["X", "V", "mu", "dXdt", "dVdt"]
 
     for br_id in datasets:
@@ -66,8 +67,8 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
         df_induction.loc[df_induction.index[0], "Plag1"] = df_semibatch["P"].iloc[-1]
 
         # -- Add calculated features --
-
         calc_features = df_calc[br_id]
+
         t_df = df["time"].values
         t_ind = df_induction["time"].values
         t_calc = calc_features["time"]
@@ -75,10 +76,18 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
         idx_df = [np.argmin(np.abs(t_calc - t)) for t in t_df] # [np.where(t_calc == t)[0][0] for t in t_df]
         for var in var_calc:
             df[f"{var}_calc"] = calc_features[var][idx_df]
+        
+        df["Xlag1_calc"] = df["X_calc"].shift(1)
+        df.loc[df.index[0], "Xlag1_calc"] = df["X_calc"].iloc[0]
 
         idx_ind = [np.argmin(np.abs(t_calc - t)) for t in t_ind] #[np.where(t_calc == t)[0][0] for t in t_ind]
         for var in var_calc:
             df_induction[f"{var}_calc"] = calc_features[var][idx_ind]
+        
+        df_induction["Xlag1_calc"] = df_induction["X_calc"].shift(1)
+        last_idx_sb = df[df["time"] < time_ind].index[-1]
+        df_induction.loc[df_induction.index[0], "Xlag1_calc"] = df["X_calc"].loc[last_idx_sb]
+
 
         # Final df
         df_global.append(df)
@@ -163,12 +172,12 @@ def add_T_ind(df,n_ultimos=4):
     return df 
 
 # --- Calculate features ---
-def calculate_features(in_dir = "src/config/default_parameters.yaml"):
+def calculate_features(BR09, in_dir = "src/config/default_parameters.yaml"):
 
     # Same code as mode_profile.py
     cfg = load_yaml(in_dir)
     kin = Kinetic_Models()
-    datasets, simulators, y0s = build_experiments(cfg, kin)
+    datasets, simulators, y0s = build_experiments(cfg, kin, BR09)
     param_names = list(cfg["kinetics"].keys())
     full_params = { k: cfg["kinetics"][k]["value"] for k in param_names }
     theta = [ cfg["kinetics"][k]["value"] for k in param_names ]

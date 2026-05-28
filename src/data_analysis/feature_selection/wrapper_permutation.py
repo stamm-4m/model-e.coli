@@ -47,15 +47,18 @@ def WnE_feature_selection(df, X_vars, y_var, model_names_w, model_names_p, out_p
         plot_metric_comparison(permutation_results,metric_name=m,out_dir=out_dir / "metrics", model_type = "permutation")
     
 # ----------- Metrics ---------------
-    # best_Metric = -np.inf
-    best_Metric = np.inf
+    best_score = np.inf
     best_global = None
-
+    alpha=0.7
+    penalty=2.0
     for model_name, info in summary.items():
-        Metric = info["metrics"]["MSE"] # ["MAPE"] ["R2"]
-        # if Metric > best_Metric:
-        if Metric < best_Metric:
-            best_Metric = Metric
+        mse = info["metrics"]["MSE"] 
+        r2 = info["metrics"]["R2"]
+        score = alpha * mse + (1 - alpha) * (1 - r2)
+        if r2 < 0:
+            score *= penalty
+        if score < best_score:
+            best_score = score
             best_global = model_name
 
 # ----------- YAML ---------------

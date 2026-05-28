@@ -40,52 +40,53 @@ permutation_models = ["svm_rbf", "svm_poly", "knn"] # "mlp", "gpr", "LASSO_p", "
 
 # Features & target
 all_features = ["X", "S", "V", "P", "T", "I", "mu", 
-                "dXdt", "dSdt", "dVdt", "Xlag1", "Plag1", 
+                "dXdt", "dSdt", "dVdt", "Xlag1","Xlag1_calc", "Plag1", 
                 "X_calc", "V_calc", "mu_calc", "dXdt_calc", "dVdt_calc"] 
 target = ["qP", "rP"]
-exclude_features =["S", "dSdt"]
+exclude_features = ["S", "dSdt", "X", "dXdt","dXdt_calc", "Xlag1", "dVdt", "dVdt_calc", "mu"] # Once it was run the all features script
 
-# # # --------- Global --------------------------------------------------------------------------------------------------------------
-df_global = pd.read_excel(r"data/processed/BR_processed.xlsx")
+# # # # --------- Global --------------------------------------------------------------------------------------------------------------
+# df_global = pd.read_excel(r"data/processed/BR_processed.xlsx")
 
-# # ---------- EAD ---------- 
-compute_ead(df_global, vars = all_features + target, results_root="results/data_analysis/ead/global")
+# # # ---------- EAD ---------- 
+# compute_ead(df_global, vars = all_features + target, results_root="results/data_analysis/ead/global")
 
-# # ----------- Feature selection -------------- 
-# ----------- Filter methods --------------
-filter_feature_selection(df_global, X_vars = all_features, y_var="qP", out_dir="results/feature_selection/global/filter/qP")
-filter_feature_selection(df_global, X_vars = all_features, y_var="rP", out_dir="results/feature_selection/global/filter/rP")
+# # # ----------- Feature selection -------------- 
+# # ----------- Filter methods --------------
+# filter_feature_selection(df_global, X_vars = all_features, y_var="qP", out_dir="results/feature_selection/global/filter/qP")
+# filter_feature_selection(df_global, X_vars = all_features, y_var="rP", out_dir="results/feature_selection/global/filter/rP")
 
-# --------- Wrapper & Embedded methods ------------
-WnE_feature_selection(df_global, X_vars = all_features, y_var="qP", model_names_w=wrapper_models, 
-                      model_names_p=permutation_models, out_path="results/feature_selection/global/wnp/qP")
-WnE_feature_selection(df_global, X_vars = all_features, y_var="rP", model_names_w=wrapper_models, 
-                      model_names_p=permutation_models, out_path="results/feature_selection/global/wnp/rP")
+# # --------- Wrapper & Embedded methods ------------
+# WnE_feature_selection(df_global, X_vars = all_features, y_var="qP", model_names_w=wrapper_models, 
+#                       model_names_p=permutation_models, out_path="results/feature_selection/global/wnp/qP")
+# WnE_feature_selection(df_global, X_vars = all_features, y_var="rP", model_names_w=wrapper_models, 
+#                       model_names_p=permutation_models, out_path="results/feature_selection/global/wnp/rP")
 
-# # --------- Cross-Validation methods --------------- 
-cross_validation(df_global, y_var="qP",in_dir="results/feature_selection/global/wnp", 
-                out_dir="results/cross_validation/global")
-cross_validation(df_global, y_var="rP", in_dir="results/feature_selection/global/wnp", 
-                out_dir="results/cross_validation/global")
+# # # --------- Cross-Validation methods --------------- 
+# cross_validation(df_global, y_var="qP",in_dir="results/feature_selection/global/wnp", 
+#                 out_dir="results/cross_validation/global")
+# cross_validation(df_global, y_var="rP", in_dir="results/feature_selection/global/wnp", 
+#                 out_dir="results/cross_validation/global")
 
 # # --------- Ind = 0 Training --------------------------------------------------------------------------------------------------------------
 df_global = pd.read_excel(r"data/processed/BR_processed.xlsx")
 df_global_ind = df_global.copy()
 mask = df_global["I"] == 0
 df_global_ind.loc[mask, "Run_ID"] = "BR09"
+vars_induction = [v for v in all_features if v not in exclude_features]
 
 # # ---------- EAD ---------- 
-compute_ead(df_global_ind, vars = all_features + target, results_root="results/data_analysis/ead/global_ind")
+compute_ead(df_global_ind, vars = vars_induction + target, results_root="results/data_analysis/ead/global_ind")
 
 # # ----------- Feature selection -------------- 
 # ----------- Filter methods --------------
-filter_feature_selection(df_global_ind, X_vars = all_features, y_var="qP", out_dir="results/feature_selection/global_ind/filter/qP")
-filter_feature_selection(df_global_ind, X_vars = all_features, y_var="rP", out_dir="results/feature_selection/global_ind/filter/rP")
+filter_feature_selection(df_global_ind, X_vars = vars_induction, y_var="qP", out_dir="results/feature_selection/global_ind/filter/qP")
+filter_feature_selection(df_global_ind, X_vars = vars_induction, y_var="rP", out_dir="results/feature_selection/global_ind/filter/rP")
 
 # --------- Wrapper & Embedded methods ------------
-WnE_feature_selection(df_global_ind, X_vars = all_features, y_var="qP", model_names_w=wrapper_models, 
+WnE_feature_selection(df_global_ind, X_vars = vars_induction, y_var="qP", model_names_w=wrapper_models, 
                       model_names_p=permutation_models, out_path="results/feature_selection/global_ind/wnp/qP")
-WnE_feature_selection(df_global_ind, X_vars = all_features, y_var="rP", model_names_w=wrapper_models, 
+WnE_feature_selection(df_global_ind, X_vars = vars_induction, y_var="rP", model_names_w=wrapper_models, 
                       model_names_p=permutation_models, out_path="results/feature_selection/global_ind/wnp/rP")
 
 # # --------- Cross-Validation methods --------------- 

@@ -39,7 +39,7 @@ def plot_metric_comparison(all_results, metric_name, out_dir, model_type=None):
         for m, res in all_results.items()
     }
 
-    ascending = metric_name in ["RMSE", "MSE", "MAE", "MAPE"]
+    ascending = metric_name in ["RMSE", "MSE", "MAE", "MAPE", "SCORE"]
 
     top_models = sorted(model_scores, key=model_scores.get, reverse=not ascending)[:3]
 

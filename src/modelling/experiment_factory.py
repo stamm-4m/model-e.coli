@@ -16,11 +16,15 @@ from src.utils.io import get_br_id, timer
 from src.utils.metrics_io import compute_metrics
 
 @timer
-def build_experiments(cfg, kin):
+def build_experiments(cfg, kin, BR09=False):
     """
     Build datasets, simulators and initial conditions for all BR experiments.
     """
-    dataset_files = [f for f in sorted(glob("data/raw/BR*.xls")) if "BR09" not in f]
+    if BR09:
+        dataset_files = [f for f in sorted(glob("data/raw/BR*.xls"))]
+    else:
+        dataset_files = [f for f in sorted(glob("data/raw/BR*.xls")) if "BR09" not in f]
+
     datasets = [ExperimentDataset(f) for f in dataset_files]
 
     simulators = []
@@ -36,7 +40,7 @@ def build_experiments(cfg, kin):
         X_profile = BiomassProfile(dataset.t, dataset.X, V_profile)
 
         t_ind = cfg["bioreactor"][br_id]["t_ind"]["value"]
-        I_profile = InductionProfile(t_ind)
+        I_profile = InductionProfile(t_ind, br_id)
 
         feed_cfg = cfg["feeds"][br_id]
         feed_S = create_feed(feed_cfg["feed_S"])

@@ -20,8 +20,8 @@ all_predictions = {}
 
 model_configs = {
     "parametric": None,
-    "global_qP": "results/cross_validation/global/qP/best_model_per_fold_dynamic",
-    "global_rP": "results/cross_validation/global/rP/best_model_per_fold_dynamic",
+    # "global_qP": "results/cross_validation/global/qP/best_model_per_fold_dynamic",
+    # "global_rP": "results/cross_validation/global/rP/best_model_per_fold_dynamic",
     "global_ind_qP": "results/cross_validation/global_ind/qP/best_model_per_fold_dynamic",
     "global_ind_rP": "results/cross_validation/global_ind/rP/best_model_per_fold_dynamic",
     "induction_qP": "results/cross_validation/induction/qP/best_model_per_fold_dynamic",
@@ -30,8 +30,8 @@ model_configs = {
 
 MODEL_COLORS = {
         "parametric": "black",
-        "global_qP": "tab:blue",
-        "global_rP": "tab:orange",
+        # "global_qP": "tab:blue",
+        # "global_rP": "tab:orange",
         "global_ind_qP": "tab:green",
         "global_ind_rP": "tab:red",
         "induction_qP": "tab:purple",
@@ -42,19 +42,18 @@ for model_name, model_path in model_configs.items():
     print(f"\n===== Running model: {model_name} =====")
     if model_name == "parametric":
         kin = Kinetic_Models(hybrid=False)
-        # model_output_dir = Path(output_dir) / "parametric"
+        model_output_dir = Path(output_dir) / "parametric"
     else:
         kin = Kinetic_Models(hybrid=True, models_folder=model_path)
-        # parts = Path(model_path).parts
-        # idx = parts.index("cross_validation")
-        # subpath = Path(*parts[idx+1:-1])  
-        # model_output_dir = Path(output_dir) / subpath
+        parts = Path(model_path).parts
+        idx = parts.index("cross_validation")
+        subpath = Path(*parts[idx+1:-2])  
+        model_output_dir = Path(output_dir) / subpath
 
-    model_output_dir = Path(output_dir) 
     model_output_dir.mkdir(parents=True, exist_ok=True)
 
     print("Building experiments...")
-    datasets, simulators, y0s = build_experiments(cfg, kin)
+    datasets, simulators, y0s = build_experiments(cfg, kin, BR09=False)
 
     # Run model
     print("Running simulation...")
@@ -89,7 +88,7 @@ for model_name, model_path in model_configs.items():
         # plot_single_model(dataset, solutions[dataset_key], model_name, model_output_dir)
 
     print(f"Plotting combined figure for model: {model_name}")
-    plot_multi_dataset_model(datasets, solutions, model_name, output_dir)
+    plot_multi_dataset_model(datasets, solutions, model_name, model_output_dir)
 
     # Global metrics
     global_row = {"model": model_name}
