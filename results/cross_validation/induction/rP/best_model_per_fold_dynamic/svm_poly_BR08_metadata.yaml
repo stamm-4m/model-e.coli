@@ -1,0 +1,7 @@
+model: svm_poly
+test_group: BR08
+features:
+- V
+- P
+- X_calc
+score: 0.6062016644608361

@@ -1,0 +1,13 @@
+model: svm_poly
+test_group: BR07
+features:
+- X
+- V
+- P
+- T
+- dXdt
+- dVdt
+- Plag1
+- X_calc
+- V_calc
+score: 0.14430892635803408

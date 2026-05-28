@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [  
         {
-            "name": "Debug estimate_parameter.py",
+            "name": "Debug data_analysis.py",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/execution/estimate_parameters.py",
+            "program": "${workspaceFolder}/execution/data_analysis.py",
             "console": "integratedTerminal",
             // "redirectOutput": true,
             "justMyCode": true,
@@ -17,29 +17,18 @@
                     "PYTHONPATH": "${workspaceFolder}"
                 }
 
-        },
-        {
-            "name": "Debug model_profile.py",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/execution/model_profile.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Debug data_analysis.py",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/execution/data_analysis.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
         }
+        // {
+        //     "name": "Debug model_profile.py",
+        //     "type": "debugpy",
+        //     "request": "launch",
+        //     "program": "${workspaceFolder}/execution/model_profile.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "env": {
+        //         "PYTHONPATH": "${workspaceFolder}"
+        //     }
+        // },
 
     ]
 }

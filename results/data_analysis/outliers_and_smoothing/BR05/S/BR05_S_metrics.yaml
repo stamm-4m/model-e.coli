@@ -1,0 +1,23 @@
+file: BR05
+variable: S
+outliers:
+  present: true
+  count: 2
+  indices:
+  - 9
+  - 10
+  replacement_methods:
+    9: mean_methods
+    10: mean_methods
+special_outliers:
+  applied: false
+  details: {}
+statistics:
+  raw:
+    mean: 2.8567142857142858
+    std: 3.800336315228369
+  treated:
+    info: if 'smooth = True' refers to smoothed data
+    mean: 2.8586639240003175
+    std: 3.798859348240197
+  MAPE_raw_vs_treated: 49.622317765353316

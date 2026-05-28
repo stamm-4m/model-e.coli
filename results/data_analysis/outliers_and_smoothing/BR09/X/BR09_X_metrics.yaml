@@ -1,0 +1,30 @@
+file: BR09
+variable: X
+outliers:
+  present: true
+  count: 2
+  indices:
+  - 11
+  - 12
+  replacement_methods:
+    11: mean_methods
+    12: mean_methods
+special_outliers:
+  applied: true
+  details:
+    last_max_pair:
+      last_index: 24
+      max_index: 21
+      original_values:
+        last: 30.196428571428616
+        max: 30.88571428571433
+      final_value: 30.54107142857147
+statistics:
+  raw:
+    mean: 19.573712121212147
+    std: 10.243555501159952
+  treated:
+    info: if 'smooth = True' refers to smoothed data
+    mean: 19.575219609996697
+    std: 10.243592297935116
+  MAPE_raw_vs_treated: 0.16241290888665189

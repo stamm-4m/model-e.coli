@@ -1,0 +1,7 @@
+model: svm_rbf
+test_group: BR08
+features:
+- P
+- T
+- Plag1
+score: 0.18082138916021792

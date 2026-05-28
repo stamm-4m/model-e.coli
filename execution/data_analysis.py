@@ -1,360 +1,119 @@
 
-import pandas as pd
 from glob import glob
-from fedbatch.data_analysis.preprocessing import ( 
-    unificar_xls, run_EAD, phase_numeric_summary, mean_ratio_by_phase, within_phase_temporal_drift,
-    drift_to_dict, mean_ratios_to_dict, feature_target_corr_by_phase,
-    influence_check, outliers_by_phase, outlier_summary_to_dict, influence_to_dict,
-    global_influence_to_dict, global_outliers_to_dict, global_outliers, # , global_influence_check
-    stability_bootstrap, stability_summary, stability_to_yaml
-    )
-from fedbatch.data_analysis.data_plots import timeseries_per_run, scatter_fun, boxplots_by_phase
-from fedbatch.utils.io import save_yaml
+import pandas as pd
+from pathlib import Path
+from src.data_analysis.data_treatment.data import ExperimentDataset
+from src.data_analysis.data_treatment.outliers import process_all_datasets # , data_unification
+from src.data_analysis.data_treatment.derivative import compute_derivatives_for_datasets
+from src.data_analysis.data_treatment.processing import processing_data
+from src.data_analysis.data_treatment.ead import compute_ead
+from src.data_analysis.feature_selection.filter import filter_feature_selection
+from src.data_analysis.feature_selection.wrapper_permutation import WnE_feature_selection
+from src.data_analysis.cross_validation.cross_val import cross_validation
 
-# Import and Unification of data
+# # ---------- Import raw data ---------- 
+ruta = Path("data/raw")
 dataset_files = sorted(glob("data/raw/BR*.xls"))
-save_dir="results/data_analysis/global/spline" # path for spline plots
-yaml_path = "fedbatch/config/default_parameters.yaml"
-
-df_global, df_batch, df_fedbatch, df_induction = unificar_xls(dataset_files, yaml_path, save_dir)
-
-# Save global dataframe
-df_global.to_csv("data/processed/BR_unified.csv", index=False)
-df_global.to_excel("data/processed/BR_unified.xlsx",index=False,engine="openpyxl")
-
-# -----------------Global Analysis based on EAD (1) ------------------------------
-# EAD
-variables = ["time","X", "S", "V", "P", "mu", "qP","rP", "I", "T", "A"] # qp_Old
-
-save_dir="results/data_analysis/global/EAD"
-run_EAD(df_global, variables, save_dir)
-
-variables = ["X", "S", "V", "P", "mu", "qP", "rP", "I", "T", "A"] # qp_Old
-
-# Time series overlaped
-save_dir="results/data_analysis/global/time_series"
-for variable in variables:
-        timeseries_per_run(df_global, variable, save_dir)
-
-# Scatter
-save_dir="results/data_analysis/global/scatter"
-for i, x in enumerate(variables):
-    for y in variables[i+1:]:
-        scatter_fun(df_global, x, y, save_dir)
-
-# -----------------Batch Analysis------------------------------
-# EAD
-variables = ["time", "X", "S", "V", "mu", "T", "A"] # qp_Old # I , P, qP
-
-save_dir="results/data_analysis/batch/EAD"
-run_EAD(df_batch, variables, save_dir)
-
-variables = ["X", "S", "V", "mu", "T", "A"] # qp_Old # I , P, qP
-
-# Time series overlaped
-save_dir="results/data_analysis/batch/time_series"
-for variable in variables:
-        timeseries_per_run(df_batch, variable, save_dir)
-
-# Scatter
-save_dir="results/data_analysis/batch/scatter"
-for i, x in enumerate(variables):
-    for y in variables[i+1:]:
-        scatter_fun(df_batch, x, y, save_dir)
-        
-# -----------------Fedbatch Analysis------------------------------
-# EAD
-variables = ["time", "X", "S", "V", "mu", "T", "A"] # qp_Old # I, P, qP
-
-save_dir="results/data_analysis/fed-batch/EAD"
-run_EAD(df_fedbatch, variables, save_dir)
-
-variables = ["X", "S", "V", "mu", "T", "A"] # qp_Old # I, P, qP
-
-# Time series overlaped
-save_dir="results/data_analysis/fed-batch/time_series"
-for variable in variables:
-        timeseries_per_run(df_fedbatch, variable, save_dir)
-
-# Scatter
-save_dir="results/data_analysis/fed-batch/scatter"
-for i, x in enumerate(variables):
-    for y in variables[i+1:]:
-        scatter_fun(df_fedbatch, x, y, save_dir)
-        
-# -----------------Induction Analysis------------------------------
-# EAD
-variables = ["time", "X", "V", "P", "mu", "qP", "rP", "T"] # qp_Old # S, A , I
-
-save_dir="results/data_analysis/induction/EAD"
-run_EAD(df_induction, variables, save_dir)
-
-variables = ["X", "V", "P", "mu", "qP", "rP", "T"] # qp_Old # S, A , I
-
-# Time series overlaped
-save_dir="results/data_analysis/induction/time_series"
-for variable in variables:
-        timeseries_per_run(df_induction, variable, save_dir)
-
-# Scatter
-save_dir="results/data_analysis/induction/scatter"
-for i, x in enumerate(variables):
-    for y in variables[i+1:]:
-        scatter_fun(df_induction, x, y, save_dir)
-
-# ----------  Phases' analysis and temporality (2) ---------------------
-
-dfs_by_phase = {
-    "phase_A": df_batch,
-    "phase_B": df_fedbatch,
-    "phase_C": df_induction,
-}
-
-numeric_features = [
-    "X", "S", "V", "P", "mu", "qP", "rP", "T", "A", "I"
-]
-
-phase_summary = phase_numeric_summary(dfs_by_phase, numeric_features)
-
-mean_ratios_A = mean_ratio_by_phase(phase_summary, ref_phase="phase_A")
-mean_ratios_B = mean_ratio_by_phase(phase_summary, ref_phase="phase_B")
-mean_ratios_C = mean_ratio_by_phase(phase_summary, ref_phase="phase_C")
-
-mean_ratios_dict = {
-    "ref_phase_A": mean_ratios_to_dict(mean_ratios_A),
-    "ref_phase_B": mean_ratios_to_dict(mean_ratios_B),
-    "ref_phase_C": mean_ratios_to_dict(mean_ratios_C),
-}
-
-# drift_A = within_phase_temporal_drift(df_batch, "time", numeric_features)
-# drift_B = within_phase_temporal_drift(df_fedbatch, "time", numeric_features)
-# drift_C = within_phase_temporal_drift(df_induction, "time", numeric_features)
-
-drift_G = within_phase_temporal_drift(df_global, "time", numeric_features)
-
-drift_dict = {
-    "phase_Global": drift_to_dict(drift_G)
-#     "phase_A": drift_to_dict(drift_A),
-#     "phase_B": drift_to_dict(drift_B),
-#     "phase_C": drift_to_dict(drift_C),
-}
-
-phase_cv = (
-    phase_summary
-    .pivot(index="feature", columns="phase", values="cv")
-    .round(3)
-    .to_dict()
-)
-
-# PHASE_DEPENDENT_RATIO_THRESHOLD = 1.5
-# STABILITY_CV_THRESHOLD = 0.3
-
-# phase_dependent_features = sorted({
-#     feature
-#     for ref_phase, ratios in mean_ratios_dict.items()
-#     for feature, ratio in ratios.items()
-#     if ratio > PHASE_DEPENDENT_RATIO_THRESHOLD
-#        or ratio < 1 / PHASE_DEPENDENT_RATIO_THRESHOLD
-# })
-
-# globally_stable_features = sorted({
-#     feature
-#     for feature, cvs in phase_cv.items()
-#     if max(cvs.values()) < STABILITY_CV_THRESHOLD
-# })
-
-phase_yaml_data = {
-    "time_col": "time",
-    "phases": list(dfs_by_phase.keys()),
-    "numeric_features": numeric_features,
-    "stability": {
-        "within_phase_cv": phase_cv 
-        # CV [0 1] high (> 0.5) → posible internal inestability
-        # CV [0 1] high (< 0.2) → estable
-        # CV different between phases → phase dependent feature 
-        },
-    "mean_ratios": mean_ratios_dict,
-        # 1 comparable between phases // 1.3 ~ 2 relevant changes // 2< and 0.5> structural changes
-    "temporal_drift": {
-        "rolling_window": 50,
-        "cv_by_phase": drift_dict,
-        },
-        # < 0.1    : Stable (without drift)
-        # 0.1 - 0.3: soft Drift 
-        # 0.3 - 0.6: moderate Drift 
-        # 0.6 - 1.0: strong Drift 
-        # > 1.0    : Sub-phases or regimes mixture 
-#     "phase_dependent_features": phase_dependent_features,
-#     "globally_stable_features": globally_stable_features
-}
-
-# save_yaml(phase_yaml_data,"results/data_analysis/global/yaml_files/phase_analysis.yaml")
-
-boxplots_by_phase(dfs_by_phase, numeric_features, "results/data_analysis/global")
-
-corr_df = feature_target_corr_by_phase(
-    dfs_by_phase = {"phase_C": df_induction},
-    numeric_features = numeric_features,
-    target="rP" # "qP"
-)
-
-corr_by_phase = (
-    corr_df
-    .set_index(["phase", "feature"])["correlation"]
-    .round(3)
-    .unstack(level=0)
-    .to_dict()
-)
-
-phase_yaml_data["feature_target_correlation"] = {
-    "target": "rP", # "qP",
-    "by_phase": corr_by_phase
-}
-
-save_yaml(phase_yaml_data,"results/data_analysis/global/yaml_files/phase_analysis.yaml")
-
-# ----------------------------- Outliers  (3) -------------------------------
-# -----Global --------
-global_outlier_summary = global_outliers(df_global, numeric_features)
-
-records = []
-for feature in numeric_features:
-    if feature == "rP": # "qP",
-        continue
-
-    corr_all, corr_clean = influence_check(df_global,feature,target="rP") # "qP"
-
-    records.append({
-        "feature": feature,
-        "corr_all": corr_all,
-        "corr_no_outliers": corr_clean,
-        "delta_corr": corr_clean - corr_all
-    })
-
-global_influence_df = pd.DataFrame(records)
-
-global_outliers_yaml = global_outliers_to_dict(global_outlier_summary)
-
-global_influence_yaml = global_influence_to_dict(global_influence_df)
-
-outlier_global_yaml = {
-    "step": "outliers_and_influence_global",
-    "scope": "global",
-    "outlier_method": {
-        "method": "IQR",
-        "k": 1.5,
-        "defined_per": "global",
-    },
-    "outliers": global_outliers_yaml,
-    "influence_on_target": {
-        "target": "rP", # "qP",
-        "global": global_influence_yaml,
-    },
-}
-
-save_yaml(outlier_global_yaml,"results/data_analysis/global/yaml_files/outliers_global_analysis.yaml")
-
-# ------------per phase ------------------
-
-outlier_summary = outliers_by_phase(dfs_by_phase, numeric_features)
-
-records = []
-# for phase, df in dfs_by_phase.items():
-df = df_induction
-phase = "phase_C"
-for feature in numeric_features:
-        if feature =="rP": # "qP" # target
-            continue
-
-        corr_all, corr_clean = influence_check(
-            df,
-            feature,
-            target="rP" # "qP"
-        )
-
-        records.append({
-            "phase": phase,
-            "feature": feature,
-            "corr_all": corr_all,
-            "corr_no_outliers": corr_clean,
-            "delta_corr": corr_clean - corr_all
-        })
-
-influence_df = pd.DataFrame(records)
-
-outliers_yaml = outlier_summary_to_dict(outlier_summary)
-influence_yaml = influence_to_dict(influence_df)
-
-
-outliers_yaml_data = {
-    "step": "outliers_and_influence",
-    "outlier_method": {
-        "method": "IQR",
-        "k": 1.5,
-        "defined_per": "phase",
-    },
-    "outliers": outliers_yaml,
-    "influence_on_target": {
-        "target": "rP", # "qP",
-        "by_phase": influence_yaml,
-    },
-}
-
-save_yaml(outliers_yaml_data,"results/data_analysis/global/yaml_files/outliers_phase_analysis.yaml")
-
-# -------------------- Runs stability (4) -------------
-
-stability_df = stability_bootstrap(
-    df=df_global,
-    features=numeric_features,
-    target="rP", #"qP"
-    n_runs=200,
-    sample_frac=0.8,
-)
-
-summary_df_global = stability_summary(stability_df)
-stability_yaml = stability_to_yaml(summary_df_global)
-
-gloabl_yaml_data = {
-    "step": "stability_between_runs",
-    "phase": "Global",
-    "target": "rP", #"qP",
-    "method": "bootstrap",
-    "n_runs": 200,
-    "sample_fraction": 0.8,
-    "stability_metrics": stability_yaml,
-}
-
-save_yaml(gloabl_yaml_data,"results/data_analysis/global/yaml_files/stability_yaml_global.yaml")
-
-stability_df = stability_bootstrap(
-    df=dfs_by_phase["phase_C"],
-    features=numeric_features,
-    target="rP", #"qP",
-    n_runs=200,
-    sample_frac=0.8,
-)
-
-summary_df_induction = stability_summary(stability_df)
-stability_yaml = stability_to_yaml(summary_df_induction)
-
-induction_yaml_data = {
-    "step": "stability_between_runs",
-    "phase": "phase_C",
-    "target": "rP", #"qP",
-    "method": "bootstrap",
-    "n_runs": 200,
-    "sample_fraction": 0.8,
-    "stability_metrics": stability_yaml,
-}
-
-save_yaml(induction_yaml_data,"results/data_analysis/global/yaml_files/stability_yaml_induction.yaml")
-
-# ------------------- Domain filter -----------------------
-# KEEP : T, I, X
-# MAYBE: mu (depends on X and S) indirect relation with qP // redundant
-#        P (!): DEPENDS STRONGLY ON EXTREM VALUES OF THE FEATURE (outlier analysis)
-#               Do P and qP depend on other factor behind ?
-# NOT KEEP: A, S, V (pase indicators or control variables)
-# 
-# See summary on domain_filter.yaml on results/global/yaml_files folder
+datasets = [ExperimentDataset(f) for f in dataset_files]
+br_id_list = [file.stem for file in ruta.iterdir() if file.suffix == ".xls"]
+variable_list = ["X", "S", "V", "P", "T"]
+
+# ---------- Data treatment ---------- 
+smooth_data, treat_data = process_all_datasets(datasets = datasets, time_col = "time", variable_list = variable_list, 
+                                                results_root="results/data_analysis/outliers_and_smoothing", smooth=False)
+
+# ---------- Derivates calculation ---------- 
+_, data_sets = compute_derivatives_for_datasets(treat_data, variables=("X", "S", "V", "P"), 
+                                                results_root="results/data_analysis/derivatives/treat")
+# smooth_data = compute_derivatives_for_datasets(smooth_data, variables=("X", "V", "P"), 
+#                                                 results_root="results/data_analysis/derivatives/smooth")
+
+# ---------- Computes qP and mu calculation and ---------- 
+yaml_path = "src/config/default_parameters.yaml"
+df_global, _, _, df_induction = processing_data(data_sets, yaml_path, t_ind_exp = True) # type: ignore
+df_induction.to_excel("data/processed/BR_processed_ind.xlsx",index=False,engine="openpyxl")
+df_global.to_excel("data/processed/BR_processed.xlsx",index=False,engine="openpyxl")
+
+# ----------- ML models --------------
+wrapper_models = ["linear", "LASSO_w", "Ridge_w", "elasticnet_w", "rf_w", "gbm_w", "svm_linear"] # "tree", 
+permutation_models = ["svm_rbf", "svm_poly", "knn"] # "mlp", "gpr", "LASSO_p", "Ridge_p", "elasticnet_p", "rf_p", "gbm_ps",
+
+# Features & target
+all_features = ["X", "S", "V", "P", "T", "I", "mu", 
+                "dXdt", "dSdt", "dVdt", "Xlag1", "Plag1", 
+                "X_calc", "V_calc", "mu_calc", "dXdt_calc", "dVdt_calc"] 
+target = ["qP", "rP"]
+exclude_features =["S", "dSdt"]
+
+# # # --------- Global --------------------------------------------------------------------------------------------------------------
+df_global = pd.read_excel(r"data/processed/BR_processed.xlsx")
+
+# # ---------- EAD ---------- 
+compute_ead(df_global, vars = all_features + target, results_root="results/data_analysis/ead/global")
+
+# # ----------- Feature selection -------------- 
+# ----------- Filter methods --------------
+filter_feature_selection(df_global, X_vars = all_features, y_var="qP", out_dir="results/feature_selection/global/filter/qP")
+filter_feature_selection(df_global, X_vars = all_features, y_var="rP", out_dir="results/feature_selection/global/filter/rP")
+
+# --------- Wrapper & Embedded methods ------------
+WnE_feature_selection(df_global, X_vars = all_features, y_var="qP", model_names_w=wrapper_models, 
+                      model_names_p=permutation_models, out_path="results/feature_selection/global/wnp/qP")
+WnE_feature_selection(df_global, X_vars = all_features, y_var="rP", model_names_w=wrapper_models, 
+                      model_names_p=permutation_models, out_path="results/feature_selection/global/wnp/rP")
+
+# # --------- Cross-Validation methods --------------- 
+cross_validation(df_global, y_var="qP",in_dir="results/feature_selection/global/wnp", 
+                out_dir="results/cross_validation/global")
+cross_validation(df_global, y_var="rP", in_dir="results/feature_selection/global/wnp", 
+                out_dir="results/cross_validation/global")
+
+# # --------- Ind = 0 Training --------------------------------------------------------------------------------------------------------------
+df_global = pd.read_excel(r"data/processed/BR_processed.xlsx")
+df_global_ind = df_global.copy()
+mask = df_global["I"] == 0
+df_global_ind.loc[mask, "Run_ID"] = "BR09"
+
+# # ---------- EAD ---------- 
+compute_ead(df_global_ind, vars = all_features + target, results_root="results/data_analysis/ead/global_ind")
+
+# # ----------- Feature selection -------------- 
+# ----------- Filter methods --------------
+filter_feature_selection(df_global_ind, X_vars = all_features, y_var="qP", out_dir="results/feature_selection/global_ind/filter/qP")
+filter_feature_selection(df_global_ind, X_vars = all_features, y_var="rP", out_dir="results/feature_selection/global_ind/filter/rP")
+
+# --------- Wrapper & Embedded methods ------------
+WnE_feature_selection(df_global_ind, X_vars = all_features, y_var="qP", model_names_w=wrapper_models, 
+                      model_names_p=permutation_models, out_path="results/feature_selection/global_ind/wnp/qP")
+WnE_feature_selection(df_global_ind, X_vars = all_features, y_var="rP", model_names_w=wrapper_models, 
+                      model_names_p=permutation_models, out_path="results/feature_selection/global_ind/wnp/rP")
+
+# # --------- Cross-Validation methods --------------- 
+cross_validation(df_global_ind, y_var="qP",in_dir="results/feature_selection/global_ind/wnp", 
+                out_dir="results/cross_validation/global_ind")
+cross_validation(df_global_ind, y_var="rP", in_dir="results/feature_selection/global_ind/wnp", 
+                out_dir="results/cross_validation/global_ind")
+
+# # ---------- Induction --------------------------------------------------------------------------------------------------------------
+df_induction = pd.read_excel(r"data/processed/BR_processed_ind.xlsx")
+vars_induction = [v for v in all_features if v not in exclude_features]
+
+# # ---------- EAD ---------- 
+compute_ead(df_induction, vars = vars_induction + target, results_root="results/data_analysis/ead/induction")
+
+# # ----------- Feature selection -------------- 
+# ----------- Filter methods --------------
+filter_feature_selection(df_induction, X_vars = vars_induction, y_var="qP", out_dir="results/feature_selection/induction/filter/qP")
+filter_feature_selection(df_induction, X_vars = vars_induction, y_var="rP", out_dir="results/feature_selection/induction/filter/rP")
+
+# --------- Wrapper & Embedded methods ------------
+WnE_feature_selection(df_induction, X_vars = vars_induction, y_var="qP", model_names_w=wrapper_models, 
+                      model_names_p=permutation_models, out_path="results/feature_selection/induction/wnp/qP")
+WnE_feature_selection(df_induction, X_vars = vars_induction, y_var="rP", model_names_w=wrapper_models, 
+                      model_names_p=permutation_models, out_path="results/feature_selection/induction/wnp/rP")
+
+# # --------- Cross-Validation methods --------------- 
+cross_validation(df_induction, y_var="qP",in_dir="results/feature_selection/induction/wnp", 
+                out_dir="results/cross_validation/induction")
+cross_validation(df_induction, y_var="rP", in_dir="results/feature_selection/induction/wnp", 
+                out_dir="results/cross_validation/induction")

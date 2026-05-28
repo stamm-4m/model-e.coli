@@ -1,0 +1,7 @@
+model: svm_linear
+test_group: BR03
+features:
+- P
+- T
+- Plag1
+score: 0.0135232421431798

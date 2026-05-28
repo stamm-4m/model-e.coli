@@ -1,0 +1,26 @@
+file: BR09
+variable: P
+outliers:
+  present: false
+  count: 0
+  indices: []
+  replacement_methods: {}
+special_outliers:
+  applied: true
+  details:
+    last_max_pair:
+      last_index: 24
+      max_index: 0
+      original_values:
+        last: 0.0
+        max: 0.0
+      final_value: 0.0
+statistics:
+  raw:
+    mean: 0.0
+    std: 0.0
+  treated:
+    info: if 'smooth = True' refers to smoothed data
+    mean: 0.0
+    std: 0.0
+  MAPE_raw_vs_treated: 0.0

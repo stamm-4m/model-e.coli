@@ -1,0 +1,419 @@
+(.venv) PS C:\Users\jcastano-san\Documents\GitHub\E.Coli-hybrid-model> python execution/data_analysis.py
+Processing dataset: BR02
+Processing dataset: BR03
+Processing dataset: BR04
+Processing dataset: BR05
+Processing dataset: BR07
+Processing dataset: BR08
+Processing dataset: BR09
+
+ Processing finished.
+
+process_all_datasets: 8.45 sec
+
+Derivatives estimation.
+
+Derivatives for BR02
+Derivatives for BR03
+Derivatives for BR04
+Derivatives for BR05
+Derivatives for BR07
+Derivatives for BR08
+Derivatives for BR09
+
+Derivative computation finished.
+
+compute_derivatives_for_datasets: 9.12 sec
+build_experiments: 0.08 sec
+run_model_with_parameters: 0.88 sec
+processing_data: 1.06 sec
+Starting EAD analysis ... 
+
+compute_ead: 9.58 sec
+Starting filter feature selection analysis ...
+
+filter_feature_selection: 4.02 sec
+Starting filter feature selection analysis ...
+
+filter_feature_selection: 3.69 sec
+Starting RFE for qP by wrapper models ...
+
+Features selection for linear model done
+Features selection for LASSO_w model done
+Features selection for Ridge_w model done
+Features selection for elasticnet_w model done
+Features selection for rf_w model done
+Features selection for svm_linear model done
+
+RFE for wrapper models finished 
+
+Features selection for svm_rbf model done
+Features selection for svm_poly model done
+Features selection for knn model done
+
+Permutation feature selection finished 
+
+WnE_feature_selection: 118.30 sec
+Starting RFE for rP by wrapper models ... 
+
+Features selection for linear model done
+Features selection for LASSO_w model done
+Features selection for Ridge_w model done
+Features selection for elasticnet_w model done
+Features selection for rf_w model done
+Features selection for svm_linear model done
+
+RFE for wrapper models finished 
+
+Features selection for svm_rbf model done
+Features selection for svm_poly model done
+Features selection for knn model done
+
+Permutation feature selection finished
+
+WnE_feature_selection: 544.58 sec
+Starting cross validation ...
+
+Starting CV for qP by all models ...
+
+Best model: elasticnet_w (0.1477837668736989)
+
+Fold 0 — Test group: BR02
+Best model for BR02: elasticnet_w
+
+Fold 1 — Test group: BR03
+Best model for BR03: Ridge_w
+
+Fold 2 — Test group: BR04
+Best model for BR04: Ridge_w
+
+Fold 3 — Test group: BR05
+Best model for BR05: Ridge_w
+
+Fold 4 — Test group: BR07
+Best model for BR07: rf_w
+
+Fold 5 — Test group: BR08
+Best model for BR08: elasticnet_w
+
+BAD DATASETS (frequent outliers):
+  - BR04: 3 times
+  - BR05: 3 times
+  - BR07: 3 times
+  - BR08: 3 times
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+CV for qP done 
+
+cross_validation: 85.27 sec
+Starting cross validation ...
+
+Starting CV for rP by all models ...
+
+Best model: svm_rbf (0.08399374872093508)
+
+Fold 0 — Test group: BR02
+Best model for BR02: LASSO_w
+
+Fold 1 — Test group: BR03
+Best model for BR03: svm_linear
+
+Fold 2 — Test group: BR04
+Best model for BR04: LASSO_w
+
+Fold 3 — Test group: BR05
+Best model for BR05: svm_linear
+
+Fold 4 — Test group: BR07
+Best model for BR07: svm_rbf
+
+Fold 5 — Test group: BR08
+Best model for BR08: svm_rbf
+
+BAD DATASETS (frequent outliers):
+  - BR07: 4 times
+  - BR08: 3 times
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+CV for rP done 
+
+cross_validation: 89.63 sec
+Starting EAD analysis ... 
+
+compute_ead: 9.50 sec
+Starting filter feature selection analysis ...
+
+filter_feature_selection: 3.73 sec
+Starting filter feature selection analysis ...
+
+filter_feature_selection: 3.53 sec
+Starting RFE for qP by wrapper models ...
+
+Features selection for linear model done
+Features selection for LASSO_w model done
+Features selection for Ridge_w model done
+Features selection for elasticnet_w model done
+Features selection for rf_w model done
+Features selection for svm_linear model done
+
+RFE for wrapper models finished
+
+Features selection for svm_rbf model done
+Features selection for svm_poly model done
+Features selection for knn model done
+
+Permutation feature selection finished
+
+WnE_feature_selection: 104.16 sec
+Starting RFE for rP by wrapper models ...
+
+Features selection for linear model done
+Features selection for LASSO_w model done
+Features selection for Ridge_w model done
+Features selection for elasticnet_w model done
+Features selection for rf_w model done
+Features selection for svm_linear model done
+
+RFE for wrapper models finished
+
+Features selection for svm_rbf model done
+Features selection for svm_poly model done
+Features selection for knn model done
+
+Permutation feature selection finished
+
+WnE_feature_selection: 948.59 sec
+Starting cross validation ...
+
+Starting CV for qP by all models ...
+
+Best model: elasticnet_w (0.2429388642511115)
+
+Fold 0 — Test group: BR02
+Best model for BR02: elasticnet_w
+
+Fold 1 — Test group: BR03
+Best model for BR03: Ridge_w
+
+Fold 2 — Test group: BR04
+Best model for BR04: elasticnet_w
+
+Fold 3 — Test group: BR05
+Best model for BR05: elasticnet_w
+
+Fold 4 — Test group: BR07
+Best model for BR07: elasticnet_w
+
+Fold 5 — Test group: BR08
+Best model for BR08: elasticnet_w
+
+BAD DATASETS (frequent outliers):
+  - BR04: 3 times
+  - BR05: 3 times
+  - BR07: 3 times
+  - BR08: 3 times
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+CV for qP done 
+
+cross_validation: 83.52 sec
+Starting cross validation ...
+
+Starting CV for rP by all models ...
+
+Best model: svm_rbf (0.1330404007288731)
+
+Fold 0 — Test group: BR02
+Best model for BR02: Ridge_w
+
+Fold 1 — Test group: BR03
+Best model for BR03: elasticnet_w
+
+Fold 2 — Test group: BR04
+Best model for BR04: svm_linear
+
+Fold 3 — Test group: BR05
+Best model for BR05: svm_linear
+
+Fold 4 — Test group: BR07
+Best model for BR07: svm_poly
+
+Fold 5 — Test group: BR08
+Best model for BR08: svm_rbf
+
+BAD DATASETS (frequent outliers):
+  - BR08: 3 times
+  - BR07: 1 times
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+CV for rP done 
+
+cross_validation: 92.13 sec
+Starting EAD analysis ...
+
+compute_ead: 8.96 sec
+Starting filter feature selection analysis ...
+
+filter_feature_selection: 2.79 sec
+Starting filter feature selection analysis ...
+
+filter_feature_selection: 2.62 sec
+Starting RFE for qP by wrapper models ...
+
+Features selection for linear model done
+Features selection for LASSO_w model done
+Features selection for Ridge_w model done
+Features selection for elasticnet_w model done
+Features selection for rf_w model done
+Features selection for svm_linear model done
+
+RFE for wrapper models finished
+
+Features selection for svm_rbf model done
+Features selection for svm_poly model done
+Features selection for knn model done
+
+Permutation feature selection finished
+
+WnE_feature_selection: 98.59 sec
+Starting RFE for rP by wrapper models ...
+
+Features selection for linear model done
+Features selection for LASSO_w model done
+Features selection for Ridge_w model done
+C:\Users\jcastano-san\Documents\GitHub\E.Coli-hybrid-model\.venv\lib\site-packages\sklearn\linear_model\_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 2.369e-04, tolerance: 2.057e-04
+  model = cd_fast.enet_coordinate_descent(
+C:\Users\jcastano-san\Documents\GitHub\E.Coli-hybrid-model\.venv\lib\site-packages\sklearn\linear_model\_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 3.116e-04, tolerance: 2.115e-04
+  model = cd_fast.enet_coordinate_descent(
+C:\Users\jcastano-san\Documents\GitHub\E.Coli-hybrid-model\.venv\lib\site-packages\sklearn\linear_model\_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 1.140e-04, tolerance: 7.680e-05
+  model = cd_fast.enet_coordinate_descent(
+C:\Users\jcastano-san\Documents\GitHub\E.Coli-hybrid-model\.venv\lib\site-packages\sklearn\linear_model\_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 1.140e-04, tolerance: 7.680e-05
+  model = cd_fast.enet_coordinate_descent(
+Features selection for elasticnet_w model done
+Features selection for rf_w model done
+Features selection for svm_linear model done
+
+RFE for wrapper models finished
+
+Features selection for svm_rbf model done
+Features selection for svm_poly model done
+Features selection for knn model done
+
+Permutation feature selection finished
+
+WnE_feature_selection: 120.51 sec
+Starting cross validation ...
+
+Starting CV for qP by all models ...
+
+Best model: Ridge_w (0.22626962287746807)
+
+Fold 0 — Test group: BR02
+Best model for BR02: LASSO_w
+
+Fold 1 — Test group: BR03
+Best model for BR03: elasticnet_w
+
+Fold 2 — Test group: BR04
+Best model for BR04: elasticnet_w
+
+Fold 3 — Test group: BR05
+Best model for BR05: Ridge_w
+
+Fold 4 — Test group: BR07
+Best model for BR07: knn
+
+Fold 5 — Test group: BR08
+Best model for BR08: Ridge_w
+
+BAD DATASETS (frequent outliers):
+  - BR04: 3 times
+  - BR05: 3 times
+  - BR07: 3 times
+  - BR08: 3 times
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+CV for qP done 
+
+cross_validation: 92.83 sec
+Starting cross validation ...
+
+Starting CV for rP by all models ...
+
+Best model: svm_rbf (0.17917372840461931)
+
+Fold 0 — Test group: BR02
+Best model for BR02: elasticnet_w
+
+Fold 1 — Test group: BR03
+Best model for BR03: elasticnet_w
+
+Fold 2 — Test group: BR04
+Best model for BR04: svm_linear
+
+Fold 3 — Test group: BR05
+Best model for BR05: svm_linear
+
+Fold 4 — Test group: BR07
+Best model for BR07: svm_rbf
+
+Fold 5 — Test group: BR08
+Best model for BR08: svm_poly
+
+BAD DATASETS (frequent outliers):
+  - BR05: 3 times
+  - BR07: 2 times
+  - BR08: 1 times
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+
+No significant outliers detected
+CV for rP done 
+
+cross_validation: 92.80 sec

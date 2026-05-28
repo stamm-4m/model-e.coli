@@ -1,0 +1,17 @@
+model: Ridge_w
+test_group: BR04
+features:
+- S
+- V
+- P
+- T
+- I
+- dXdt
+- Xlag1
+- Plag1
+- X_calc
+- V_calc
+- mu_calc
+- dXdt_calc
+- dVdt_calc
+score: 0.03192193696167586

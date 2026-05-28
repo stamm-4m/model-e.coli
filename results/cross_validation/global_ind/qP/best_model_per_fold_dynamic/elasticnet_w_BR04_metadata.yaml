@@ -1,0 +1,19 @@
+model: elasticnet_w
+test_group: BR04
+features:
+- X
+- P
+- T
+- I
+- mu
+- dXdt
+- dSdt
+- dVdt
+- Xlag1
+- Plag1
+- X_calc
+- V_calc
+- mu_calc
+- dXdt_calc
+- dVdt_calc
+score: 0.14470906816636087

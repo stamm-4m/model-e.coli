@@ -1,0 +1,11 @@
+model: rf_w
+test_group: BR07
+features:
+- P
+- T
+- mu
+- dVdt
+- Plag1
+- X_calc
+- dXdt_calc
+score: 0.23950010378282152
