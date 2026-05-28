@@ -2,10 +2,10 @@ model: svm_linear
 test_group: BR05
 features:
 - P
-- mu
+- Xlag1
+- Xlag1_calc
 - Plag1
-- X_calc
+- V_calc
 - mu_calc
 - dXdt_calc
-- dVdt_calc
-score: 0.07366701092344717
+score: 0.0745717367361514

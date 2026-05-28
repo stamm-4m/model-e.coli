@@ -1,0 +1,9 @@
+model: knn
+test_group: BR08
+features:
+- P
+- dVdt
+- Plag1
+- X_calc
+- V_calc
+score: 1.373295216842209

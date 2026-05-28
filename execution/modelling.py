@@ -92,7 +92,7 @@ for model_name, model_path in model_configs.items():
 
     # Global metrics
     global_row = {"model": model_name}
-    global_row.update(global_metrics)
+    global_row.update(global_metrics) # type: ignore
     all_global_results.append(global_row)
 
     # Metrics per dataset
@@ -109,7 +109,7 @@ for model_name, model_path in model_configs.items():
             all_dataset_results.append(row)
 
 print("Generating comparison plots...")
-output = model_output_dir / "comparison"
+output = model_output_dir / "comparison" # type: ignore
 output_dir = Path(output) 
 output_dir.mkdir(parents=True, exist_ok=True)
 

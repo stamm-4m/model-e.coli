@@ -7,13 +7,13 @@ features:
 - I
 - mu
 - dXdt
-- dSdt
 - dVdt
 - Xlag1
+- Xlag1_calc
 - Plag1
 - X_calc
 - V_calc
 - mu_calc
 - dXdt_calc
 - dVdt_calc
-score: 1.4645300029356503
+score: 1.46124219169754

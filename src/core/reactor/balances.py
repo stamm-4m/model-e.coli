@@ -9,6 +9,7 @@ class FedBatchBalances:
         self.biomass = biomass_profile
         self.induction_P = induction_profile
         self.br_id = br_id
+        self.history = []
 
 
     def dfdt(self, t, state, FS, FA, ind_F):
@@ -22,7 +23,7 @@ class FedBatchBalances:
         T = self.temperature.F(t)
 
         V_real, dV_real = self.volume.F(t)
-        # X_real, dX_real, mu_real = self.biomass.F(t)
+        X_real, dX_real, mu_real = self.biomass.F(t)
 
         induction = self.induction_P.F(t)
 
@@ -43,37 +44,40 @@ class FedBatchBalances:
         
         if self.kinetics.hybrid:
 
-            if t == 0:
-                self.prev_X = X
-                # self.prev_X_real = X_real
-                self.prev_P = P
+            self.history.append((t, X, X_real, P, V, mu))
+            self.history = sorted(self.history, key=lambda e: e[0])
+
+            prev_entry = max( (entry for entry in self.history if entry[0] < t), key=lambda e: e[0], default=None)
+
+            if prev_entry is not None:
+                (self.prev_t, self.prev_X, self.prev_X_real, 
+                self.prev_P, self.prev_V, self.prev_mu) = prev_entry
+            else:
+                (self.prev_t, self.prev_X, self.prev_X_real, 
+                 self.prev_P, self.prev_V, self.prev_mu) = t, X, X_real, P, V, mu
 
             features =  {  # exclude features ["S", "dSdt", "X", "dXdt","dXdt_calc", "Xlag1", "dVdt", "dVdt_calc", "mu"]
-                # "X": X_real, 
+                "X": X_real, 
                 # "S": S, 
                 "V": V_real,
                 "P": P,
                 "T": T,
                 "I": induction,
-                # "mu": mu_real,          
-                # "dXdt": dX_real,
+                "mu": mu_real,          
+                "dXdt": dX_real,
                 # "dSdt": dSdt,
-                # "dVdt": dV_real,
-                # "Xlag1": self.prev_X_real, 
+                "dVdt": dV_real,
+                "Xlag1": self.prev_X_real, 
                 "Xlag1_calc": self.prev_X,  
                 "Plag1": self.prev_P,
                 "X_calc": X,
                 "V_calc": V, 
                 "mu_calc": mu, 
-                # "dXdt_calc": dXdt, 
-                # "dVdt_calc": dVdt
+                "dXdt_calc": dXdt, 
+                "dVdt_calc": dVdt
             }
 
             features = {k: np.float64(v) for k, v in features.items()}
-
-            self.prev_X = X
-            # self.prev_X_real = X_real
-            self.prev_P = P
 
             if self.kinetics.use_rp:
                 rP = self.kinetics.rp_hybrid(features, self.br_id)
@@ -87,7 +91,8 @@ class FedBatchBalances:
             qp = self.kinetics.qp(X, S, T, induction)
             rP = (qp * X)
         
-        rP = np.clip(rP, 0, None) # 2 rP = np.maximum(0, rP)
+        # rP = np.clip(rP, 0, None) # 2 
+        rP = np.maximum(0, rP)
             
         dPdt = rP - (dVdt * P / V) # + (mu * P)
         # dPdt = rP - (dV_real * P / V_real) # + (mu * P)

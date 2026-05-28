@@ -1,0 +1,11 @@
+model: svm_linear
+test_group: BR03
+features:
+- P
+- Xlag1
+- Xlag1_calc
+- Plag1
+- V_calc
+- mu_calc
+- dXdt_calc
+score: 0.02183823538924672

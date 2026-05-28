@@ -43,7 +43,8 @@ all_features = ["X", "S", "V", "P", "T", "I", "mu",
                 "dXdt", "dSdt", "dVdt", "Xlag1","Xlag1_calc", "Plag1", 
                 "X_calc", "V_calc", "mu_calc", "dXdt_calc", "dVdt_calc"] 
 target = ["qP", "rP"]
-exclude_features = ["S", "dSdt", "X", "dXdt","dXdt_calc", "Xlag1", "dVdt", "dVdt_calc", "mu"] # Once it was run the all features script
+# exclude_features = ["S", "dSdt", "X", "dXdt","dXdt_calc", "Xlag1", "dVdt", "dVdt_calc", "mu"] # Once it was run the all features script
+exclude_features = ["S", "dSdt"]
 
 # # # # --------- Global --------------------------------------------------------------------------------------------------------------
 # df_global = pd.read_excel(r"data/processed/BR_processed.xlsx")
