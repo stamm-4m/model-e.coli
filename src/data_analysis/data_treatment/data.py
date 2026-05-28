@@ -33,6 +33,7 @@ class ExperimentDataset:
         }
 
         self.V = df["V"].values
+        self.X = df["X"].values
         self.T = df["T"].values
         self.I = df["I"].values
 

@@ -105,9 +105,9 @@ class Kinetic_Models:
                 return 0
 
         x = self._build_input(features, br_id)
-        qp = self.model[br_id].predict(x)[0]
+        qp = self.models[br_id].predict(x)
 
-        return      qp       
+        return      qp[0]       
                                    
     
     def rp_hybrid(self, features, br_id):
@@ -117,9 +117,9 @@ class Kinetic_Models:
                 return 0
 
         x = self._build_input(features, br_id)
-        rp = self.model[br_id].predict(x)[0]
+        rp = self.models[br_id].predict(x)
 
-        return      rp    
+        return      rp[0]
                                       
 
     def _build_input(self, features, br_id):

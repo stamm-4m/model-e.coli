@@ -1,9 +1,11 @@
 import os
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 def plot_single_model(dataset, solution, model_name, output_dir):
 
-    dataset_name = dataset.path.split("/")[-1].replace(".xls", "")
+    # dataset_name = dataset.path.split("/")[-1].replace(".xls", "")
+    dataset_name = Path(dataset.path).stem
 
     t_exp = dataset.t
     P_exp = dataset.data["P"]
@@ -23,14 +25,66 @@ def plot_single_model(dataset, solution, model_name, output_dir):
     plt.legend()
 
     filepath = os.path.join(output_dir, f"{dataset_name}_{model_name}_P.png")
+    Path(filepath).parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(filepath)
     plt.close()
 
 
+def plot_multi_dataset_model(datasets, solutions, model_name, output_dir):
+
+    n = len(datasets)
+
+    # Crear figura con subplots (2 filas x 3 columnas si hay 6 experimentos)
+    ncols = 3
+    nrows = (n + ncols - 1) // ncols
+
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(15, 8))
+    axes = axes.flatten()
+
+    for i, dataset in enumerate(datasets):
+        ax = axes[i]
+
+        dataset_key = dataset.path
+        dataset_name = Path(dataset.path).stem
+
+        t_exp = dataset.t
+        P_exp = dataset.data["P"]
+
+        sol = solutions[dataset_key]["sol"]
+        t_model = sol.t
+        P_model = sol.y[2]
+
+        ax.plot(t_exp, P_exp, "o", label="Exp")
+        ax.plot(t_model, P_model, "-", label=model_name)
+
+        ax.set_title(dataset_name)
+        ax.set_xlabel("Time")
+        ax.set_ylabel("P")
+
+    # Ocultar axes extra si hay menos de 6
+    for j in range(i + 1, len(axes)):
+        axes[j].axis("off")
+
+    # Leyenda global
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper right")
+
+    fig.suptitle(f"{model_name} - All datasets", fontsize=16)
+
+    plt.tight_layout()
+
+    # Guardar
+    filepath = Path(output_dir) / f"{model_name}_all_datasets.png"
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+
+    plt.savefig(filepath, dpi=200)
+    plt.close()
+
 
 def plot_comparison(dataset, predictions, output_dir, MODEL_COLORS):
     
-    dataset_name = os.path.basename(dataset.path).replace(".xls","")
+    # dataset_name = os.path.basename(dataset.path).replace(".xls","")
+    dataset_name = Path(dataset.path).stem
 
     plt.figure(figsize=(6,5))
 
@@ -57,7 +111,9 @@ def plot_comparison(dataset, predictions, output_dir, MODEL_COLORS):
     plt.legend(fontsize=8)
     plt.tight_layout()
 
-    plt.savefig(os.path.join(output_dir, f"{dataset_name}_comparison_P.png"))
+    filepath = os.path.join(output_dir, f"{dataset_name}_comparison_P.png")
+    Path(filepath).parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(filepath)
     plt.close()
 
 
@@ -92,7 +148,7 @@ def plot_multibr_states_parametric(datasets, all_predictions, output_dir):
                 dataset.t,
                 dataset.data[var],
                 color="black",
-                s=12, s=15, alpha=0.8,
+                s=12, alpha=0.8,
                 label="Exp" if (row == 0 and col == 0) else None
             )
 
@@ -131,7 +187,9 @@ def plot_multibr_states_parametric(datasets, all_predictions, output_dir):
 
     plt.tight_layout(rect=[0, 0, 1, 0.93])
 
-    plt.savefig(os.path.join(output_dir, "multibr_XSV_parametric.png"))
+    filepath = os.path.join(output_dir, "multibr_XSV_parametric.png")
+    Path(filepath).parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(filepath)
     plt.close()
 
 

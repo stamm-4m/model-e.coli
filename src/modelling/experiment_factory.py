@@ -5,6 +5,7 @@ from glob import glob
 from src.data_analysis.data_treatment.data import ExperimentDataset
 from src.core.auxiliar.temperature_profile import TemperatureProfile
 from src.core.auxiliar.volume_profile import VolumeProfile
+from src.core.auxiliar.biomass_profile import BiomassProfile
 from src.core.auxiliar.induction_func import InductionProfile
 from src.core.auxiliar.feed_factory import create_feed
 from src.core.auxiliar.simulator import Simulator
@@ -19,7 +20,7 @@ def build_experiments(cfg, kin):
     """
     Build datasets, simulators and initial conditions for all BR experiments.
     """
-    dataset_files = sorted(glob("data/raw/BR*.xls"))
+    dataset_files = [f for f in sorted(glob("data/raw/BR*.xls")) if "BR09" not in f]
     datasets = [ExperimentDataset(f) for f in dataset_files]
 
     simulators = []
@@ -31,6 +32,8 @@ def build_experiments(cfg, kin):
         T_profile = TemperatureProfile(dataset.t, dataset.T)
 
         V_profile = VolumeProfile(dataset.t, dataset.V)
+
+        X_profile = BiomassProfile(dataset.t, dataset.X, V_profile)
 
         t_ind = cfg["bioreactor"][br_id]["t_ind"]["value"]
         I_profile = InductionProfile(t_ind)
@@ -44,6 +47,7 @@ def build_experiments(cfg, kin):
             Sf=cfg["bioreactor"][br_id]["Sf"]["value"],
             temperature_profile=T_profile,
             volume_profile=V_profile,
+            biomass_profile=X_profile,
             induction_profile=I_profile,
             br_id = br_id
         )
@@ -57,8 +61,9 @@ def build_experiments(cfg, kin):
         method = cfg["simulation"]["method_ode"]["type"]
         rtol = cfg["simulation"]["rtol_ode"]["value"]
         atol = cfg["simulation"]["atol_ode"]["value"]
+        max_step = cfg["simulation"]["max_step"]["value"]
 
-        sim = Simulator(model, method, rtol, atol)
+        sim = Simulator(model, method, rtol, atol, max_step)
         simulators.append(sim)
 
         y0 = build_initial_state(cfg, br_id, dataset)
@@ -69,12 +74,11 @@ def build_experiments(cfg, kin):
 @timer
 def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_names, full_params, dense = False):
     # Update model with optimal parameters
-    
-    params = full_params.copy()
 
+    # if kin.hybrid == False:
+    params = full_params.copy()
     for name, value in zip(param_names, theta):
         params[name] = value
-
     kin.set_params(params)
 
     per_dataset_metrics = {}

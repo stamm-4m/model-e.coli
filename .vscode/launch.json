@@ -17,18 +17,18 @@
                     "PYTHONPATH": "${workspaceFolder}"
                 }
 
-        }
-        // {
-        //     "name": "Debug model_profile.py",
-        //     "type": "debugpy",
-        //     "request": "launch",
-        //     "program": "${workspaceFolder}/execution/model_profile.py",
-        //     "console": "integratedTerminal",
-        //     "justMyCode": true,
-        //     "env": {
-        //         "PYTHONPATH": "${workspaceFolder}"
-        //     }
-        // },
+        },
+        {
+            "name": "Debug modellig.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/execution/modelling.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
 
     ]
 }

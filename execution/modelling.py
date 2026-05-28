@@ -1,10 +1,11 @@
 
 import pandas as pd
+from pathlib import Path
 import os
 from src.utils.io import load_yaml
 from src.core.reactor.kinetics import Kinetic_Models
 from src.modelling.experiment_factory import build_experiments, run_model_with_parameters
-from src.modelling.modelling_plots import plot_single_model, plot_comparison, plot_multibr_states_parametric
+from src.modelling.modelling_plots import plot_comparison, plot_multibr_states_parametric, plot_multi_dataset_model #, plot_single_model 
 
 # Gloabal parameters
 output_dir = "results/modelling"
@@ -19,12 +20,12 @@ all_predictions = {}
 
 model_configs = {
     "parametric": None,
-    "global_qP": "results/cross_validation/global/qP/best_model_folds",
-    "global_rP": "results/cross_validation/global/rP/best_model_folds",
-    "global_ind_qP": "results/cross_validation/global_ind/qP/best_model_folds",
-    "global_ind_rP": "results/cross_validation/global_ind/rP/best_model_folds",
-    "induction_qP": "results/cross_validation/induction/qP/best_model_folds",
-    "induction_rP": "results/cross_validation/induction/rP/best_model_folds",
+    "global_qP": "results/cross_validation/global/qP/best_model_per_fold_dynamic",
+    "global_rP": "results/cross_validation/global/rP/best_model_per_fold_dynamic",
+    "global_ind_qP": "results/cross_validation/global_ind/qP/best_model_per_fold_dynamic",
+    "global_ind_rP": "results/cross_validation/global_ind/rP/best_model_per_fold_dynamic",
+    "induction_qP": "results/cross_validation/induction/qP/best_model_per_fold_dynamic",
+    "induction_rP": "results/cross_validation/induction/rP/best_model_per_fold_dynamic",
 }
 
 MODEL_COLORS = {
@@ -41,8 +42,16 @@ for model_name, model_path in model_configs.items():
     print(f"\n===== Running model: {model_name} =====")
     if model_name == "parametric":
         kin = Kinetic_Models(hybrid=False)
+        # model_output_dir = Path(output_dir) / "parametric"
     else:
         kin = Kinetic_Models(hybrid=True, models_folder=model_path)
+        # parts = Path(model_path).parts
+        # idx = parts.index("cross_validation")
+        # subpath = Path(*parts[idx+1:-1])  
+        # model_output_dir = Path(output_dir) / subpath
+
+    model_output_dir = Path(output_dir) 
+    model_output_dir.mkdir(parents=True, exist_ok=True)
 
     print("Building experiments...")
     datasets, simulators, y0s = build_experiments(cfg, kin)
@@ -76,8 +85,11 @@ for model_name, model_path in model_configs.items():
             "P": sol.y[2],
             "V": sol.y[3],
             }
-        print(f"      Plotting individual model : {model_name}")
-        plot_single_model(dataset, solutions[dataset_key], model_name, output_dir)
+        # print(f"      Plotting individual model : {model_name}")
+        # plot_single_model(dataset, solutions[dataset_key], model_name, model_output_dir)
+
+    print(f"Plotting combined figure for model: {model_name}")
+    plot_multi_dataset_model(datasets, solutions, model_name, output_dir)
 
     # Global metrics
     global_row = {"model": model_name}
@@ -98,16 +110,20 @@ for model_name, model_path in model_configs.items():
             all_dataset_results.append(row)
 
 print("Generating comparison plots...")
+output = model_output_dir / "comparison"
+output_dir = Path(output) 
+output_dir.mkdir(parents=True, exist_ok=True)
+
 for dataset in datasets:
     dataset_key = dataset.path
     plot_comparison(dataset,all_predictions[dataset_key],output_dir,MODEL_COLORS)
 
-plot_multibr_states_parametric(datasets, all_predictions, output_dir)
+plot_multibr_states_parametric(datasets, all_predictions, model_output_dir)
 
 df_global = pd.DataFrame(all_global_results)
 df_dataset = pd.DataFrame(all_dataset_results)
 
-excel_path = os.path.join(output_dir, "metrics_summary_all_models.xlsx")
+excel_path = os.path.join(model_output_dir, "metrics_summary_all_models.xlsx")
 
 print("Saving Excel results...")
 with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
