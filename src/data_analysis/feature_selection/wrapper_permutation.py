@@ -23,7 +23,7 @@ def WnE_feature_selection(df, X_vars, y_var, model_names_w, model_names_p, out_p
     out_dir = Path(out_path)
     all_results = {}
     summary = {}
-    metrics = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE"]#, "AIC", "BIC"]
+    metrics = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE", "AIC", "BIC"]
 
 # ----------- Recursive Feature Selection (RFE) (Wrapper methods) ---------------
     models_wrapper = models_dict(model_names_w)
@@ -49,14 +49,11 @@ def WnE_feature_selection(df, X_vars, y_var, model_names_w, model_names_p, out_p
 # ----------- Metrics ---------------
     best_score = np.inf
     best_global = None
-    alpha=0.7
-    penalty=2.0
+
     for model_name, info in summary.items():
-        mse = info["metrics"]["MSE"] 
-        r2 = info["metrics"]["R2"]
-        score = alpha * mse + (1 - alpha) * (1 - r2)
-        if r2 < 0:
-            score *= penalty
+
+        score = info["metrics"]["AIC"]
+
         if score < best_score:
             best_score = score
             best_global = model_name
@@ -65,6 +62,7 @@ def WnE_feature_selection(df, X_vars, y_var, model_names_w, model_names_p, out_p
     yaml_data = {
         "target": y_var,
         "best_model": best_global,
+        "best_info": summary[best_global],
         "models": summary
     }
     

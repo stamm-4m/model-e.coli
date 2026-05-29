@@ -272,7 +272,7 @@ def plot_predictions_by_model(predictions, out_dir=None):
             if r2 < 0:
                 ax.set_facecolor("#ffe6e6")  # fondo rojo suave
 
-            ax.text(0.05, 0.90,f"R²={r2:.2f}\nRMSE={rmse:.2f}",
+            ax.text(0.05, 0.90,f"R²={r2:.4f}\nRMSE={rmse:.2f}",
                     transform=ax.transAxes,fontsize=9,
                     bbox=dict(facecolor='white', alpha=0.7))
 

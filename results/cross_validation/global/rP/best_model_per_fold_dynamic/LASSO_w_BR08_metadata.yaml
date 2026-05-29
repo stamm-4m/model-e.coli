@@ -1,7 +1,0 @@
-model: LASSO_w
-test_group: BR08
-features:
-- P
-- T
-- Plag1
-score: 0.012916912712633188

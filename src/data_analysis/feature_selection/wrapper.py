@@ -49,18 +49,19 @@ def rfe_analysis(df, X_vars, y_var, model, model_name):
 
     # importance_getter = get_importance_getter(best_model)
     if model_name in ("svm_linear", "LASSO_w", "Ridge_w", "elasticnet_w"):
-        importance_getter = lambda est: est.named_steps["model"].coef_
+        importance_getter = lambda est: np.abs(est.named_steps["model"].coef_).ravel()
     elif model_name in ("tree", "rf_w", "gbm_w"):
         importance_getter = "feature_importances_"
     elif model_name == "linear":
-        importance_getter = "coef_"
+        importance_getter = lambda est: np.abs(est.coef_).ravel()
+        # importance_getter = "coef_"
     else:
         importance_getter = "auto"  
 
     selected_vars = list(X_vars)
 
     # ---------------- RFE loop ----------------
-    k = 1
+    # k = 1
     while len(selected_vars) >= 1:
         X_sel = df[selected_vars].values
 
@@ -81,11 +82,11 @@ def rfe_analysis(df, X_vars, y_var, model, model_name):
             y_pred[test_idx] = model_clone.predict(X_sel[test_idx])
 
         mask = groups != "BR09"
-        metrics = compute_metrics(y[mask], y_pred[mask], k)
+        metrics = compute_metrics(y[mask], y_pred[mask],len(selected_vars))
 
         results.append({
-            "k": k,
-            "features": selected_vars,
+            "k": len(selected_vars),
+            "features": selected_vars.copy(),
             "metrics": metrics,
             "best_params": current_model.get_params()
         })
@@ -103,6 +104,6 @@ def rfe_analysis(df, X_vars, y_var, model, model_name):
         rfe.fit(X_rfe, y_rfe)
         selected_vars = [v for v, s in zip(selected_vars, rfe.support_) if s]
         
-        k += 1
+        # k += 1
 
     return results

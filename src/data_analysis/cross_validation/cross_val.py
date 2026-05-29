@@ -1,6 +1,7 @@
 
 import numpy as np
 from pathlib import Path
+import shutil
 
 from sklearn.model_selection import GridSearchCV
 from sklearn.base import clone
@@ -66,7 +67,7 @@ def cross_validation(df,y_var,in_dir,out_dir):
     train_and_save_best_model_per_fold_dynamic(df, models, y_var, out_dir)
 
     # Plots
-    metrics = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE"]#, "AIC", "BIC"]
+    metrics = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE", "AIC", "BIC"]
     plots = ("boxplot", "ranking", "heatmap") # "by_run"
     plot_all_metrics(cv_results, metrics, target_dir / "metrics", plots)
     plot_predictions_by_model(predictions, target_dir / "predictions")
@@ -136,7 +137,7 @@ def evaluate_models_leave_one_run(df, models_dict, y_var, run_col):
 
             # -------- Predict --------
             y_pred = best_model.predict(X_test)
-            y_pred = np.maximum(0, y_pred)
+            # y_pred = np.maximum(0, y_pred)
             # y_pred = cross_val_predict(best_model, X_test, y_test,cv=inner_cv,groups=groups[train_idx])
 
             # # Inverse scaling
@@ -144,7 +145,8 @@ def evaluate_models_leave_one_run(df, models_dict, y_var, run_col):
             #     scaler = best_model.named_steps["scaler"]
             #     y_pred = scaler.inverse_transform(y_pred.reshape(-1, 1)).ravel() #####
 
-            metrics = compute_metrics(y_test, y_pred, len(features))
+            k = len(features) 
+            metrics = compute_metrics(y_test, y_pred, k)
 
             # best_params = grid.best_params_ if grid else {}
 
@@ -239,6 +241,9 @@ def train_and_save_best_model_per_fold(df, models, best_model_name, y_var, out_d
 def train_and_save_best_model_per_fold_dynamic(df, models, y_var, out_dir):
 
     model_dir = Path(out_dir) / y_var / "best_model_per_fold_dynamic"
+    if model_dir.exists():
+        shutil.rmtree(model_dir)
+
     model_dir.mkdir(parents=True, exist_ok=True)
 
     groups = df["Run_ID"].values

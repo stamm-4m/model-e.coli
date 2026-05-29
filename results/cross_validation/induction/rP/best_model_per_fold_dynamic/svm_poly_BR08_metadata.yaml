@@ -3,6 +3,5 @@ test_group: BR08
 features:
 - V
 - P
-- Plag1
 - X_calc
-score: 0.25039667006530386
+score: -106.12742419284966

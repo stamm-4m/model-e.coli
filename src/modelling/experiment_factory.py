@@ -93,10 +93,21 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
     all_y_model = []
 
     for dataset, simulator, y0 in zip(datasets, simulators, y0s):
+
+        br_id = get_br_id(dataset) 
+        # if br_id in ("BR07", "BR08"):
+        #     t_span = (dataset.t[0], dataset.t[-2])
+        #     t_eval = dataset.t[:-1]
+        #     t_eval_dense = np.linspace(dataset.t[0], dataset.t[-2], 200)
+        # else:
+        t_span = (dataset.t[0], dataset.t[-1])
+        t_eval = dataset.t
+        t_eval_dense = np.linspace(dataset.t[0], dataset.t[-1], 200) 
+
         sol = simulator.run( 
             y0 = y0,
-            t_span = (dataset.t[0], dataset.t[-1]),
-            t_eval = dataset.t ) 
+            t_span = t_span ,
+            t_eval = t_eval ) 
         
         X_model, S_model, P_model, V_model = sol.y
         t_vals = sol.t
@@ -104,8 +115,8 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
         if dense:
             sol_dense = simulator.run( 
                 y0 = y0,
-                t_span = (dataset.t[0], dataset.t[-1]),
-                t_eval = np.linspace(dataset.t[0], dataset.t[-1], 200), 
+                t_span = t_span ,
+                t_eval = t_eval_dense, 
                 dense_ouput = True )
         else:
             sol_dense = None

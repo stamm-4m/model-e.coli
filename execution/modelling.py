@@ -109,20 +109,20 @@ for model_name, model_path in model_configs.items():
             all_dataset_results.append(row)
 
 print("Generating comparison plots...")
-output = model_output_dir / "comparison" # type: ignore
-output_dir = Path(output) 
-output_dir.mkdir(parents=True, exist_ok=True)
+output = output_dir / "comparison" # type: ignore
+output = Path(output) 
+output.mkdir(parents=True, exist_ok=True)
 
 for dataset in datasets:
     dataset_key = dataset.path
-    plot_comparison(dataset,all_predictions[dataset_key],output_dir,MODEL_COLORS)
+    plot_comparison(dataset,all_predictions[dataset_key],output,MODEL_COLORS)
 
-plot_multibr_states_parametric(datasets, all_predictions, model_output_dir)
+plot_multibr_states_parametric(datasets, all_predictions, output_dir)
 
 df_global = pd.DataFrame(all_global_results)
 df_dataset = pd.DataFrame(all_dataset_results)
 
-excel_path = os.path.join(model_output_dir, "metrics_summary_all_models.xlsx")
+excel_path = os.path.join(output_dir, "metrics_summary_all_models.xlsx")
 
 print("Saving Excel results...")
 with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:

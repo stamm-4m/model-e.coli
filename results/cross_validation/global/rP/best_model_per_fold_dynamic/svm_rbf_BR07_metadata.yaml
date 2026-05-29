@@ -1,8 +1,0 @@
-model: svm_rbf
-test_group: BR07
-features:
-- P
-- T
-- Plag1
-- dXdt_calc
-score: 0.1770163221679683

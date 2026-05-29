@@ -286,11 +286,11 @@ simulation:
   # n_points: 
   #   400
   method_ode: 
-    type : Radau # BDF #  Radau
+    type : BDF # BDF #  Radau
   rtol_ode: 
     value: 1.0e-7 # 1.0e-6
   max_step:
-    value: 0.5
+    value: 0.05 # 0.5
   atol_ode: 
     value: 1.0e-9 # 1.0e-8
 

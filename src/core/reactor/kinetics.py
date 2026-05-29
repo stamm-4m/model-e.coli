@@ -106,8 +106,9 @@ class Kinetic_Models:
 
         x = self._build_input(features, br_id)
         qp = self.models[br_id].predict(x)
+        out = np.maximum(1e-8, qp[0])
 
-        return      qp[0]       
+        return      out      
                                    
     
     def rp_hybrid(self, features, br_id):
@@ -118,8 +119,9 @@ class Kinetic_Models:
 
         x = self._build_input(features, br_id)
         rp = self.models[br_id].predict(x)
+        out = np.maximum(1e-8, rp[0])
 
-        return      rp[0]
+        return     out
                                       
 
     def _build_input(self, features, br_id):

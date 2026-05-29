@@ -2,6 +2,5 @@ model: svm_linear
 test_group: BR04
 features:
 - P
-- Xlag1_calc
 - Plag1
-score: 0.10410945150536588
+score: -46.78026971206359

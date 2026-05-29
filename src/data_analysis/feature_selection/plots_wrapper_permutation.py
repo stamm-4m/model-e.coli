@@ -94,7 +94,7 @@ def plot_metric_comparison(all_results, metric_name, out_dir, model_type=None):
 
 def plot_metrics_heatmap_from_summary(df, out_path):
 
-    metrics_cols = ["MSE", "R2", "SCORE"] #, "MAE", "MSE", "RMSE", "MAPE"
+    metrics_cols = ["R2", "SCORE"] #, "MAE", "MSE", "RMSE", "MAPE"
     metrics_cols = [c for c in metrics_cols if c in df.columns]
 
     plt.figure(figsize=(10, 6))
@@ -126,6 +126,7 @@ def plot_feature_heatmap_from_summary(yaml_data, out_path):
     data = []
 
     for model_name, info in yaml_data["models"].items():
+    # for model_name, info in yaml_data["best_info"].items():
 
         features = info.get("features", [])
 

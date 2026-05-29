@@ -2,8 +2,5 @@ model: elasticnet_w
 test_group: BR03
 features:
 - P
-- mu
 - Plag1
-- X_calc
-- V_calc
-score: 0.02037536498655454
+score: -24.089345709532253

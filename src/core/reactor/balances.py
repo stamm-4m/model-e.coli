@@ -17,7 +17,7 @@ class FedBatchBalances:
 
         # X = max(X, 0)
         # S = max(S, 0)
-        # P = max(P, 0)
+        P = max(P, 0)
         # V = max(V, 1e-8)
 
         T = self.temperature.F(t)
@@ -26,6 +26,9 @@ class FedBatchBalances:
         X_real, dX_real, mu_real = self.biomass.F(t)
 
         induction = self.induction_P.F(t)
+
+        if induction == 1:
+            A = 0
 
         dVdt = FS + FA 
         # dVdt = dV_real
@@ -92,12 +95,12 @@ class FedBatchBalances:
             rP = (qp * X)
         
         # rP = np.clip(rP, 0, None) # 2 
-        rP = np.maximum(0, rP)
+        # rP = np.maximum(0, rP)
             
         dPdt = rP - (dVdt * P / V) # + (mu * P)
         # dPdt = rP - (dV_real * P / V_real) # + (mu * P)
 
-        if P <= 0:
-            dPdt = max(dPdt, 0.0)
+        # if P <= 0:
+        dPdt = max(dPdt, 0.0)
 
         return np.array([dXdt, dSdt, dPdt, dVdt])

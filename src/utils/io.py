@@ -97,20 +97,11 @@ def save_model(model, name, out_dir):
 
 # ------------- Model Selection ---------------s
 
-def select_optimal_model_feature(results, alpha=0.7, penalty=2.0):
-    # best = None
-    # best_score = -np.inf
+def select_optimal_model_feature(results):
     best_score = np.inf
-
     for r in results:
-        r2 = r["metrics"]["R2"] # - 0.001 * r["k"] # number of features
-        mse = r["metrics"]["MSE"] # + 0.01 * r["k"] # number of features
-        
-        score = alpha * mse + (1 - alpha) * (1 - r2)
-
-        if r2 < 0:
-            score *= penalty
-
+        # score = r["metrics"]["SCORE"]
+        score = r["metrics"]["AIC"]
         if score < best_score:
             best_score = score
             best = r
@@ -118,21 +109,11 @@ def select_optimal_model_feature(results, alpha=0.7, penalty=2.0):
     return best, best_score
 
 # --------- Select best model ---------------
-def select_best_model(cv_results, alpha=0.7, penalty=2.0):#, metric="RMSE"):
-    best_model_name = None
+def select_best_model(cv_results):
     best_score = np.inf  
-
     for model_name, info in cv_results.items():
-
-        mean_r2 = info["summary"]["R2"]["mean"]
-        mean_mse = info["summary"]["MSE"]["mean"]
-        
-        # Base score (normalize: RMSE smaller is better, R2 larger is better)
-        score = alpha * mean_mse + (1 - alpha) * (1 - mean_r2)
-
-        if mean_r2 < 0:
-            score *= penalty
-
+        # score = info["summary"]["SCORE"]["mean"]
+        score = info["summary"]["AIC"]["mean"]
         if score < best_score:
             best_score = score
             best_model_name = model_name
@@ -325,28 +306,28 @@ def models_dict(model_names):
         "linear": LinearRegression(positive=True),
         "LASSO_w": Pipeline([
             ("scaler", StandardScaler()),
-            ("model", Lasso())]),
+            ("model", Lasso(random_state=42))]),
         "Ridge_w": Pipeline([
             ("scaler", StandardScaler()),
-            ("model", Ridge())]),
+            ("model", Ridge(random_state=42))]),
         "elasticnet_w": Pipeline([
             ("scaler", StandardScaler()),
-            ("model", ElasticNet())]),
-        "tree": DecisionTreeRegressor(),
-        "rf_w": RandomForestRegressor(),
-        "gpm_w": GradientBoostingRegressor(),
+            ("model", ElasticNet(random_state=42))]),
+        "tree": DecisionTreeRegressor(random_state=42),
+        "rf_w": RandomForestRegressor(random_state=42),
+        "gpm_w": GradientBoostingRegressor(random_state=42),
         "svm_linear": Pipeline([
             ("scaler", StandardScaler()),
             ("model", SVR(kernel="linear"))]),
         "LASSO_p": Pipeline([
             ("scaler", StandardScaler()),
-            ("model", Lasso())]),
+            ("model", Lasso(random_state=42))]),
         "Ridge_p": Pipeline([
             ("scaler", StandardScaler()),
-            ("model", Ridge())]),
+            ("model", Ridge(random_state=42))]),
         "elasticnet_p": Pipeline([
             ("scaler", StandardScaler()),
-            ("model", ElasticNet())]),
+            ("model", ElasticNet(random_state=42))]),
         "svm_rbf": Pipeline([
             ("scaler", StandardScaler()),
             ("model", SVR(kernel = 'rbf'))]),
@@ -355,12 +336,12 @@ def models_dict(model_names):
             ("model", SVR(kernel = 'poly'))]),
         "gpr": Pipeline([
             ("scaler", StandardScaler()),
-            ("model", GaussianProcessRegressor())]),
-        "rf_p": RandomForestRegressor(),
-        "gbm_p": GradientBoostingRegressor(),
+            ("model", GaussianProcessRegressor(random_state=42))]),
+        "rf_p": RandomForestRegressor(random_state=42),
+        "gbm_p": GradientBoostingRegressor(random_state=42),
         "mlp": Pipeline([
             ("scaler", StandardScaler()),
-            ("model", MLPRegressor())]),
+            ("model", MLPRegressor(random_state=42))]),
         "knn": Pipeline([
             ("scaler", StandardScaler()),  
             ("model", KNeighborsRegressor())]),
@@ -379,7 +360,7 @@ def save_wrapper_summary_table(yaml_data, filepath):
         row = {
             "model": model_name,
             "n_features": info.get("n_features", np.nan),
-            "features": ", ".join(info.get("features", []))  # 👈 clave
+            "features": ", ".join(info.get("features", []))  
         }
 
         # métricas
@@ -392,7 +373,7 @@ def save_wrapper_summary_table(yaml_data, filepath):
 
     # orden columnas
     base_cols = ["model", "n_features", "features"]
-    metric_cols = [c for c in ["R2","MAE","MSE","RMSE","MAPE","AIC","BIC"] if c in df.columns]
+    metric_cols = [c for c in ["R2","MAE","MSE","RMSE","MAPE","SCORE","AIC","BIC"] if c in df.columns]
 
     df = df[base_cols + metric_cols]
 

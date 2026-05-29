@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 from pathlib import Path
+from src.utils.io import get_br_id
 
 def plot_single_model(dataset, solution, model_name, output_dir):
 
@@ -47,8 +48,13 @@ def plot_multi_dataset_model(datasets, solutions, model_name, output_dir):
         dataset_key = dataset.path
         dataset_name = Path(dataset.path).stem
 
-        t_exp = dataset.t
-        P_exp = dataset.data["P"]
+        br_id = get_br_id(dataset) 
+        if br_id in ("BR07", "BR08"):
+            t_exp = dataset.t[:-1]
+            P_exp = dataset.data["P"][:-1]
+        else:
+            t_exp = dataset.t
+            P_exp = dataset.data["P"]
 
         sol = solutions[dataset_key]["sol"]
         t_model = sol.t
@@ -118,9 +124,6 @@ def plot_comparison(dataset, predictions, output_dir, MODEL_COLORS):
 
 
 def plot_multibr_states_parametric(datasets, all_predictions, output_dir):
-
-    import matplotlib.pyplot as plt
-    import os
 
     variables = ["X", "S", "V"]
 

@@ -132,21 +132,25 @@ def calc_mu_qp_rp(df, t_ind=None):
                 # qp[i] = (1/X[i]) * dPdt[i] 
                 qp[i] = (1/X[i]) * ( dPdt[i] + (dVdt[i] * P[i] / V[i]) ) 
                 rp[i] = dPdt[i] + (dVdt[i] * P[i] / V[i]) 
+        
+                qp = np.clip(qp, 1e-8, None)
+                rp = np.clip(rp, 1e-8, None)
     else: 
         # qp = (1/X) *  dPdt 
         qp    = (1/X) * ( dPdt + (dVdt * P / V) )
         rp    =  dPdt + (dVdt * P / V) 
+
+        qp = np.clip(qp, 0, None)
+        rp = np.clip(rp, 0, None)
     
     mu    = (1/X) * ( dXdt ) + (1/V) * ( dVdt )
-
-    # Clip negative values to zero
     mu = np.clip(mu, 0, None)
-    qp = np.clip(qp, 0, None)
-    rp = np.clip(rp, 0, None)
 
     df["mu"] = mu
     df["qP"] = qp
     df["rP"] = rp
+    df["qP_sqrt"] = np.sqrt(qp)
+    df["rP_sqrt"] = np.sqrt(rp)
 
     return df
 
