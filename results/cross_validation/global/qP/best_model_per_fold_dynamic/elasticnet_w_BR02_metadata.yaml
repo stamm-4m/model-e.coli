@@ -1,0 +1,7 @@
+model: elasticnet_w
+test_group: BR02
+features:
+- T
+- V_calc
+- Xlag1_calc
+score: -171.0947310453969

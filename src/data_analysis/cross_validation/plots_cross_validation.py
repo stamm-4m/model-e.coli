@@ -85,12 +85,19 @@ def plot_heatmap_models_runs(cv_results, metric, out_dir=None):
 
     data = []
 
-    runs = None
-
     for model_name, res in cv_results.items():
 
         row = []
-        runs = [f["test_groups"][0] for f in res["folds"]]
+        runs = []
+        # runs = [f["test_groups"][0] for f in res["folds"]]
+        for f in res["folds"]:
+            tg = f.get("test_groups")
+            if isinstance(tg, str):
+                runs.append(tg)            
+            elif isinstance(tg, (list, tuple)) and len(tg) > 0:
+                runs.append(tg[0])
+            else:
+                runs.append("unknown")
 
         for fold in res["folds"]:
             row.append(fold["metrics"][metric])
@@ -162,8 +169,15 @@ def plot_metric_boxplot(cv_results, metric, out_dir=None):
     rows = []
     for model_name, data in cv_results.items():
         for fold in data["folds"]:
+
+            tg = fold["test_groups"]
+            if isinstance(tg, str):
+                dataset = tg
+            else:
+                dataset = "_".join(map(str, tg))
+
             rows.append({"model": model_name,"value": fold["metrics"][metric],
-                "dataset": ",".join(map(str, fold["test_groups"]))})
+                "dataset": dataset }) # ",".join(map(str, fold["test_groups"]))})
 
     df = pd.DataFrame(rows)
 
@@ -178,8 +192,8 @@ def plot_metric_boxplot(cv_results, metric, out_dir=None):
         print("\nBAD DATASETS (frequent outliers):")
         for dataset, count in bad_datasets.head(10).items():
             print(f"  - {dataset}: {count} times")
-    else:
-        print("\nNo significant outliers detected")
+    # else:
+    #     print("\nNo significant outliers detected")
 
 
     # ------------------------- Stability ranking -------------------------

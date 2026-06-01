@@ -94,7 +94,7 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
 
     for dataset, simulator, y0 in zip(datasets, simulators, y0s):
 
-        br_id = get_br_id(dataset) 
+        # br_id = get_br_id(dataset) 
         # if br_id in ("BR07", "BR08"):
         #     t_span = (dataset.t[0], dataset.t[-2])
         #     t_eval = dataset.t[:-1]

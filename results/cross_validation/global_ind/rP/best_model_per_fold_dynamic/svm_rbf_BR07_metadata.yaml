@@ -1,7 +1,0 @@
-model: svm_rbf
-test_group: BR07
-features:
-- P
-- T
-- Plag1
-score: -85.91083578014168

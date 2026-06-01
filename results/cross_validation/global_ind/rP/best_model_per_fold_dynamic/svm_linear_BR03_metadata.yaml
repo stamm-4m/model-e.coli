@@ -1,6 +1,0 @@
-model: svm_linear
-test_group: BR03
-features:
-- P
-- Plag1
-score: -24.988219094491935

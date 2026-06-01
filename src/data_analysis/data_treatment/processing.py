@@ -29,8 +29,8 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
         df = pd.DataFrame(datasets[br_id])
 
-        if br_id in ["BR07", "BR08"]:
-            df = df.iloc[:-1]
+        # if br_id in ["BR07", "BR08"]:
+        #     df = df.iloc[:-1]
 
         # Indicates the dataset name
         df["Run_ID"] = br_id
@@ -45,9 +45,9 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
         # mu and qp calculation
         if t_ind_exp == True:
-            df = calc_mu_qp_rp(df, time_ind)
+            df = calc_mu_qp_rp(df, time_ind, br_id)
         else:
-            df = calc_mu_qp_rp(df, t_ind=None)
+            df = calc_mu_qp_rp(df, t_ind=None, br_id=br_id)
         # df = df.sort_values("time").reset_index(drop=True)
 
         df_batch = df[(df["time"] >= 0) & (df["time"] < time_sb)].copy()
@@ -105,7 +105,7 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
 # -------------------------- mu, qp & rp function ---------------------------------------
 
-def calc_mu_qp_rp(df, t_ind=None):
+def calc_mu_qp_rp(df, t_ind=None, br_id=None):
 
     df = df.sort_values("time").copy()
 
@@ -132,9 +132,16 @@ def calc_mu_qp_rp(df, t_ind=None):
                 # qp[i] = (1/X[i]) * dPdt[i] 
                 qp[i] = (1/X[i]) * ( dPdt[i] + (dVdt[i] * P[i] / V[i]) ) 
                 rp[i] = dPdt[i] + (dVdt[i] * P[i] / V[i]) 
+
+                # if br_id == "BR09":
+                #     low_qp = 0
+                #     low_rp = 0
+                # else:
+                low_qp = 0 # 1e-6
+                low_rp = 0 # 1e-5
         
-                qp = np.clip(qp, 1e-8, None)
-                rp = np.clip(rp, 1e-8, None)
+                qp = np.clip(qp, low_qp, None)
+                rp = np.clip(rp, low_rp, None)
     else: 
         # qp = (1/X) *  dPdt 
         qp    = (1/X) * ( dPdt + (dVdt * P / V) )
@@ -149,8 +156,8 @@ def calc_mu_qp_rp(df, t_ind=None):
     df["mu"] = mu
     df["qP"] = qp
     df["rP"] = rp
-    df["qP_sqrt"] = np.sqrt(qp)
-    df["rP_sqrt"] = np.sqrt(rp)
+    # df["qP_sqrt"] = np.sqrt(qp)
+    # df["rP_sqrt"] = np.sqrt(rp)
 
     return df
 

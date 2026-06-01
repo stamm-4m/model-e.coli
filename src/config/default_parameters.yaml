@@ -36,7 +36,7 @@ bioreactor:
       value: 4.45 # 5.6
       units: h
     t_ind:
-      value: 9.9 # 9.933 # 9.1
+      value: 9.1 # 9.933 # 9.1
       units: h
   BR05:
     Sf:
@@ -286,7 +286,7 @@ simulation:
   # n_points: 
   #   400
   method_ode: 
-    type : BDF # BDF #  Radau
+    type : Radau # BDF #  Radau
   rtol_ode: 
     value: 1.0e-7 # 1.0e-6
   max_step:

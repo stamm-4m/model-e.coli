@@ -1,6 +1,0 @@
-model: Ridge_w
-test_group: BR03
-features:
-- P
-- Plag1
-score: -66.64055561069111

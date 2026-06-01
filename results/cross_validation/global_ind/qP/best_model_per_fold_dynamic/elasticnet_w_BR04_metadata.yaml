@@ -1,7 +1,0 @@
-model: elasticnet_w
-test_group: BR04
-features:
-- P
-- mu
-- Plag1
-score: -88.28347379936213

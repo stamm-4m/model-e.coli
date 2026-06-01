@@ -106,7 +106,7 @@ class Kinetic_Models:
 
         x = self._build_input(features, br_id)
         qp = self.models[br_id].predict(x)
-        out = np.maximum(1e-8, qp[0])
+        out = np.maximum(1e-6, qp[0]) # 0 1e-6
 
         return      out      
                                    
@@ -119,7 +119,7 @@ class Kinetic_Models:
 
         x = self._build_input(features, br_id)
         rp = self.models[br_id].predict(x)
-        out = np.maximum(1e-8, rp[0])
+        out = np.maximum(1e-5, rp[0]) # 0 1e-5
 
         return     out
                                       

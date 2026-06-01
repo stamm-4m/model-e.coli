@@ -1,0 +1,6 @@
+model: rf_w
+test_group: BR05
+features:
+- T
+- mu_calc
+score: -36.90347980756674

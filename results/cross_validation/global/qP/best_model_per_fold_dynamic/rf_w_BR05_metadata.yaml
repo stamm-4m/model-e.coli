@@ -1,0 +1,9 @@
+model: rf_w
+test_group: BR05
+features:
+- T
+- V_calc
+- mu_calc
+- dXdt_calc
+- Xlag1_calc
+score: -311.81802238911087

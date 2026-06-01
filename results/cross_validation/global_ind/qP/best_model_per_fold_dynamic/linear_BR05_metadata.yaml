@@ -1,0 +1,5 @@
+model: linear
+test_group: BR05
+features:
+- Xlag1_calc
+score: -82.19161142244485

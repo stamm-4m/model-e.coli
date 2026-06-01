@@ -6,6 +6,7 @@ from src.utils.io import load_yaml
 from src.core.reactor.kinetics import Kinetic_Models
 from src.modelling.experiment_factory import build_experiments, run_model_with_parameters
 from src.modelling.modelling_plots import plot_comparison, plot_multibr_states_parametric, plot_multi_dataset_model #, plot_single_model 
+from src.data_analysis.cross_validation.plots_cross_validation import plot_all_metrics
 
 # Gloabal parameters
 output_dir = "results/modelling"
@@ -19,9 +20,9 @@ all_dataset_results = []
 all_predictions = {}
 
 model_configs = {
-    "parametric": None,
-    # "global_qP": "results/cross_validation/global/qP/best_model_per_fold_dynamic",
-    # "global_rP": "results/cross_validation/global/rP/best_model_per_fold_dynamic",
+    # "parametric": None,
+    "global_qP": "results/cross_validation/global/qP/best_model_per_fold_dynamic",
+    "global_rP": "results/cross_validation/global/rP/best_model_per_fold_dynamic",
     "global_ind_qP": "results/cross_validation/global_ind/qP/best_model_per_fold_dynamic",
     "global_ind_rP": "results/cross_validation/global_ind/rP/best_model_per_fold_dynamic",
     "induction_qP": "results/cross_validation/induction/qP/best_model_per_fold_dynamic",
@@ -30,13 +31,17 @@ model_configs = {
 
 MODEL_COLORS = {
         "parametric": "black",
-        # "global_qP": "tab:blue",
-        # "global_rP": "tab:orange",
+        "global_qP": "tab:blue",
+        "global_rP": "tab:orange",
         "global_ind_qP": "tab:green",
         "global_ind_rP": "tab:red",
         "induction_qP": "tab:purple",
         "induction_rP": "tab:brown",
     }
+
+metrics_name = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE", "AIC", "BIC"]
+plots = ("boxplot", "heatmap") # "by_run" "ranking"
+data_plots = {}
 
 for model_name, model_path in model_configs.items():
     print(f"\n===== Running model: {model_name} =====")
@@ -96,19 +101,31 @@ for model_name, model_path in model_configs.items():
     all_global_results.append(global_row)
 
     # Metrics per dataset
+    fold_results = []
     for dataset_path, data in per_dataset_metrics.items():
 
-        dataset_name = dataset_path.split("/")[-1]  # BRXX.xls
-        # dataset_name = os.path.basename(dataset.path).replace(".xls","")
+        dataset_name = Path(dataset_path).name
+        dataset_name = dataset_name.replace(".xls","")
+
         if "P" in data["regression"]:
             metrics = data["regression"]["P"]
             row = { "model": model_name,
-                    "dataset": dataset_name,
-                    "variable": "P" }
+                    "dataset": dataset_name}
             row.update(metrics)
             all_dataset_results.append(row)
 
+            fold_results.append({
+                    "test_groups": dataset_name,
+                    "metrics": data["regression"]["P"]
+                })
+        
+    data_plots[model_name] = {
+        "folds": fold_results,
+        "summary": None # aggregate_cv_results(fold_results)
+    }
+
 print("Generating comparison plots...")
+output_dir = Path(output_dir)
 output = output_dir / "comparison" # type: ignore
 output = Path(output) 
 output.mkdir(parents=True, exist_ok=True)
@@ -118,6 +135,7 @@ for dataset in datasets:
     plot_comparison(dataset,all_predictions[dataset_key],output,MODEL_COLORS)
 
 plot_multibr_states_parametric(datasets, all_predictions, output_dir)
+plot_all_metrics(data_plots, metrics_name, output_dir / "metrics", plots)
 
 df_global = pd.DataFrame(all_global_results)
 df_dataset = pd.DataFrame(all_dataset_results)
