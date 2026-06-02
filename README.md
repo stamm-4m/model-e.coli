@@ -18,13 +18,19 @@ Corrales, D. C., Villela, S. M. A., Bouhaouala-Zahar, B., Cescut, J., Daboussi, 
 ## Repository Structure
 ```
 dynamic_model_coli_Nb_Antivenom_01/
-│
-├── data/                                       # Experimental data
-│   ├── processed/         
-│   └── raw/   
+├── data/                                       
+│   ├── processed/
+│   │   ├── BR_processed_ind.xlsx
+│   │   └── BR_processed.xlsx       
+│   └── raw/
+│       ├── unused/
+│       │   └── BR06.xlsx    
+│       ├── BR02.xlsx
+│       ├── (...).xlsx
+│       └── BR09.xlsx       
 ├── execution/                
-│   ├── estimate_parameters.py                
-│   └── model_profile.py               
+│   ├── data_analysis.py                
+│   └── modelling.py               
 ├── fedbatch/                   
 │   ├── config/
 │   ├── core/
@@ -43,24 +49,131 @@ dynamic_model_coli_Nb_Antivenom_01/
 │   │   ├── temperature_profile.py 
 │   │   └── simulator.py       
 │   └── utils/
-│   │   ├── excel_io.py 
-│   │   ├── execute_model_io.py
-│   │   ├── experiment_factory.py 
-│   │   ├── io.py 
-│   │   ├── metric_io.py 
-│   │   ├── io.py 
-│   │   ├── vizualization_correlation_io.py 
-│   │   ├── vizualization_residuals_io.py 
-│   │   └── vizualization_fitting_io.py      
-├── results/                                    # Simulation outputs (plots, tables)
-│   ├── estimation/         
-│   └── plots/
-│   │   ├── processed/         
-│   │   └── time_profiles/
+│       ├── excel_io.py 
+│       ├── execute_model_io.py
+│       ├── experiment_factory.py 
+│       ├── io.py 
+│       ├── metric_io.py 
+│       ├── io.py 
+│       ├── vizualization_correlation_io.py 
+│       ├── vizualization_residuals_io.py 
+│       └── vizualization_fitting_io.py      
+├── results/                                    
+│   ├── data_analysis/
+│   │   ├── outliers_and_smoothing/
+│   │   │   ├── BR02/
+│   │   │   │   ├── T_outlier_diagnosis.png
+│   │   │   │   └── T_replacement_smoothing.png
+│   │   │   ├── (...)/
+│   │   │   ├── BR09/
+│   │   │   └── summary.yaml
+│   │   ├── derivatives/
+│   │   │   ├── treat/
+│   │   │   │   ├── BR02/
+│   │   │   │   │   ├── all_derivatives.png
+│   │   │   │   │   └── derivatives_summary.yaml
+│   │   │   │   ├── (...)/
+│   │   │   │   └── BR09/
+│   │   │   └── smooth/ (empty)
+│   │   └── ead/
+│   │       ├── induction/
+│   │       │   ├── BP_BR02.png (Boxplot)
+│   │       │   ├── (...).png
+│   │       │   ├── BP_BR09.png
+│   │       │   ├── BP_global.png
+│   │       │   ├── HM_BR02.png (Heatmap)
+│   │       │   ├── (...).png
+│   │       │   ├── HM_BR09.png
+│   │       │   ├── HM_global.png
+│   │       │   ├── PCA_BR02.png
+│   │       │   ├── (...).png
+│   │       │   ├── PCA_BR09.png
+│   │       │   ├── PCA_global.png
+│   │       │   ├── Temperature_series_BR02.png (for qP and rP)
+│   │       │   ├── (...).png
+│   │       │   ├── Temperature_series_BR09.png
+│   │       │   ├── Temperature_series_global.png
+│   │       │   ├── time_series_BR02.png (for qP and rP)
+│   │       │   ├── (...).png
+│   │       │   ├── time_BR09.png
+│   │       │   └── time_global.png
+│   │       ├── global_ind/
+│   │       └── global/
+│   ├── feature_selection/
+│   │   ├── induction/
+│   │   │   ├── filter/ (filter methdos)
+│   │   │   │   ├── qp/
+│   │   │   │   │   ├── CMI_comparison.png
+│   │   │   │   │   ├── redundancy.png
+│   │   │   │   │   ├── feature_selection_heatmap.png
+│   │   │   │   │   ├── feature_selection_bars.png
+│   │   │   │   │   └── feature.yaml
+│   │   │   │   └── rp/
+│   │   │   └── wnp/ (wrapper and permutation selection methods)
+│   │   │       ├── qp/
+│   │   │       │   ├── metrics/ (RMSE R2 MSE MAPE MAE AIC BIC SCORE)
+│   │   │       │   │   ├── RMSE_wrapper_comparison.png
+│   │   │       │   │   ├── RMSE_permutation_comparison.png
+│   │   │       │   │   ├── (...)_wrapper_comparison.png 
+│   │   │       │   │   └── (...)_permutation_comparison.png 
+│   │   │       │   ├── feature_heatmap.png
+│   │   │       │   ├── metrics_heatmap.png
+│   │   │       │   ├── metrics_global.xlsx
+│   │   │       │   └── wrapper_summary.yaml
+│   │   │       └── rp/
+│   │   ├── global_ind/
+│   │   └── global/ 
+│   ├── cross_validation/
+│   │   ├── induction/
+│   │   │   ├── qp/
+│   │   │   │   ├── best_model_per_fold_dynamic/ 
+│   │   │   │   │   ├── svm_linear_BR02_metadata.yaml
+│   │   │   │   │   ├── svm_linear_BR02_params.yaml
+│   │   │   │   │   ├── svm_linear_BR02.pkl
+│   │   │   │   │   ├── (...)_metadata.yaml
+│   │   │   │   │   ├── (...)_params.yaml
+│   │   │   │   │   └── (...).pkl
+│   │   │   │   ├── metrics/ (RMSE R2 MSE MAPE MAE AIC BIC SCORE)
+│   │   │   │   │   ├── RMSE_boxplot_advanced.png
+│   │   │   │   │   ├── RMSE_heatmap.png
+│   │   │   │   │   ├── (...)_boxplot_advanced.png
+│   │   │   │   │   └── (...)_heatmap.png
+│   │   │   │   ├── predictions/ (linear elasticnet_w LASSO_w Ridge_w svm_linear svm_polu svm_rbf rf_w knn)
+│   │   │   │   │   ├── linear_predictions.png
+│   │   │   │   │   ├── linear_timeseries.png
+│   │   │   │   │   ├── (...)_predictions.png
+│   │   │   │   │   └── (...)_timeseries.png
+│   │   │   │   ├── residuals/ (linear elasticnet_w LASSO_w Ridge_w svm_linear svm_polu svm_rbf rf_w knn)
+│   │   │   │   │   ├── linear_residuals.png
+│   │   │   │   │   └── (...)_residuals.png
+│   │   │   │   └── cv_results_full.yaml
+│   │   │   ├── rp/
+│   │   │   └── metrics_summary.xlsx
+│   │   ├── global_ind/
+│   │   └── global/      
+│   └── modelling/
+│       ├── parametric/
+│       │   └── parametric_all_datasets.png
+│       ├── induction/
+│       │   ├── induction_qp_all_datasets.png
+│       │   └── induction_rp_all_datasets.png
+│       ├── global_ind/
+│       ├── global/
+│       ├── comparison/
+│       │   ├── BR02_comparison_P.png
+│       │   ├── (...).png
+│       │   └── BR08_comparison_P.png
+│       ├── metrics/ (RMSE R2 MSE MAPE MAE AIC BIC SCORE)
+│       │   ├── RMSE_boxplot_advanced.png
+│       │   ├── RMSE_heatmap.png
+│       │   ├── (...)_boxplot_advanced.png 
+│       │   └── (...)_heatmap.png 
+│       ├── metrics_summary_all_mdoels.xlsx         
+│       └── multibr_XSV_parametric.png
 ├── LICENSE               
-├── README.md                                   # Project documentation
-├── requirements.txt                            # Python dependencies
-└── .gitignore                                  # Files ignored by Git
+├── README.md                                   
+├── requirements.txt                            
+└── .gitignore                                  
 ```
 ---
 ## Model Description
