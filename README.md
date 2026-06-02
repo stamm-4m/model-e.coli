@@ -17,7 +17,7 @@ Corrales, D. C., Villela, S. M. A., Bouhaouala-Zahar, B., Cescut, J., Daboussi, 
 
 ## Repository Structure
 ```
-dynamic_model_coli_Nb_Antivenom_01/
+model-e.coli/
 ├── data/                                       
 │   ├── processed/     
 │   └── raw/
