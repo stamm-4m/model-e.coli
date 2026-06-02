@@ -20,101 +20,26 @@ Corrales, D. C., Villela, S. M. A., Bouhaouala-Zahar, B., Cescut, J., Daboussi, 
 model-e.coli/
 ├── data/                                       
 │   ├── processed/     
-│   └── raw/
-│       ├── unused/
-│       │   └── BR06.xlsx    
-│       ├── BR02.xlsx
-│       ├── (...).xlsx
-│       └── BR09.xlsx       
+│   └── raw/  
 ├── execution/                
 │   ├── data_analysis.py                
 │   └── modelling.py               
 ├── src/                   
 │   ├── config/
 │   ├── core/
-│   │   ├── auxiliar/ 
-│   │   │   ├── feed_factory.py 
-│   │   │   ├── feed_profile.py
-│   │   │   ├── induction_func.py 
-│   │   │   ├── initial_conditions.py 
-│   │   │   ├── biomass_profile.py 
-│   │   │   ├── volume_profile.py
-│   │   │   ├── temperature_profile.py
-│   │   │   └── simulator.py     
+│   │   ├── auxiliar/   
 │   │   └── reactor/ 
-│   │       ├── balances.py 
-│   │       ├── kinetics.py 
-│   │       └── fedbatch_model.py 
 │   ├── data_analysis/
 │   │   ├── data_treatment/
-│   │   │   ├── data.py 
-│   │   │   ├── derivative.py
-│   │   │   ├── ead.py 
-│   │   │   ├── outliers.py 
-│   │   │   ├── processing.py 
-│   │   │   └── plots_outlier_derivative.py    
-│   │   ├── feature_selection/
-│   │   │   ├── filter.py 
-│   │   │   ├── wrapper.py
-│   │   │   ├── permutation.py
-│   │   │   ├── wrapper_permutation.py  
-│   │   │   ├── plots_filter.py
-│   │   │   └── plots_wrapper_permutation.py    
-│   │   └── cross_validation/
-│   │       ├── cross_val.py 
-│   │       └── plots_cross_validation.py    
-│   ├── modelling/
-│   │   ├── experiment_factory.py 
-│   │   └── modelling_plots.py       
+│   │   ├── feature_selection/  
+│   │   └── cross_validation/  
+│   ├── modelling/     
 │   └── utils/
-│       ├── metric_io.py 
-│       └── io.py  
 ├── results/                                    
 │   ├── data_analysis/
-│   │   ├── outliers_and_smoothing/
-│   │   │   ├── BR02/
-│   │   │   ├── (...)/
-│   │   │   ├── BR09/
-│   │   │   └── summary.yaml
-│   │   ├── derivatives/
-│   │   │   ├── treat/
-│   │   │   │   ├── BR02/
-│   │   │   │   ├── (...)/
-│   │   │   │   └── BR09/
-│   │   │   └── smooth/ (empty)
-│   │   └── ead/
-│   │       ├── induction/
-│   │       ├── global_ind/
-│   │       └── global/
 │   ├── feature_selection/
-│   │   ├── induction/
-│   │   │   ├── filter/ (filter methdos)
-│   │   │   │   ├── qp/
-│   │   │   │   └── rp/
-│   │   │   └── wnp/ (wrapper and permutation selection methods)
-│   │   ├── global_ind/
-│   │   └── global/ 
-│   ├── cross_validation/
-│   │   ├── induction/
-│   │   │   ├── qp/
-│   │   │   │   ├── best_model_per_fold_dynamic/ 
-│   │   │   │   ├── metrics/ 
-│   │   │   │   ├── predictions/ 
-│   │   │   │   ├── residuals/ 
-│   │   │   │   └── cv_results_full.yaml
-│   │   │   ├── rp/
-│   │   │   └── metrics_summary.xlsx
-│   │   ├── global_ind/
-│   │   └── global/      
+│   ├── cross_validation/  
 │   └── modelling/
-│       ├── parametric/
-│       ├── induction/
-│       ├── global_ind/
-│       ├── global/
-│       ├── comparison/
-│       ├── metrics/ 
-│       ├── metrics_summary_all_mdoels.xlsx         
-│       └── multibr_XSV_parametric.png
 ├── LICENSE               
 ├── README.md                                   
 ├── requirements.txt
