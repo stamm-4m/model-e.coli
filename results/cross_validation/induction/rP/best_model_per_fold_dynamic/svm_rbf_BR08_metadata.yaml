@@ -1,6 +1,0 @@
-model: svm_rbf
-test_group: BR08
-features:
-- V_calc
-- Xlag1_calc
-score: -99.49325722391508

@@ -1,4 +1,4 @@
-model__C: 1
+model__C: 10
 model__degree: 3
 model__epsilon: 0.1
 model__gamma: scale

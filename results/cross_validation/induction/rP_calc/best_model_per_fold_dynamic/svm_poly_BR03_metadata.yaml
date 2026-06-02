@@ -1,0 +1,7 @@
+model: svm_poly
+test_group: BR03
+features:
+- T
+- FS_calc
+- V_calc
+score: -7.360491391521673

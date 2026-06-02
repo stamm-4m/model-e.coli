@@ -1,0 +1,158 @@
+target: rP_calc
+best_model: svm_poly
+best_info:
+  n_features: 4
+  features:
+  - X_calc
+  - V_calc
+  - dVdt_calc
+  - Xlag1_calc
+  metrics:
+    R2: 0.5024066732742092
+    MAE: 0.08463034088669874
+    MSE: 0.022071801596059554
+    RMSE: 0.14856581570489072
+    MAPE: 397.3001448997037
+    SCORE: 0.16672825913497896
+    AIC: -197.92653927670673
+    BIC: -189.97060309044963
+models:
+  linear:
+    n_features: 1
+    features:
+    - FS_calc
+    metrics:
+      R2: -0.15870300235975066
+      MAE: 0.09793219675146768
+      MSE: 0.05139671575808008
+      RMSE: 0.22670843777433622
+      MAPE: 691.6259078043272
+      SCORE: 0.7681772034771627
+      AIC: -158.2817742332603
+      BIC: -156.29279018669604
+  LASSO_w:
+    n_features: 5
+    features:
+    - X_calc
+    - V_calc
+    - mu_calc
+    - dXdt_calc
+    - dVdt_calc
+    metrics:
+      R2: 0.21666905395069358
+      MAE: 0.08749167395818683
+      MSE: 0.0347462964164342
+      RMSE: 0.18640358477356117
+      MAPE: 1048.5546916930068
+      SCORE: 0.2618216913062959
+      AIC: -171.42284369215741
+      BIC: -161.47792345933604
+  Ridge_w:
+    n_features: 5
+    features:
+    - X_calc
+    - V_calc
+    - mu_calc
+    - dXdt_calc
+    - dVdt_calc
+    metrics:
+      R2: 0.22129618732221945
+      MAE: 0.08722389234352643
+      MSE: 0.034541050155583314
+      RMSE: 0.18585222666296822
+      MAPE: 1038.78173116383
+      SCORE: 0.26028987891224253
+      AIC: -171.7427673449679
+      BIC: -161.7978471121465
+  elasticnet_w:
+    n_features: 5
+    features:
+    - V_calc
+    - mu_calc
+    - dXdt_calc
+    - dVdt_calc
+    - Xlag1_calc
+    metrics:
+      R2: 0.20879702555851887
+      MAE: 0.09124007137070149
+      MSE: 0.03509547684048434
+      RMSE: 0.18733786814332104
+      MAPE: 1151.2951191652523
+      SCORE: 0.2644277261207834
+      AIC: -170.8828831749095
+      BIC: -160.93796294208812
+  rf_w:
+    n_features: 1
+    features:
+    - FS_calc
+    metrics:
+      R2: -0.11223158145152001
+      MAE: 0.09620445572736631
+      MSE: 0.04933537786007672
+      RMSE: 0.2221156857587431
+      MAPE: 791.9057773292428
+      SCORE: 0.7374084778750195
+      AIC: -160.49214798830135
+      BIC: -158.50316394173709
+  svm_linear:
+    n_features: 3
+    features:
+    - X_calc
+    - V_calc
+    - Xlag1_calc
+    metrics:
+      R2: 0.24377475271781857
+      MAE: 0.10285358404080407
+      MSE: 0.03354396597272183
+      RMSE: 0.18315011868061082
+      MAPE: 1517.4405543450987
+      SCORE: 0.25184835036555975
+      AIC: -177.32450731015996
+      BIC: -171.35755517046712
+  svm_rbf:
+    n_features: 3
+    features:
+    - X_calc
+    - V_calc
+    - Xlag1_calc
+    metrics:
+      R2: 0.46232096739199724
+      MAE: 0.08919638477841117
+      MSE: 0.02384988763449581
+      RMSE: 0.1544340883176244
+      MAPE: 459.5255607637866
+      SCORE: 0.17949863112654793
+      AIC: -195.74269174204213
+      BIC: -189.7757396023493
+  svm_poly:
+    n_features: 4
+    features:
+    - X_calc
+    - V_calc
+    - dVdt_calc
+    - Xlag1_calc
+    metrics:
+      R2: 0.5024066732742092
+      MAE: 0.08463034088669874
+      MSE: 0.022071801596059554
+      RMSE: 0.14856581570489072
+      MAPE: 397.3001448997037
+      SCORE: 0.16672825913497896
+      AIC: -197.92653927670673
+      BIC: -189.97060309044963
+  knn:
+    n_features: 4
+    features:
+    - T
+    - X_calc
+    - V_calc
+    - Xlag1_calc
+    metrics:
+      R2: 0.40099514742700215
+      MAE: 0.08341278472084158
+      MSE: 0.026570123735509585
+      RMSE: 0.16300344700499309
+      MAPE: 352.62372787241605
+      SCORE: 0.2003005423867561
+      AIC: -187.91026456194052
+      BIC: -179.95432837568342

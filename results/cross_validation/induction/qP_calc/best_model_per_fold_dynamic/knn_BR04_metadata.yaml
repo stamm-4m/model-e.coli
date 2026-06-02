@@ -1,0 +1,6 @@
+model: knn
+test_group: BR04
+features:
+- FS_calc
+- V_calc
+score: -76.07645269360438

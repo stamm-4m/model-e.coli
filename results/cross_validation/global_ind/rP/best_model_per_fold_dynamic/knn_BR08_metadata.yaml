@@ -1,8 +1,0 @@
-model: knn
-test_group: BR08
-features:
-- T
-- X_calc
-- V_calc
-- Xlag1_calc
-score: -90.58374298887142

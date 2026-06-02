@@ -21,6 +21,8 @@ def WnE_feature_selection(df, X_vars, y_var, model_names_w, model_names_p, out_p
 
     print(f"Starting RFE for {y_var} by wrapper models ... \n")
     out_dir = Path(out_path)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    
     all_results = {}
     summary = {}
     metrics = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE", "AIC", "BIC"]

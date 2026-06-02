@@ -1,5 +1,0 @@
-model: svm_linear
-test_group: BR02
-features:
-- Xlag1_calc
-score: -86.51225133887078

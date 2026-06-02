@@ -1,7 +1,0 @@
-model: svm_poly
-test_group: BR02
-features:
-- I
-- V_calc
-- Xlag1_calc
-score: -61.11101309164053

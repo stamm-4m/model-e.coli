@@ -2,4 +2,4 @@ model: linear
 test_group: BR04
 features:
 - Xlag1_calc
-score: -81.6529121062133
+score: -81.48783669004986

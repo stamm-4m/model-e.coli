@@ -5,6 +5,7 @@ import pandas as pd
 from src.utils.io import load_yaml, get_time_ranges, timer, get_br_id
 from src.utils.io import load_yaml
 from src.core.reactor.kinetics import Kinetic_Models
+from src.core.auxiliar.feed_factory import create_feed
 from src.modelling.experiment_factory import build_experiments, run_model_with_parameters
 
 # ------------------- Computes qP and mu and unifies dataframes --------------
@@ -17,13 +18,13 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
     # datasets = [ExperimentDataset(f) for f in dataset_files]
     
     df_global = []
-    df_batch_all = []
-    df_semibatch_all = []
+    # df_batch_all = []
+    # df_semibatch_all = []
     df_induction_all = []
 
     df_calc = calculate_features(BR09=True)
 
-    var_calc = ["X", "V", "mu", "dXdt", "dVdt"]
+    var_calc = ["X", "V", "mu", "dXdt", "dVdt","FS"]
 
     for br_id in datasets:
 
@@ -43,14 +44,7 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
         # qP and mu calculation
         time_sb, time_ind = get_time_ranges(yaml_params, br_id)
 
-        # mu and qp calculation
-        if t_ind_exp == True:
-            df = calc_mu_qp_rp(df, time_ind, br_id)
-        else:
-            df = calc_mu_qp_rp(df, t_ind=None, br_id=br_id)
-        # df = df.sort_values("time").reset_index(drop=True)
-
-        df_batch = df[(df["time"] >= 0) & (df["time"] < time_sb)].copy()
+        # df_batch = df[(df["time"] >= 0) & (df["time"] < time_sb)].copy()
         df_semibatch = df[(df["time"] >= time_sb) & (df["time"] < time_ind)].copy()
         df_induction = df[df["time"] >= time_ind].copy()
 
@@ -88,20 +82,28 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
         last_idx_sb = df[df["time"] < time_ind].index[-1]
         df_induction.loc[df_induction.index[0], "Xlag1_calc"] = df["X_calc"].loc[last_idx_sb]
 
+        # mu and qp calculation
+        if t_ind_exp == True:
+            df = calc_mu_qp_rp(df, time_ind, br_id)
+            df_induction = calc_mu_qp_rp(df_induction, time_ind, br_id)
+        else:
+            df = calc_mu_qp_rp(df, t_ind=None, br_id=br_id)
+            df_induction = calc_mu_qp_rp(df_induction, time_ind, br_id)
+        # df = df.sort_values("time").reset_index(drop=True)
 
         # Final df
         df_global.append(df)
-        df_batch_all.append(df_batch)
-        df_semibatch_all.append(df_semibatch)
+        # df_batch_all.append(df_batch)
+        # df_semibatch_all.append(df_semibatch)
         df_induction_all.append(df_induction)
 
     # final unification
     df_global_final = pd.concat(df_global, ignore_index=True)
-    df_batch_final = pd.concat(df_batch_all, ignore_index=True)
-    df_semibatch_final = pd.concat(df_semibatch_all, ignore_index=True)
+    # df_batch_final = pd.concat(df_batch_all, ignore_index=True)
+    # df_semibatch_final = pd.concat(df_semibatch_all, ignore_index=True)
     df_induction_final = pd.concat(df_induction_all, ignore_index=True)
 
-    return df_global_final, df_batch_final, df_semibatch_final, df_induction_final 
+    return df_global_final, df_induction_final 
 
 # -------------------------- mu, qp & rp function ---------------------------------------
 
@@ -115,12 +117,21 @@ def calc_mu_qp_rp(df, t_ind=None, br_id=None):
     qp = np.zeros(n)
     rp = np.zeros(n)
 
+    mu_calc = np.zeros(n)
+    qp_calc = np.zeros(n)
+    rp_calc = np.zeros(n)
+
     t = df["time"].values
     X = df["X"].values
     V = df["V"].values
+    X_calc = df["X_calc"].values
+    V_calc = df["V_calc"].values
     P = df["P"].values
+    
     dXdt = df["dXdt"].values
     dVdt = df["dVdt"].values
+    dXdt_calc = df["dXdt_calc"].values
+    dVdt_calc = df["dVdt_calc"].values
     dPdt = df["dPdt"].values
 
     if t_ind != None:
@@ -128,34 +139,51 @@ def calc_mu_qp_rp(df, t_ind=None, br_id=None):
             if t[i] < t_ind:
                 qp[i] = 0
                 rp[i] = 0
+                qp_calc[i] = 0
+                rp_calc[i] = 0
             else:
                 # qp[i] = (1/X[i]) * dPdt[i] 
                 qp[i] = (1/X[i]) * ( dPdt[i] + (dVdt[i] * P[i] / V[i]) ) 
                 rp[i] = dPdt[i] + (dVdt[i] * P[i] / V[i]) 
 
-                # if br_id == "BR09":
-                #     low_qp = 0
-                #     low_rp = 0
-                # else:
+                qp_calc[i] = (1/X_calc[i]) * ( dPdt[i] + (dVdt_calc[i] * P[i] / V_calc[i]) ) 
+                rp_calc[i] = dPdt[i] + (dVdt_calc[i] * P[i] / V_calc[i]) 
+
                 low_qp = 0 # 1e-6
                 low_rp = 0 # 1e-5
         
                 qp = np.clip(qp, low_qp, None)
                 rp = np.clip(rp, low_rp, None)
+
+                qp_calc = np.clip(qp_calc, low_qp, None)
+                rp_calc = np.clip(rp_calc, low_rp, None)
     else: 
         # qp = (1/X) *  dPdt 
         qp    = (1/X) * ( dPdt + (dVdt * P / V) )
         rp    =  dPdt + (dVdt * P / V) 
 
+        qp_calc    = (1/X_calc) * ( dPdt + (dVdt_calc * P / V_calc) )
+        rp_calc    =  dPdt + (dVdt_calc * P / V_calc) 
+
         qp = np.clip(qp, 0, None)
         rp = np.clip(rp, 0, None)
+
+        qp_calc = np.clip(qp_calc, 0, None)
+        rp_calc = np.clip(rp_calc, 0, None)
     
     mu    = (1/X) * ( dXdt ) + (1/V) * ( dVdt )
     mu = np.clip(mu, 0, None)
 
+    mu_calc    = (1/X_calc) * ( dXdt_calc ) + (1/V_calc) * ( dVdt_calc )
+    mu_calc = np.clip(mu_calc, 0, None)
+
     df["mu"] = mu
     df["qP"] = qp
     df["rP"] = rp
+
+    df["mu_calc"] = mu_calc
+    df["qP_calc"] = qp_calc
+    df["rP_calc"] = rp_calc
     # df["qP_sqrt"] = np.sqrt(qp)
     # df["rP_sqrt"] = np.sqrt(rp)
 
@@ -187,11 +215,17 @@ def calculate_features(BR09, in_dir = "src/config/default_parameters.yaml"):
 
     # Same code as mode_profile.py
     cfg = load_yaml(in_dir)
+
     kin = Kinetic_Models()
+
     datasets, simulators, y0s = build_experiments(cfg, kin, BR09)
+
     param_names = list(cfg["kinetics"].keys())
+
     full_params = { k: cfg["kinetics"][k]["value"] for k in param_names }
+
     theta = [ cfg["kinetics"][k]["value"] for k in param_names ]
+    
     _, _, _, solutions = run_model_with_parameters (
         datasets=datasets, simulators=simulators, y0s=y0s, kin=kin, theta=theta, param_names=param_names, full_params=full_params)
     
@@ -205,13 +239,20 @@ def calculate_features(BR09, in_dir = "src/config/default_parameters.yaml"):
         X, _, _, V = sol.y
         time = sol.t
 
+        feed_cfg = cfg["feeds"][br_id]
+        feed_S = create_feed(feed_cfg["feed_S"])
+        FS = np.zeros(len(time))
+        for i in range(0,len(time)):
+            FS[i], _ = feed_S.F(time[i])
+
         results[br_id] = {
             "time":time,
             "X": X,
             "V": V,
             "mu": sol_block["mu"],
             "dXdt": sol_block["dXdt"],
-            "dVdt": sol_block["dVdt"]
+            "dVdt": sol_block["dVdt"],
+            "FS": FS
         }
 
     return results

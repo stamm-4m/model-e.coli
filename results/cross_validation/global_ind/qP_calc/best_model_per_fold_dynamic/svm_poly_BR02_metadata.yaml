@@ -1,0 +1,8 @@
+model: svm_poly
+test_group: BR02
+features:
+- T
+- X_calc
+- V_calc
+- dXdt_calc
+score: -82.69482930979473

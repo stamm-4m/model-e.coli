@@ -4,6 +4,5 @@ features:
 - T
 - V_calc
 - mu_calc
-- dXdt_calc
 - Xlag1_calc
-score: -309.4164090707452
+score: -310.9574482955286
