@@ -109,16 +109,50 @@ def select_optimal_model_feature(results):
     return best, best_score
 
 # --------- Select best model ---------------
-def select_best_model(cv_results):
-    best_score = np.inf  
-    for model_name, info in cv_results.items():
-        # score = info["summary"]["SCORE"]["mean"]
-        score = info["summary"]["AIC"]["mean"]
-        if score < best_score:
-            best_score = score
-            best_model_name = model_name
 
-    return best_model_name, best_score
+
+def select_best_models(cv_results, top_n=3):
+
+    def ranking(item):
+        _, info = item
+
+        folds = info["folds"]
+
+        r2_values = [f["metrics"]["R2"] for f in folds if "R2" in f["metrics"]]
+        aic_values = [f["metrics"]["AIC"] for f in folds if "AIC" in f["metrics"]]
+
+        if not r2_values or not aic_values:
+            return (np.inf, np.inf, np.inf)
+
+        r2_values = np.array(r2_values)
+
+        r2_positive_count = np.sum(r2_values > 0)
+        aic_mean = np.mean(aic_values)
+
+        r2_penalty = np.sum(np.minimum(0, r2_values))
+
+        return (-r2_positive_count, aic_mean, -r2_penalty)
+
+    sorted_models = sorted(cv_results.items(), key=ranking)
+
+    top_models = []
+    for model_name, info in sorted_models[:top_n]:
+
+        folds = info["folds"]
+
+        r2_values = [f["metrics"]["R2"] for f in folds if "R2" in f["metrics"]]
+        aic_values = [f["metrics"]["AIC"] for f in folds if "AIC" in f["metrics"]]
+
+        r2_positive_count = np.sum(np.array(r2_values) > 0)
+        aic_mean = np.mean(aic_values)
+
+        top_models.append({
+            "model_name": model_name,
+            "r2_positive": r2_positive_count,
+            "aic": aic_mean
+        })
+
+    return top_models
 
 # ----Splitter -----
 def custom_group_split(groups, fixed_group=None):

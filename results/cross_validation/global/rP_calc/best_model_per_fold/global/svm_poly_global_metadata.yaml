@@ -1,0 +1,7 @@
+model: svm_poly
+test_group: global
+features:
+- P
+- I
+- Plag1
+- Xlag1_calc

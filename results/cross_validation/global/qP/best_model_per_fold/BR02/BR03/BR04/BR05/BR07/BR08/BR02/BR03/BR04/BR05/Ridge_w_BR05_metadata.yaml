@@ -1,0 +1,9 @@
+model: Ridge_w
+test_group: BR05
+features:
+- P
+- T
+- I
+- Plag1
+- X_calc
+- Xlag1_calc

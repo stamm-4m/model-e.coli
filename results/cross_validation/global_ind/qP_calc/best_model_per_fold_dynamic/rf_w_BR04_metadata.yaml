@@ -1,5 +1,0 @@
-model: rf_w
-test_group: BR04
-features:
-- FS_calc
-score: -75.10527191264333

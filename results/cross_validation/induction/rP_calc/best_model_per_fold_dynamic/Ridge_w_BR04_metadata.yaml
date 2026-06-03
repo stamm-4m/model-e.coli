@@ -1,7 +1,0 @@
-model: Ridge_w
-test_group: BR04
-features:
-- T
-- FS_calc
-- V_calc
-score: -36.57000459018125

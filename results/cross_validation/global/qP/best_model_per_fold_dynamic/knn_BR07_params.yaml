@@ -1,3 +1,0 @@
-model__n_neighbors: 10
-model__p: 1
-model__weights: uniform

@@ -1,5 +1,0 @@
-model: linear
-test_group: BR05
-features:
-- FS_calc
-score: -42.670944783626695

@@ -1,7 +1,0 @@
-model: svm_poly
-test_group: BR08
-features:
-- T
-- FS_calc
-- V_calc
-score: -107.22238164111731

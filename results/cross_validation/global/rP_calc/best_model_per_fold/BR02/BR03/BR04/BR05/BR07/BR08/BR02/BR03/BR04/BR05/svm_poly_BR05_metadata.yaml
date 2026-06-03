@@ -1,0 +1,7 @@
+model: svm_poly
+test_group: BR05
+features:
+- P
+- I
+- Plag1
+- Xlag1_calc

@@ -9,7 +9,7 @@ from sklearn.base import clone
 from src.utils.metrics_io import compute_metrics, save_metrics_tables_excel
 from src.utils.io import (load_yaml, to_python_type, save_yaml, 
                 custom_group_split, save_model, get_param_grid,
-                select_best_model, select_optimal_model_feature, models_dict, timer) #, get_param_grid_importance , make_positive_model
+                select_best_models, select_optimal_model_feature, models_dict, timer) #, get_param_grid_importance , make_positive_model
 from src.data_analysis.cross_validation.plots_cross_validation import plot_all_metrics, plot_predictions_by_model, plot_residuals_by_model
 
 # from sklearn.model_selection import GroupKFold
@@ -17,7 +17,7 @@ from src.data_analysis.cross_validation.plots_cross_validation import plot_all_m
 # from sklearn.model_selection import RandomizedSearchCV
 @timer
 # --------- Cross - Validation global function ---------------
-def cross_validation(df,y_var,in_dir,out_dir):
+def cross_validation(df,y_var,in_dir,out_dir,top_n=3):
 
     print(f"Starting cross validation ... \n")
 
@@ -61,10 +61,9 @@ def cross_validation(df,y_var,in_dir,out_dir):
     save_yaml(cv_results, target_dir / "cv_results_full.yaml")
 
     # Best model ("Cross-validated model deployment")
-    best_model_name, best_score = select_best_model(cv_results)
-    print(f"\nBest model: {best_model_name} ({best_score})")
-    # train_and_save_best_model_per_fold(df, models, best_model_name, y_var, out_dir)
-    train_and_save_best_model_per_fold_dynamic(df, models, y_var, out_dir)
+    best_models = select_best_models(cv_results, top_n=top_n)
+    train_and_save_best_model_per_fold(df, models, best_models, y_var, out_dir)
+    # train_and_save_best_model_per_fold_dynamic(df, models, y_var, out_dir)
 
     # Plots
     metrics = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE", "AIC", "BIC"]
@@ -197,46 +196,80 @@ def aggregate_cv_results(fold_results):
     return summary
 
 
-def train_and_save_best_model_per_fold(df, models, best_model_name, y_var, out_dir):
+def train_and_save_best_model_per_fold(df, models, best_models, y_var, out_dir):
 
-    model_info = models[best_model_name]
-    base_model = model_info["model"]
-    features = model_info["features"]
+    model_dir = Path(out_dir) / y_var / "best_model_per_fold"
+    model_dir_global = Path(out_dir) / y_var / "best_model_per_fold" / "global"
 
-    X_all = df[features].values
-    y_all = df[y_var].values
+    if model_dir.exists():
+        shutil.rmtree(model_dir)
+
+    model_dir.mkdir(parents=True, exist_ok=True)
+    model_dir_global.mkdir(parents=True, exist_ok=True)
+
     groups = df["Run_ID"].values
 
-    param_grid = get_param_grid(best_model_name)
+    for model_entry in best_models:
 
-    model_dir = Path(out_dir) / y_var / "best_model_folds"
-    model_dir.mkdir(parents=True, exist_ok=True)
+        best_model_name = model_entry["model_name"]
 
-    for fold, (train_idx, test_idx) in enumerate(custom_group_split(groups, fixed_group="BR09")):
+        model_info = models[best_model_name]
+        base_model = model_info["model"]
+        features = model_info["features"]
 
-        X_train = X_all[train_idx]
-        y_train = y_all[train_idx]
-        test_group = np.unique(groups[test_idx])[0]
-        model = clone(base_model)
-        inner_cv = list(custom_group_split(groups[train_idx], fixed_group="BR09"))
+        X_all = df[features].values
+        y_all = df[y_var].values
+        groups = df["Run_ID"].values
 
-        grid = GridSearchCV(model,param_grid,cv=inner_cv,
-            scoring="neg_mean_squared_error",n_jobs=-1)
-        grid.fit(X_train, y_train, groups=groups[train_idx])
+        param_grid = get_param_grid(best_model_name)
 
-        best_model = grid.best_estimator_
-        best_params = grid.best_params_
+        # ========== PER FOLD ===============
+        for fold, (train_idx, test_idx) in enumerate(custom_group_split(groups, fixed_group="BR09")):
 
-        # SAVE MODEL
-        model_name = f"{best_model_name}_{test_group}"
-        save_model(best_model, model_name, model_dir)
-        save_yaml(best_params, model_dir / f"{model_name}_params.yaml")
-        save_yaml({
-            "model": best_model_name,
-            "test_group": test_group,
-            "features": features
-        }, model_dir / f"{model_name}_metadata.yaml")
+            X_train = X_all[train_idx]
+            y_train = y_all[train_idx]
+            test_group = np.unique(groups[test_idx])[0]
+            model = clone(base_model)
+            inner_cv = list(custom_group_split(groups[train_idx], fixed_group="BR09"))
 
+            grid = GridSearchCV(model,param_grid,cv=inner_cv,
+                scoring="neg_mean_squared_error",n_jobs=-1)
+            grid.fit(X_train, y_train, groups=groups[train_idx])
+
+            best_model = grid.best_estimator_
+            best_params = grid.best_params_
+
+            # SAVE MODEL
+            model_name = f"{best_model_name}_{test_group}"
+            
+            fold_dir = model_dir / test_group
+            fold_dir.mkdir(parents=True, exist_ok=True)
+
+            save_model(best_model, model_name, fold_dir)
+            save_yaml(best_params, fold_dir / f"{model_name}_params.yaml")
+            save_yaml({ "model": best_model_name,
+                        "test_group": test_group,
+                        "features": features}, fold_dir / f"{model_name}_metadata.yaml")
+
+    # ========= GLOBAL MODEL ================
+        global_model = clone(base_model)
+        inner_cv_global = list(custom_group_split(groups, fixed_group="BR09"))
+
+        grid_global = GridSearchCV(global_model, param_grid, cv=inner_cv_global,
+            scoring="neg_mean_squared_error", n_jobs=-1)
+
+        grid_global.fit(X_all, y_all, groups=groups)
+
+        best_global_model = grid_global.best_estimator_
+        best_global_params = grid_global.best_params_
+
+        global_name = f"{best_model_name}_global"
+
+        save_model(best_global_model, global_name, model_dir_global)
+        save_yaml(best_global_params, model_dir_global / f"{global_name}_params.yaml")
+        save_yaml({"model": best_model_name,
+                "test_group": "global",
+                "features": features}, model_dir_global / f"{global_name}_metadata.yaml")
 
 def train_and_save_best_model_per_fold_dynamic(df, models, y_var, out_dir):
 

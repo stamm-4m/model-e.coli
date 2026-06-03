@@ -13,13 +13,8 @@ from src.modelling.experiment_factory import build_experiments, run_model_with_p
 def processing_data(datasets, yaml_path, t_ind_exp = True):
     
     yaml_params = load_yaml(yaml_path)
-    # dataset_files = sorted(glob("data/raw/BR*.xls"))
-    
-    # datasets = [ExperimentDataset(f) for f in dataset_files]
     
     df_global = []
-    # df_batch_all = []
-    # df_semibatch_all = []
     df_induction_all = []
 
     df_calc = calculate_features(BR09=True)
@@ -30,8 +25,8 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
         df = pd.DataFrame(datasets[br_id])
 
-        # if br_id in ["BR07", "BR08"]:
-        #     df = df.iloc[:-1]
+        if br_id in ["BR07", "BR08"]:
+            df = df.iloc[:-1]
 
         # Indicates the dataset name
         df["Run_ID"] = br_id
@@ -44,7 +39,6 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
         # qP and mu calculation
         time_sb, time_ind = get_time_ranges(yaml_params, br_id)
 
-        # df_batch = df[(df["time"] >= 0) & (df["time"] < time_sb)].copy()
         df_semibatch = df[(df["time"] >= time_sb) & (df["time"] < time_ind)].copy()
         df_induction = df[df["time"] >= time_ind].copy()
 
@@ -84,30 +78,25 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
         # mu and qp calculation
         if t_ind_exp == True:
-            df = calc_mu_qp_rp(df, time_ind, br_id)
-            df_induction = calc_mu_qp_rp(df_induction, time_ind, br_id)
+            df = calc_mu_qp_rp(df, time_ind)
+            df_induction = calc_mu_qp_rp(df_induction, time_ind)
         else:
-            df = calc_mu_qp_rp(df, t_ind=None, br_id=br_id)
-            df_induction = calc_mu_qp_rp(df_induction, time_ind, br_id)
-        # df = df.sort_values("time").reset_index(drop=True)
+            df = calc_mu_qp_rp(df, t_ind=None)
+            df_induction = calc_mu_qp_rp(df_induction, t_ind=None)
 
         # Final df
         df_global.append(df)
-        # df_batch_all.append(df_batch)
-        # df_semibatch_all.append(df_semibatch)
         df_induction_all.append(df_induction)
 
     # final unification
     df_global_final = pd.concat(df_global, ignore_index=True)
-    # df_batch_final = pd.concat(df_batch_all, ignore_index=True)
-    # df_semibatch_final = pd.concat(df_semibatch_all, ignore_index=True)
     df_induction_final = pd.concat(df_induction_all, ignore_index=True)
 
     return df_global_final, df_induction_final 
 
 # -------------------------- mu, qp & rp function ---------------------------------------
 
-def calc_mu_qp_rp(df, t_ind=None, br_id=None):
+def calc_mu_qp_rp(df, t_ind=None):
 
     df = df.sort_values("time").copy()
 
@@ -123,59 +112,55 @@ def calc_mu_qp_rp(df, t_ind=None, br_id=None):
 
     t = df["time"].values
     X = df["X"].values
+    P = df["P"].values
     V = df["V"].values
+
     X_calc = df["X_calc"].values
     V_calc = df["V_calc"].values
-    P = df["P"].values
     
     dXdt = df["dXdt"].values
     dVdt = df["dVdt"].values
-    dXdt_calc = df["dXdt_calc"].values
-    dVdt_calc = df["dVdt_calc"].values
     dPdt = df["dPdt"].values
 
+    dXdt_calc = df["dXdt_calc"].values
+    dVdt_calc = df["dVdt_calc"].values
+
+    low_qp = 0 # 1e-6
+    low_rp = 0 # 1e-5
+    
     if t_ind != None:
         for i in range(n):
             if t[i] < t_ind:
                 qp[i] = 0
                 rp[i] = 0
+
                 qp_calc[i] = 0
                 rp_calc[i] = 0
             else:
-                # qp[i] = (1/X[i]) * dPdt[i] 
-                qp[i] = (1/X[i]) * ( dPdt[i] + (dVdt[i] * P[i] / V[i]) ) 
-                rp[i] = dPdt[i] + (dVdt[i] * P[i] / V[i]) 
+                rp[i] = dPdt[i] + (dVdt[i] * P[i] / V[i])
+                qp[i] = rp[i] / X[i]
+                
+                rp_calc[i] =  dPdt[i] + (dVdt_calc[i] * P[i] / V_calc[i])
+                qp_calc[i] = rp_calc[i] / X_calc[i]
 
-                qp_calc[i] = (1/X_calc[i]) * ( dPdt[i] + (dVdt_calc[i] * P[i] / V_calc[i]) ) 
-                rp_calc[i] = dPdt[i] + (dVdt_calc[i] * P[i] / V_calc[i]) 
-
-                low_qp = 0 # 1e-6
-                low_rp = 0 # 1e-5
+    else:
+        rp    =  dPdt + (dVdt * P / V)  
+        qp    = rp / X
         
-                qp = np.clip(qp, low_qp, None)
-                rp = np.clip(rp, low_rp, None)
-
-                qp_calc = np.clip(qp_calc, low_qp, None)
-                rp_calc = np.clip(rp_calc, low_rp, None)
-    else: 
-        # qp = (1/X) *  dPdt 
-        qp    = (1/X) * ( dPdt + (dVdt * P / V) )
-        rp    =  dPdt + (dVdt * P / V) 
-
-        qp_calc    = (1/X_calc) * ( dPdt + (dVdt_calc * P / V_calc) )
         rp_calc    =  dPdt + (dVdt_calc * P / V_calc) 
-
-        qp = np.clip(qp, 0, None)
-        rp = np.clip(rp, 0, None)
-
-        qp_calc = np.clip(qp_calc, 0, None)
-        rp_calc = np.clip(rp_calc, 0, None)
+        qp_calc    = rp_calc / X_calc
+        
     
-    mu    = (1/X) * ( dXdt ) + (1/V) * ( dVdt )
-    mu = np.clip(mu, 0, None)
-
+    mu         = (1/X)      * ( dXdt )      + (1/V)      * ( dVdt )
     mu_calc    = (1/X_calc) * ( dXdt_calc ) + (1/V_calc) * ( dVdt_calc )
+
+    mu = np.clip(mu, 0, None)
+    qp = np.clip(qp, low_qp, None)
+    rp = np.clip(rp, low_rp, None)
+
     mu_calc = np.clip(mu_calc, 0, None)
+    qp_calc = np.clip(qp_calc, low_qp, None)
+    rp_calc = np.clip(rp_calc, low_rp, None)
 
     df["mu"] = mu
     df["qP"] = qp
@@ -184,8 +169,6 @@ def calc_mu_qp_rp(df, t_ind=None, br_id=None):
     df["mu_calc"] = mu_calc
     df["qP_calc"] = qp_calc
     df["rP_calc"] = rp_calc
-    # df["qP_sqrt"] = np.sqrt(qp)
-    # df["rP_sqrt"] = np.sqrt(rp)
 
     return df
 

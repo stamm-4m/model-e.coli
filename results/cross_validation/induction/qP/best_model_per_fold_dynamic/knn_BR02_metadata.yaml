@@ -1,6 +1,0 @@
-model: knn
-test_group: BR02
-features:
-- V_calc
-- Xlag1_calc
-score: -85.5780821272482

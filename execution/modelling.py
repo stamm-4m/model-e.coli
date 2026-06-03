@@ -21,12 +21,12 @@ all_predictions = {}
 
 model_configs = {
     # "parametric": None,
-    "global_qP": "results/cross_validation/global/qP/best_model_per_fold_dynamic",
-    "global_rP": "results/cross_validation/global/rP/best_model_per_fold_dynamic",
-    "global_ind_qP": "results/cross_validation/global_ind/qP/best_model_per_fold_dynamic",
-    "global_ind_rP": "results/cross_validation/global_ind/rP/best_model_per_fold_dynamic",
-    "induction_qP": "results/cross_validation/induction/qP/best_model_per_fold_dynamic",
-    "induction_rP": "results/cross_validation/induction/rP/best_model_per_fold_dynamic",
+    "global_qP": "results/cross_validation/global/qP_calc/best_model_per_fold",
+    "global_rP": "results/cross_validation/global/rP_calc/best_model_per_fold",
+    "global_ind_qP": "results/cross_validation/global_ind/qP_calc/best_model_per_fold",
+    "global_ind_rP": "results/cross_validation/global_ind/rP_calc/best_model_per_fold",
+    "induction_qP": "results/cross_validation/induction/qP_calc/best_model_per_fold",
+    "induction_rP": "results/cross_validation/induction/rP_calc/best_model_per_fold",
 }
 
 MODEL_COLORS = {
@@ -49,13 +49,15 @@ for model_name, model_path in model_configs.items():
         kin = Kinetic_Models(hybrid=False)
         model_output_dir = Path(output_dir) / "parametric"
     else:
-        kin = Kinetic_Models(hybrid=True, models_folder=model_path)
+        kin = Kinetic_Models(hybrid=True, models_folder=model_path, ensemble_mode="fold")
         parts = Path(model_path).parts
-        idx = parts.index("cross_validation")
-        subpath = Path(*parts[idx+1:-2])  
+        subpath = parts[parts.index("cross_validation") + 1]
+        # idx = parts.index("cross_validation")
+        # subpath = Path(*parts[idx+1:-2])  
         model_output_dir = Path(output_dir) / subpath
 
     model_output_dir.mkdir(parents=True, exist_ok=True)
+    model_label = f"{model_name}_{kin.ensemble_mode}"
 
     print("Building experiments...")
     datasets, simulators, y0s = build_experiments(cfg, kin, BR09=False)
@@ -80,9 +82,8 @@ for model_name, model_path in model_configs.items():
         if dataset_key not in all_predictions:
             all_predictions[dataset_key] = {}
         sol = solutions[dataset_key]["sol"]
-
         # Save
-        all_predictions[dataset_key][model_name] = {
+        all_predictions[dataset_key][model_label] = {
             "t": sol.t,
             "X": sol.y[0],
             "S": sol.y[1],
@@ -96,7 +97,8 @@ for model_name, model_path in model_configs.items():
     plot_multi_dataset_model(datasets, solutions, model_name, model_output_dir)
 
     # Global metrics
-    global_row = {"model": model_name}
+    
+    global_row = {"model": model_label}
     global_row.update(global_metrics) # type: ignore
     all_global_results.append(global_row)
 

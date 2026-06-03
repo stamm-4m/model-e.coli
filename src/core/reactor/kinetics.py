@@ -3,10 +3,11 @@ import joblib
 import yaml
 import numpy as np
 import os
+from pathlib import Path
 
 class Kinetic_Models:
 
-    def __init__(self, hybrid=False, models_folder=None):
+    def __init__(self, hybrid=False, models_folder=None, ensemble_mode="fold"):
 
         self.params = {}
         self.models = {}
@@ -27,24 +28,31 @@ class Kinetic_Models:
                 self.use_rp = True
             if "ind" in folder_lower:
                 self.use_induction = True
+            
+            models_path = Path(models_folder)
+            self.ensemble_mode = ensemble_mode
 
-            for file in os.listdir(models_folder):
+            for subdir in models_path.iterdir():
 
-                if file.endswith(".pkl"):
-                    br_id = file.split("_")[-1].replace(".pkl", "")
+                if subdir.is_dir():
+                    br_id = subdir.name
+                    pkl_files = list(subdir.glob("*.pkl"))
+                    self.models[br_id] = []
+                    self.feature_orders[br_id] = []
 
-                    model_path = os.path.join(models_folder, file)
-                    metadata_path = os.path.join(
-                        models_folder,
-                        file.replace(".pkl", "_metadata.yaml")
-                    )
+                    for file in pkl_files:
+                        model_path = file
+                        model = joblib.load(model_path)
+                        self.models[br_id].append(model)
 
-                    self.models[br_id] = joblib.load(model_path)
+                        metadata_path = model_path.with_name(
+                            model_path.stem + "_metadata.yaml")
 
-                    with open(metadata_path, "r") as f:
-                        meta = yaml.safe_load(f)
+                        with open(metadata_path, "r") as f:
+                            meta = yaml.safe_load(f)
 
-                    self.feature_orders[br_id] = meta["features"]
+                        self.feature_orders[br_id].append(meta["features"])
+
 
 
     def set_params(self, params):
@@ -99,36 +107,85 @@ class Kinetic_Models:
         return      qp                                      # [mg Nb * L / (g X * h)]
     
     def qp_hybrid(self, features, br_id):
-        
         if self.use_induction:
             if features["I"] == 0:
                 return 0
+        
+        preds = []
+        if self.ensemble_mode == "fold":
+            if br_id in self.models:
+                models_fold = self.models[br_id]
+                features_fold = self.feature_orders[br_id]
 
-        x = self._build_input(features, br_id)
-        qp = self.models[br_id].predict(x)
-        out = np.maximum(1e-6, qp[0]) # 0 1e-6
+                for model, order in zip(models_fold, features_fold):
+                    x = self._build_input(features, order)
+                    pred = model.predict(x)[0]
+                    preds.append(pred)
 
-        return      out      
+        elif self.ensemble_mode == "global":
+            if "global" in self.models:
+                models_global = self.models["global"]
+                features_global = self.feature_orders["global"]
+
+                for model, order in zip(models_global, features_global):
+                    x = self._build_input(features, order)
+                    pred = model.predict(x)[0]
+                    preds.append(pred)
+
+        qp = np.mean(preds) 
+
+        if qp < 0:
+            positives = [p for p in preds if p > 0]
+            if positives:
+                qp = np.mean(positives)
+            else:
+                qp = 0.0 # np.maximum(1e-6, qp) # 0 1e-6
+
+        return qp    
                                    
-    
+
     def rp_hybrid(self, features, br_id):
-        
         if self.use_induction:
             if features["I"] == 0:
                 return 0
+        
+        preds = []
+        if self.ensemble_mode == "fold":
+            if br_id in self.models:
+                models_fold = self.models[br_id]
+                features_fold = self.feature_orders[br_id]
 
-        x = self._build_input(features, br_id)
-        rp = self.models[br_id].predict(x)
-        out = np.maximum(1e-5, rp[0]) # 0 1e-5
+                for model, order in zip(models_fold, features_fold):
+                    x = self._build_input(features, order)
+                    pred = model.predict(x)[0]
+                    preds.append(pred)
 
-        return     out
+        elif self.ensemble_mode == "global":
+            if "global" in self.models:
+                models_global = self.models["global"]
+                features_global = self.feature_orders["global"]
+
+                for model, order in zip(models_global, features_global):
+                    x = self._build_input(features, order)
+                    pred = model.predict(x)[0]
+                    preds.append(pred)
+
+        rp = np.mean(preds)
+
+        if rp < 0:
+            positives = [p for p in preds if p > 0]
+            if positives:
+                rp = np.mean(positives)
+            else:
+                rp = 0.0 # np.maximum(1e-5, rp) # 0 1e-5
+
+        return rp
                                       
 
-    def _build_input(self, features, br_id):
-        order = self.feature_orders[br_id]
+    def _build_input(self, features, feature_order):
         try:
-            x = [features[f] for f in order]
+            x = [features[f] for f in feature_order]
         except KeyError as e:
-            raise ValueError(f"Feature missing for model {br_id}: {e}")
+            raise ValueError(f"Feature missing: {e}")
 
         return np.array(x).reshape(1, -1)

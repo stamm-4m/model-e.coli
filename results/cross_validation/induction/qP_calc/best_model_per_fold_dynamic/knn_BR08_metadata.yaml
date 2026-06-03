@@ -1,6 +1,0 @@
-model: knn
-test_group: BR08
-features:
-- FS_calc
-- V_calc
-score: -196.3811618099104

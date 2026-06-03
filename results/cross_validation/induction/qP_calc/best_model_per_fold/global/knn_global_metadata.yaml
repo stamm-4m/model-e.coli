@@ -1,0 +1,4 @@
+model: knn
+test_group: global
+features:
+- P

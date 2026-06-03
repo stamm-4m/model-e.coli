@@ -14,11 +14,7 @@ class FedBatchBalances:
 
     def dfdt(self, t, state, FS, FA, ind_F):
         X, S, P, V = state # T also
-
-        # X = max(X, 0)
-        # S = max(S, 0)
         P = max(P, 0)
-        # V = max(V, 1e-8)
 
         T = self.temperature.F(t)
 
@@ -66,7 +62,8 @@ class FedBatchBalances:
                 "P": P,
                 "T": T,
                 "I": induction,
-                "mu": mu_real,          
+                "mu": mu_real, 
+                "FS_calc": FS,          
                 "dXdt": dX_real,
                 # "dSdt": dSdt,
                 "dVdt": dV_real,

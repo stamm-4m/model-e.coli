@@ -1,0 +1,7 @@
+model: elasticnet_w
+test_group: global
+features:
+- P
+- T
+- I
+- Plag1

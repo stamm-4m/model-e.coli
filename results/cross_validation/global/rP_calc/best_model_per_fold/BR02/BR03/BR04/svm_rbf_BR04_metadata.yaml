@@ -1,0 +1,6 @@
+model: svm_rbf
+test_group: BR04
+features:
+- P
+- T
+- Plag1
