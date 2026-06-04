@@ -99,6 +99,9 @@ def plot_comparison(dataset, predictions, output_dir, MODEL_COLORS):
 
     for model_name in sorted(predictions):
 
+        if model_name == "parametric":
+            continue
+
         pred = predictions[model_name]
 
         plt.plot(

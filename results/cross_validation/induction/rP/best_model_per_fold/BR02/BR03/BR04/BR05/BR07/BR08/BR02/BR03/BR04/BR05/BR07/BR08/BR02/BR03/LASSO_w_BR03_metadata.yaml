@@ -1,5 +1,0 @@
-model: LASSO_w
-test_group: BR03
-features:
-- P
-- Plag1

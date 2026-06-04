@@ -1,0 +1,7 @@
+model: knn
+test_group: BR03
+features:
+- T
+- X_calc
+- V_calc
+- Xlag1_calc

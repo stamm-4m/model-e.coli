@@ -120,7 +120,13 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
                 dense_ouput = True )
         else:
             sol_dense = None
-        
+
+        print(f"\nDataset: {dataset.path}")
+        print("sol.success:", sol.success)
+        print("message:", sol.message)
+        print("len(t_eval):", len(t_eval))
+        print("len(sol.t):", len(sol.t))
+
     # ----- Compute mu and dVdt from dynamic model --------
         mu_values = []
         dXdt_values = []
@@ -163,6 +169,10 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
         all_y_model.append(V_model)
 
         # Regression metrics per variable
+        if len(dataset.data["X"]) != len(X_model):
+            print(f"Mismatch en {dataset.path}")
+            A = 2
+
         metrics = {
             "X": compute_metrics(dataset.data["X"], X_model, k=len(theta)),
             "S": compute_metrics(dataset.data["S"], S_model, k=len(theta)),

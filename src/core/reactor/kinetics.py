@@ -18,6 +18,7 @@ class Kinetic_Models:
         self.use_induction = False
 
         self.hybrid = hybrid
+        self.ensemble_mode = ensemble_mode
 
         if hybrid:
 
@@ -30,7 +31,6 @@ class Kinetic_Models:
                 self.use_induction = True
             
             models_path = Path(models_folder)
-            self.ensemble_mode = ensemble_mode
 
             for subdir in models_path.iterdir():
 
@@ -107,48 +107,26 @@ class Kinetic_Models:
         return      qp                                      # [mg Nb * L / (g X * h)]
     
     def qp_hybrid(self, features, br_id):
-        if self.use_induction:
-            if features["I"] == 0:
+        if self.use_induction and features.get("I", 1) == 0:
                 return 0
         
-        preds = []
-        if self.ensemble_mode == "fold":
-            if br_id in self.models:
-                models_fold = self.models[br_id]
-                features_fold = self.feature_orders[br_id]
-
-                for model, order in zip(models_fold, features_fold):
-                    x = self._build_input(features, order)
-                    pred = model.predict(x)[0]
-                    preds.append(pred)
-
-        elif self.ensemble_mode == "global":
-            if "global" in self.models:
-                models_global = self.models["global"]
-                features_global = self.feature_orders["global"]
-
-                for model, order in zip(models_global, features_global):
-                    x = self._build_input(features, order)
-                    pred = model.predict(x)[0]
-                    preds.append(pred)
-
-        qp = np.mean(preds) 
-
-        if qp < 0:
-            positives = [p for p in preds if p > 0]
-            if positives:
-                qp = np.mean(positives)
-            else:
-                qp = 0.0 # np.maximum(1e-6, qp) # 0 1e-6
+        low_value = 1e-6 # 0
+        qp = self._predict_hybrid(features, br_id, low_value)
 
         return qp    
                                    
 
     def rp_hybrid(self, features, br_id):
-        if self.use_induction:
-            if features["I"] == 0:
-                return 0
+
+        if self.use_induction and features.get("I", 1) == 0:
+            return 0
         
+        low_value = 1e-5 # 0
+        rp = self._predict_hybrid(features, br_id, low_value)
+
+        return rp
+
+    def _predict_hybrid(self, features, br_id, low_value):
         preds = []
         if self.ensemble_mode == "fold":
             if br_id in self.models:
@@ -170,17 +148,16 @@ class Kinetic_Models:
                     pred = model.predict(x)[0]
                     preds.append(pred)
 
-        rp = np.mean(preds)
+        if not preds:
+            return 0.0
+        
+        value = np.mean(preds)
+        # weights = np.array([2.0 if p > 0 else 1.0 for p in preds])
+        # value = np.sum(weights * preds) / np.sum(weights)
 
-        if rp < 0:
-            positives = [p for p in preds if p > 0]
-            if positives:
-                rp = np.mean(positives)
-            else:
-                rp = 0.0 # np.maximum(1e-5, rp) # 0 1e-5
+        value = max(value, low_value)
 
-        return rp
-                                      
+        return value
 
     def _build_input(self, features, feature_order):
         try:

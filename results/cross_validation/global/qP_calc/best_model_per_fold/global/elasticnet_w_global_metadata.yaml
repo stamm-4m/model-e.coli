@@ -1,6 +1,6 @@
 model: elasticnet_w
 test_group: global
 features:
-- P
 - T
-- Plag1
+- V_calc
+- Xlag1_calc

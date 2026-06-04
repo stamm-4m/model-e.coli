@@ -111,7 +111,7 @@ def select_optimal_model_feature(results):
 # --------- Select best model ---------------
 
 
-def select_best_models(cv_results, top_n=3):
+def select_best_models(cv_results, top_n=2):
 
     def ranking(item):
         _, info = item

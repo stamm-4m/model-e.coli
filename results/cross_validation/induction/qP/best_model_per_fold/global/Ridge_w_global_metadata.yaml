@@ -1,5 +1,0 @@
-model: Ridge_w
-test_group: global
-features:
-- P
-- Plag1

@@ -1,5 +1,0 @@
-model: svm_rbf
-test_group: BR08
-features:
-- P
-- Plag1

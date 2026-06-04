@@ -1,6 +1,0 @@
-model: LASSO_w
-test_group: BR07
-features:
-- P
-- Plag1
-- V_calc

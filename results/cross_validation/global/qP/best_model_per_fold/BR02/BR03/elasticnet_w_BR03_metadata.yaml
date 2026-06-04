@@ -1,7 +1,0 @@
-model: elasticnet_w
-test_group: BR03
-features:
-- P
-- T
-- I
-- Plag1

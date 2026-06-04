@@ -11,28 +11,28 @@ from src.data_analysis.feature_selection.filter import filter_feature_selection
 from src.data_analysis.feature_selection.wrapper_permutation import WnE_feature_selection
 from src.data_analysis.cross_validation.cross_val import cross_validation
 
-# # # ---------- Import raw data ---------- 
-# ruta = Path("data/raw")
-# dataset_files = sorted(glob("data/raw/BR*.xls"))
-# datasets = [ExperimentDataset(f) for f in dataset_files]
-# br_id_list = [file.stem for file in ruta.iterdir() if file.suffix == ".xls"]
-# variable_list = ["X", "S", "V", "P", "T"]
+# # ---------- Import raw data ---------- 
+ruta = Path("data/raw")
+dataset_files = sorted(glob("data/raw/BR*.xls"))
+datasets = [ExperimentDataset(f) for f in dataset_files]
+br_id_list = [file.stem for file in ruta.iterdir() if file.suffix == ".xls"]
+variable_list = ["X", "S", "V", "P", "T"]
 
-# # ---------- Data treatment ---------- 
-# smooth_data, treat_data = process_all_datasets(datasets = datasets, time_col = "time", variable_list = variable_list, 
-#                                                 results_root="results/data_analysis/outliers_and_smoothing", smooth=False)
+# ---------- Data treatment ---------- 
+smooth_data, treat_data = process_all_datasets(datasets = datasets, time_col = "time", variable_list = variable_list, 
+                                                results_root="results/data_analysis/outliers_and_smoothing", smooth=False)
 
-# # ---------- Derivates calculation ---------- 
-# _, data_sets = compute_derivatives_for_datasets(treat_data, variables=("X", "S", "V", "P"), 
-#                                                 results_root="results/data_analysis/derivatives/treat")
-# # smooth_data = compute_derivatives_for_datasets(smooth_data, variables=("X", "V", "P"), 
-# #                                                 results_root="results/data_analysis/derivatives/smooth")
+# ---------- Derivates calculation ---------- 
+_, data_sets = compute_derivatives_for_datasets(treat_data, variables=("X", "S", "V", "P"), 
+                                                results_root="results/data_analysis/derivatives/treat")
+# smooth_data = compute_derivatives_for_datasets(smooth_data, variables=("X", "V", "P"), 
+#                                                 results_root="results/data_analysis/derivatives/smooth")
 
-# # ---------- Computes qP and mu calculation and ---------- 
-# yaml_path = "src/config/default_parameters.yaml"
-# df_global, df_induction = processing_data(data_sets, yaml_path, t_ind_exp = True) # type: ignore
-# df_induction.to_excel("data/processed/BR_processed_ind.xlsx",index=False,engine="openpyxl")
-# df_global.to_excel("data/processed/BR_processed.xlsx",index=False,engine="openpyxl")
+# ---------- Computes qP and mu calculation and ---------- 
+yaml_path = "src/config/default_parameters.yaml"
+df_global, df_induction = processing_data(data_sets, yaml_path, t_ind_exp = True) # type: ignore
+df_induction.to_excel("data/processed/BR_processed_ind.xlsx",index=False,engine="openpyxl")
+df_global.to_excel("data/processed/BR_processed.xlsx",index=False,engine="openpyxl")
 
 # ----------- ML models --------------
 wrapper_models = ["linear", "LASSO_w", "Ridge_w", "elasticnet_w", "rf_w", "gbm_w", "svm_linear"] # "tree", 
@@ -44,13 +44,13 @@ all_features = ["X", "S", "V", "P", "mu", "T", "I", "FS_calc", "dXdt", "dSdt", "
 
 target = ["qP_calc", "rP_calc", "qP", "rP"] 
 
-exclude_features = ["X", "S", "V", "mu", "FS_calc", "dXdt", "dSdt", "dVdt", "Xlag1"] # "P", "Plag1"
+exclude_features = ["X", "S", "V", "mu", "dXdt", "dSdt", "dVdt", "Xlag1", "Plag1"] # "P"
 
 vars = [v for v in all_features if v not in exclude_features]
 
-top_n = 3 # number of models to save
+top_n = 2 # number of models to save
 
-for i in range(0,2): 
+for i in range(0,1): # (1) onlycalc (2) real 
     # # # --------- Global --------------------------------------------------------------------------------------------------------------
     df_global = pd.read_excel(r"data/processed/BR_processed.xlsx")
 

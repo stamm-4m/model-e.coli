@@ -17,7 +17,7 @@ from src.data_analysis.cross_validation.plots_cross_validation import plot_all_m
 # from sklearn.model_selection import RandomizedSearchCV
 @timer
 # --------- Cross - Validation global function ---------------
-def cross_validation(df,y_var,in_dir,out_dir,top_n=3):
+def cross_validation(df,y_var,in_dir,out_dir,top_n=2):
 
     print(f"Starting cross validation ... \n")
 
@@ -271,88 +271,88 @@ def train_and_save_best_model_per_fold(df, models, best_models, y_var, out_dir):
                 "test_group": "global",
                 "features": features}, model_dir_global / f"{global_name}_metadata.yaml")
 
-def train_and_save_best_model_per_fold_dynamic(df, models, y_var, out_dir):
+# def train_and_save_best_model_per_fold_dynamic(df, models, y_var, out_dir):
 
-    model_dir = Path(out_dir) / y_var / "best_model_per_fold_dynamic"
-    if model_dir.exists():
-        shutil.rmtree(model_dir)
+#     model_dir = Path(out_dir) / y_var / "best_model_per_fold_dynamic"
+#     if model_dir.exists():
+#         shutil.rmtree(model_dir)
 
-    model_dir.mkdir(parents=True, exist_ok=True)
+#     model_dir.mkdir(parents=True, exist_ok=True)
 
-    groups = df["Run_ID"].values
+#     groups = df["Run_ID"].values
 
-    for fold, (train_idx, test_idx) in enumerate(custom_group_split(groups, fixed_group="BR09")):
+#     for fold, (train_idx, test_idx) in enumerate(custom_group_split(groups, fixed_group="BR09")):
 
-        results = []
+#         results = []
 
-        X_train_full = df.iloc[train_idx]
-        y_train = X_train_full[y_var].values
+#         X_train_full = df.iloc[train_idx]
+#         y_train = X_train_full[y_var].values
 
-        test_group = np.unique(groups[test_idx])[0]
+#         test_group = np.unique(groups[test_idx])[0]
 
-        best_fold_score = np.inf
-        best_fold_model = None
-        best_fold_name = None
-        best_fold_params = None
-        best_features = None
+#         best_fold_score = np.inf
+#         best_fold_model = None
+#         best_fold_name = None
+#         best_fold_params = None
+#         best_features = None
 
-        print(f"\nFold {fold} — Test group: {test_group}")
+#         print(f"\nFold {fold} — Test group: {test_group}")
 
-        # LOOP OVER ALL MODELS
-        for model_name, model_info in models.items():
+#         # LOOP OVER ALL MODELS
+#         for model_name, model_info in models.items():
 
-            base_model = model_info["model"]
-            features = model_info["features"]
+#             base_model = model_info["model"]
+#             features = model_info["features"]
 
-            X_train = X_train_full[features].values
+#             X_train = X_train_full[features].values
 
-            param_grid = get_param_grid(model_name)
+#             param_grid = get_param_grid(model_name)
 
-            inner_groups = groups[train_idx]
-            inner_cv = list(custom_group_split(inner_groups, fixed_group="BR09"))
+#             inner_groups = groups[train_idx]
+#             inner_cv = list(custom_group_split(inner_groups, fixed_group="BR09"))
 
-            model = clone(base_model)
+#             model = clone(base_model)
 
-            grid = GridSearchCV(model,param_grid,cv=inner_cv,scoring="neg_mean_squared_error",n_jobs=-1)
+#             grid = GridSearchCV(model,param_grid,cv=inner_cv,scoring="neg_mean_squared_error",n_jobs=-1)
 
-            grid.fit(X_train, y_train, groups=inner_groups)
+#             grid.fit(X_train, y_train, groups=inner_groups)
 
-            best_model = grid.best_estimator_
+#             best_model = grid.best_estimator_
 
-            # ---- Evaluate on validation folds (approx proxy) ----
+#             # ---- Evaluate on validation folds (approx proxy) ----
             
-            X_test = df.iloc[test_idx][features].values
-            y_test = df.iloc[test_idx][y_var].values
-            y_pred = best_model.predict(X_test)
+#             X_test = df.iloc[test_idx][features].values
+#             y_test = df.iloc[test_idx][y_var].values
+#             y_pred = best_model.predict(X_test)
 
-            metrics = compute_metrics(y_test, y_pred, k=len(features))
+#             metrics = compute_metrics(y_test, y_pred, k=len(features))
 
-            results.append({
-                "model_name": model_name,
-                "model": grid.best_estimator_,
-                "params": grid.best_params_,
-                "features": features,
-                "metrics": metrics})
+#             results.append({
+#                 "model_name": model_name,
+#                 "model": grid.best_estimator_,
+#                 "params": grid.best_params_,
+#                 "features": features,
+#                 "metrics": metrics})
             
-        best, best_fold_score = select_optimal_model_feature(results)
+#         best, best_fold_score = select_optimal_model_feature(results)
 
-        best_fold_model = best["model"]
-        best_fold_name = best["model_name"]
-        best_fold_params = best["params"]
-        best_features = best["features"]
+#         best_fold_model = best["model"]
+#         best_fold_name = best["model_name"]
+#         best_fold_params = best["params"]
+#         best_features = best["features"]
 
-        # SAVE BEST MODEL OF THIS FOLD
-        model_name = f"{best_fold_name}_{test_group}"
+#         # SAVE BEST MODEL OF THIS FOLD
+#         model_name = f"{best_fold_name}_{test_group}"
 
-        save_model(best_fold_model, model_name, model_dir)
+#         save_model(best_fold_model, model_name, model_dir)
 
-        save_yaml(best_fold_params, model_dir / f"{model_name}_params.yaml")
+#         save_yaml(best_fold_params, model_dir / f"{model_name}_params.yaml")
 
-        save_yaml({
-            "model": best_fold_name,
-            "test_group": test_group,
-            "features": best_features,
-            "score": float(best_fold_score)
-        }, model_dir / f"{model_name}_metadata.yaml")
+#         save_yaml({
+#             "model": best_fold_name,
+#             "test_group": test_group,
+#             "features": best_features,
+#             "score": float(best_fold_score)
+#         }, model_dir / f"{model_name}_metadata.yaml")
 
-        print(f"Best model for {test_group}: {best_fold_name}")
+#         print(f"Best model for {test_group}: {best_fold_name}")

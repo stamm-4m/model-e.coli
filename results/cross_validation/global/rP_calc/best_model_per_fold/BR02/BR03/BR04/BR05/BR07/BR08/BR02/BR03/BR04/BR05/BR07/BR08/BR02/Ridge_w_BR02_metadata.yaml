@@ -1,6 +1,0 @@
-model: Ridge_w
-test_group: BR02
-features:
-- P
-- T
-- Plag1

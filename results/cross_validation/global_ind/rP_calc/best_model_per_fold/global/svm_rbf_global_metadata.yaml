@@ -1,6 +1,0 @@
-model: svm_rbf
-test_group: global
-features:
-- P
-- T
-- Plag1

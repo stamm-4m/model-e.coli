@@ -1,5 +1,0 @@
-model: svm_linear
-test_group: BR07
-features:
-- P
-- Plag1

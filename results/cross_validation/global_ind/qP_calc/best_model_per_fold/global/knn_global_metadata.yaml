@@ -1,4 +1,7 @@
 model: knn
 test_group: global
 features:
-- P
+- T
+- X_calc
+- V_calc
+- Xlag1_calc

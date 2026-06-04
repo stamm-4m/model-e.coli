@@ -1,6 +1,6 @@
 model: LASSO_w
 test_group: global
 features:
-- P
-- Plag1
+- T
 - V_calc
+- Xlag1_calc
