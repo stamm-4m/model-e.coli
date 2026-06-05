@@ -1,0 +1,116 @@
+X:
+  method_used: mean
+  s_values: null
+  first_derivative_metrics:
+    taylor:
+      mean: 1.66351138011016
+      std: 2.603796074311492
+      max_abs: 9.719942279942108
+      smoothness_d2f_var: 7.645205330923829
+    grad:
+      mean: 1.6635113801101593
+      std: 2.603796074311491
+      max_abs: 9.71994227994211
+      smoothness_d2f_var: 1.3146722898936436
+    cubic:
+      mean: 1.6256475051243249
+      std: 2.775034680525
+      max_abs: 10.73971692748753
+      smoothness_d2f_var: 30.871316480019004
+    uni:
+      mean: 1.514236025924369
+      std: 2.2852580805641516
+      max_abs: 8.037938549476163
+      smoothness_d2f_var: 4.643646585720915
+    mean:
+      mean: 1.5735306497373005
+      std: 2.431143893190769
+      max_abs: 8.878940414709136
+      smoothness_d2f_var: 2.4339024950217225
+S:
+  method_used: mean
+  s_values: null
+  first_derivative_metrics:
+    taylor:
+      mean: -0.5349526067870773
+      std: 1.1393185833025858
+      max_abs: 4.487631087063455
+      smoothness_d2f_var: 1.5055804188343047
+    grad:
+      mean: -0.5349526067870777
+      std: 1.1393185833025856
+      max_abs: 4.4876310870634555
+      smoothness_d2f_var: 0.4123259053850276
+    cubic:
+      mean: -0.5200382788998353
+      std: 1.3056263513821385
+      max_abs: 5.258815545525822
+      smoothness_d2f_var: 4.952271368302182
+    uni:
+      mean: -0.4965829607286802
+      std: 1.3376299378226484
+      max_abs: 4.7543445773377995
+      smoothness_d2f_var: 3.0109041303145037
+    mean:
+      mean: -0.5467756453048526
+      std: 1.1879298428215026
+      max_abs: 4.620987832200628
+      smoothness_d2f_var: 0.5829118344178887
+V:
+  method_used: mean
+  s_values: null
+  first_derivative_metrics:
+    taylor:
+      mean: 0.013472793900883445
+      std: 0.04031723673692268
+      max_abs: 0.13577647214854688
+      smoothness_d2f_var: 0.0011695289397821913
+    grad:
+      mean: 0.013472793900883503
+      std: 0.04031723673692271
+      max_abs: 0.13577647214854682
+      smoothness_d2f_var: 0.0007155664409696038
+    cubic:
+      mean: 0.013178628185316553
+      std: 0.043308197757368175
+      max_abs: 0.15260505703863275
+      smoothness_d2f_var: 0.0027778065503692557
+    uni:
+      mean: 0.012261747118679276
+      std: 0.034466353973958745
+      max_abs: 0.09195762936185015
+      smoothness_d2f_var: 0.0003276059471196509
+    mean:
+      mean: 0.013028758367522786
+      std: 0.03648971784342578
+      max_abs: 0.11386705075519848
+      smoothness_d2f_var: 0.0004723145574000195
+P:
+  method_used: mean
+  s_values: null
+  first_derivative_metrics:
+    taylor:
+      mean: 0.023866813910064906
+      std: 0.024512700004975123
+      max_abs: 0.05760661517679757
+      smoothness_d2f_var: 7.235281365414565e-05
+    grad:
+      mean: 0.0238668139100649
+      std: 0.024512700004975123
+      max_abs: 0.05760661517679758
+      smoothness_d2f_var: 2.9669351182841813e-05
+    cubic:
+      mean: 0.025136462874318255
+      std: 0.024167173583065787
+      max_abs: 0.05983562603265714
+      smoothness_d2f_var: 4.1905673027415116e-05
+    uni:
+      mean: 0.025323911262569016
+      std: 0.025446666723047653
+      max_abs: 0.058078357632656535
+      smoothness_d2f_var: 5.131162159050248e-06
+    mean:
+      mean: 0.024248932973878295
+      std: 0.024725796453737296
+      max_abs: 0.05698882657592755
+      smoothness_d2f_var: 2.2540571569996832e-05

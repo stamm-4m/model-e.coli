@@ -1,6 +1,0 @@
-model: knn
-test_group: BR03
-features:
-- I
-- X_calc
-- V_calc

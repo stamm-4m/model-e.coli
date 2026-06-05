@@ -1,6 +1,0 @@
-model: elasticnet_w
-test_group: global
-features:
-- T
-- FS_calc
-- V_calc

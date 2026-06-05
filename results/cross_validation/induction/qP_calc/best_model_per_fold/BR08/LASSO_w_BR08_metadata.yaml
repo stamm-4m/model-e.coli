@@ -1,6 +1,0 @@
-model: LASSO_w
-test_group: BR08
-features:
-- T
-- FS_calc
-- V_calc

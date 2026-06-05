@@ -12,6 +12,7 @@ class Kinetic_Models:
         self.params = {}
         self.models = {}
         self.feature_orders = {}
+        self.models_name = {}
 
         self.use_qp = False
         self.use_rp = False
@@ -39,6 +40,7 @@ class Kinetic_Models:
                     pkl_files = list(subdir.glob("*.pkl"))
                     self.models[br_id] = []
                     self.feature_orders[br_id] = []
+                    self.models_name[br_id] = []
 
                     for file in pkl_files:
                         model_path = file
@@ -52,6 +54,7 @@ class Kinetic_Models:
                             meta = yaml.safe_load(f)
 
                         self.feature_orders[br_id].append(meta["features"])
+                        self.models_name[br_id].append(meta["model"])
 
 
 
@@ -132,20 +135,29 @@ class Kinetic_Models:
             if br_id in self.models:
                 models_fold = self.models[br_id]
                 features_fold = self.feature_orders[br_id]
+                models_name = self.models_name[br_id]
 
-                for model, order in zip(models_fold, features_fold):
+                for model, order, name in zip(models_fold, features_fold, models_name):
                     x = self._build_input(features, order)
                     pred = model.predict(x)[0]
+                    use_log = name not in ("poisson", "tweedie")
+                    if use_log:
+                        pred = np.expm1(pred)
+
                     preds.append(pred)
 
         elif self.ensemble_mode == "global":
             if "global" in self.models:
                 models_global = self.models["global"]
                 features_global = self.feature_orders["global"]
+                models_name = self.models_name["global"]
 
-                for model, order in zip(models_global, features_global):
+                for model, order, name in zip(models_global, features_global, models_name):
                     x = self._build_input(features, order)
                     pred = model.predict(x)[0]
+                    use_log = name not in ("poisson", "tweedie")
+                    if use_log:
+                        pred = np.expm1(pred)
                     preds.append(pred)
 
         if not preds:

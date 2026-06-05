@@ -1,0 +1,8 @@
+model: poisson
+test_group: BR06
+features:
+- t
+- t_ind
+- P
+- I
+- mu_calc

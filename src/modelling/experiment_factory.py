@@ -122,10 +122,10 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
             sol_dense = None
 
         print(f"\nDataset: {dataset.path}")
-        print("sol.success:", sol.success)
+        # print("sol.success:", sol.success)
         print("message:", sol.message)
-        print("len(t_eval):", len(t_eval))
-        print("len(sol.t):", len(sol.t))
+        # print("len(t_eval):", len(t_eval))
+        # print("len(sol.t):", len(sol.t))
 
     # ----- Compute mu and dVdt from dynamic model --------
         mu_values = []

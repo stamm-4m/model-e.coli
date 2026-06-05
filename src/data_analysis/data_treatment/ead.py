@@ -35,7 +35,7 @@ def compute_ead(df, vars, results_root):
 
     annot = corr_global.copy()
     annot = annot.map(
-        lambda v: f"{v:.2f}" if abs(v) >= 0.7 else ""
+        lambda v: f"{v:.2f}" if abs(v) >= 0.5 else ""
     )
 
     plt.figure(figsize=(10, 8))
@@ -52,7 +52,7 @@ def compute_ead(df, vars, results_root):
         corr = df_run[vars_hm].corr(method='spearman')
         annot = corr.copy()
         annot = annot.map(
-            lambda v: f"{v:.2f}" if abs(v) >= 0.7 else ""
+            lambda v: f"{v:.2f}" if abs(v) >= 0.5 else ""
         )
         plt.figure(figsize=(8, 6))
         sns.heatmap(corr, annot=annot, fmt="", cmap="coolwarm", center=0)

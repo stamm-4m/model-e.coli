@@ -21,11 +21,13 @@ class ExperimentDataset:
             "Induction": "I"
         })
 
+        df["t"] = df["time"]
         self.df = df 
 
         self.t = df["time"].values
 
         self.data = {
+            "t": df["time"].values,
             "X": df["X"].values,
             "S": df["S"].values,
             "P": df["P"].values,

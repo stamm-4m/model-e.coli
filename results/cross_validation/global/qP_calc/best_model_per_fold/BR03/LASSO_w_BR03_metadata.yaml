@@ -1,6 +1,0 @@
-model: LASSO_w
-test_group: BR03
-features:
-- T
-- V_calc
-- Xlag1_calc

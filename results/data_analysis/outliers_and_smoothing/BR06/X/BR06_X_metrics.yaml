@@ -1,0 +1,26 @@
+file: BR06
+variable: X
+outliers:
+  present: false
+  count: 0
+  indices: []
+  replacement_methods: {}
+special_outliers:
+  applied: true
+  details:
+    last_max_pair:
+      last_index: 27
+      max_index: 25
+      original_values:
+        last: 38.228571428571435
+        max: 38.84285714285721
+      final_value: 38.53571428571432
+statistics:
+  raw:
+    mean: 24.464249133912833
+    std: 14.995263554730942
+  treated:
+    info: if 'smooth = True' refers to smoothed data
+    mean: 24.464249133912837
+    std: 14.995038870828234
+  MAPE_raw_vs_treated: 0.056934637637081384

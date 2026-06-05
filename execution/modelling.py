@@ -12,7 +12,7 @@ from joblib import Parallel, delayed
 logging.basicConfig(level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s")
 
-# Global parameters
+# Global parameters # use_log
 output_dir_r = Path("results/modelling")
 os.makedirs(output_dir_r, exist_ok=True)
 cfg = load_yaml("src/config/default_parameters.yaml")
@@ -47,7 +47,7 @@ plots = ("boxplot", "heatmap") # "by_run" "ranking"
 ensemble_mode = "fold"
 output_dir = output_dir_r / ensemble_mode
 
-results = Parallel(n_jobs=1, backend="loky")( # -1
+results = Parallel(n_jobs=-1, backend="loky")( # -1
     delayed(run_model)(name, path, output_dir, cfg, theta, param_names, full_params, ensemble_mode)
     for name, path in model_configs.items() )
 

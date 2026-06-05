@@ -25,8 +25,8 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
         df = pd.DataFrame(datasets[br_id])
 
-        if br_id in ["BR07", "BR08"]:
-            df = df.iloc[:-1]
+        # if br_id in ["BR07", "BR08"]:
+        #     df = df.iloc[:-1]
 
         # Indicates the dataset name
         df["Run_ID"] = br_id
@@ -38,6 +38,8 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
         # qP and mu calculation
         time_sb, time_ind = get_time_ranges(yaml_params, br_id)
+
+        df["t_ind"] = df["t"] - time_ind
 
         df_semibatch = df[(df["time"] >= time_sb) & (df["time"] < time_ind)].copy()
         df_induction = df[df["time"] >= time_ind].copy()

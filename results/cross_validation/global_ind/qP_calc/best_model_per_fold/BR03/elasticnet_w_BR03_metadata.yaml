@@ -1,7 +1,0 @@
-model: elasticnet_w
-test_group: BR03
-features:
-- T
-- FS_calc
-- V_calc
-- Xlag1_calc

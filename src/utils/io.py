@@ -194,19 +194,31 @@ def stringify_params(params):
 def get_param_grid(model_name):
     if model_name == "linear":
         return {}  # No hyperparams 
-    
-    elif model_name in ("LASSO_p", "LASSO_w"):
+        
+    elif model_name == "poisson":
+        return {
+            "model__alpha": np.logspace(-6, 1, 10)
+        }
+        
+    elif model_name == "tweedie":
+        return {
+            "model__power": [1.1, 1.3, 1.5, 1.7, 1.9],
+            "model__alpha": np.logspace(-6, 1, 10),
+            "model__link": ["log"]
+        }
+
+    elif model_name in ("LASSO_p", "LASSO_b"):
         return {
             "model__alpha": np.logspace(-4, 1, 20),  # 1e-4 → 10
             "model__max_iter": [10000]
         }
     
-    elif model_name in ("Ridge_p", "Ridge_w"):
+    elif model_name in ("Ridge_p", "Ridge_b"):
         return {
             "model__alpha": np.logspace(-4, 2, 20)  # 1e-4 → 100
         }
     
-    elif model_name in ("elasticnet_w", "elasticnet_p"):
+    elif model_name in ("elasticnet_b", "elasticnet_p"):
         return {
             "model__alpha": np.logspace(-4, 1, 10),
             "model__l1_ratio": [0.1, 0.5, 0.7, 0.9, 1.0],
@@ -246,7 +258,7 @@ def get_param_grid(model_name):
                 "model__epsilon": [0.01, 0.1, 1]
             }
 
-    elif model_name in ( "rf_w", "rf_p"):
+    elif model_name in ( "rf_b", "rf_p"):
         return {
             "n_estimators": [100, 200],
             "max_depth": [None, 5, 10],
@@ -258,7 +270,7 @@ def get_param_grid(model_name):
             # "min_samples_leaf": [1, 2, 5]
         }
 
-    elif model_name in ("gbm_w", "gbm_p"):
+    elif model_name in ("gbm_b", "gbm_p"):
         return {
             "n_estimators": [100, 200],
             "learning_rate": [0.01, 0.05, 0.1],
@@ -326,7 +338,7 @@ def get_param_grid(model_name):
 
 def models_dict(model_names):
 
-    from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet #, SGDRegressor
+    from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet, PoissonRegressor, TweedieRegressor #, SGDRegressor
     from sklearn.tree import DecisionTreeRegressor
     from sklearn.svm import SVR
     from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
@@ -337,18 +349,24 @@ def models_dict(model_names):
     from sklearn.neighbors import KNeighborsRegressor
 
     model_definitions  = {
-        "linear": LinearRegression(positive=True),
-        "LASSO_w": Pipeline([
+        "linear": LinearRegression(positive=True),        
+        "poisson": Pipeline([
+            ("scaler", StandardScaler()),
+            ("model", PoissonRegressor())]),
+        "tweedie": Pipeline([
+            ("scaler", StandardScaler()),
+            ("model", TweedieRegressor())]),
+        "LASSO_b": Pipeline([
             ("scaler", StandardScaler()),
             ("model", Lasso(random_state=42))]),
-        "Ridge_w": Pipeline([
+        "Ridge_b": Pipeline([
             ("scaler", StandardScaler()),
             ("model", Ridge(random_state=42))]),
-        "elasticnet_w": Pipeline([
+        "elasticnet_b": Pipeline([
             ("scaler", StandardScaler()),
             ("model", ElasticNet(random_state=42))]),
         "tree": DecisionTreeRegressor(random_state=42),
-        "rf_w": RandomForestRegressor(random_state=42),
+        "rf_b": RandomForestRegressor(random_state=42),
         "gpm_w": GradientBoostingRegressor(random_state=42),
         "svm_linear": Pipeline([
             ("scaler", StandardScaler()),

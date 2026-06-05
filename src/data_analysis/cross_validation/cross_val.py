@@ -28,8 +28,8 @@ def cross_validation(df,y_var,in_dir,out_dir,top_n=2):
 
     # Model 
     model_names = config["models"].keys()
-    # model_names = ["linear", "LASSO_w", "Ridge_w", "elasticnet_w", "tree", 
-    #                "rf_w", "gbm_w", "svm_linear", "LASSO_p", "Ridge_p", 
+    # model_names = ["linear", "LASSO_b", "Ridge_b", "elasticnet_b", "tree", 
+    #                "rf_b", "gbm_b", "svm_linear", "LASSO_p", "Ridge_p", 
     #                "elasticnet_p","svm_rbf", "svm_poly", "rf_p", 
     #                "gbm_p", "knn"] # "mlp", "gpr"
     
@@ -92,7 +92,13 @@ def evaluate_models_leave_one_run(df, models_dict, y_var, run_col):
         features = model_info["features"]
   
         X_all = df[features].values
-        y_all = df[y_var].values
+        y_all_orig = df[y_var].values
+
+        if model_name in ("poisson", "tweedie"):
+            y_all = y_all_orig
+        else:
+            y_all = np.log1p(y_all_orig)
+
         time_all = df["time"].values
         
         # gkf = GroupKFold(n_splits=df[run_col].nunique())  
@@ -145,6 +151,12 @@ def evaluate_models_leave_one_run(df, models_dict, y_var, run_col):
             #     y_pred = scaler.inverse_transform(y_pred.reshape(-1, 1)).ravel() #####
 
             k = len(features) 
+            
+            use_log = model_name not in ("poisson", "tweedie")
+            if use_log:
+                y_test = np.expm1(y_test)
+                y_pred = np.expm1(y_pred)
+
             metrics = compute_metrics(y_test, y_pred, k)
 
             # best_params = grid.best_params_ if grid else {}

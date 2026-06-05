@@ -14,13 +14,15 @@ def plot_all_metrics(cv_results, metrics, out_dir, plots=("by_run", "boxplot", "
 
     palette = {
         "linear": "#071620",
-        "LASSO_w": "#1a568f",
-        "Ridge_w": "#479cd8",
-        "elasticnet_w": "#728ea1",
+        "LASSO_b": "#1a568f",
+        "poisson": "#313b44",
+        "tweedie": "#6fa8dd",
+        "Ridge_b": "#479cd8",
+        "elasticnet_b": "#728ea1",
         "tree": "#28d628",
-        "rf_w": "#08580c",
-        "gbm_w": "#598056",
-        "svm_linear": "#f2f700",
+        "rf_b": "#08580c",
+        "gbm_b": "#598056",
+        "svm_linear": "#ffdb0dff",
         "LASSO_p": "#004b91",
         "Ridge_p": "#007fda",
         "elasticnet_p": "#728ea1",
@@ -34,9 +36,10 @@ def plot_all_metrics(cv_results, metrics, out_dir, plots=("by_run", "boxplot", "
     }
 
     marker = {
-        "linear": "o", "LASSO_w": "o", "Ridge_w": "o", 
-        "elasticnet_w": "o", "tree": "o",
-        "rf_w": "o", "gbm_w": "o", "svm_linear": "o",
+        "linear": "o", "poisson": "o", "tweedie": "o",
+        "LASSO_b": "o", "Ridge_b": "o", 
+        "elasticnet_b": "o", "tree": "o",
+        "rf_b": "o", "gbm_b": "o", "svm_linear": "o",
         
         "LASSO_p": "d", "Ridge_p": "d", "elasticnet_p": "d",
         "svm_rbf": "d", "svm_poly": "d", "gpr": "d",

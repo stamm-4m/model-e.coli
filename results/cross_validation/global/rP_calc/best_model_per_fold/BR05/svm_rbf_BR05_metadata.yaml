@@ -1,6 +1,7 @@
 model: svm_rbf
 test_group: BR05
 features:
-- X_calc
-- V_calc
-- Xlag1_calc
+- t_ind
+- P
+- I
+- Plag1

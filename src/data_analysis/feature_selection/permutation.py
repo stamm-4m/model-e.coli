@@ -8,7 +8,7 @@ from sklearn.base import clone
 from src.utils.io import select_optimal_model_feature, custom_group_split, get_param_grid # , stringify_params
 from src.utils.metrics_io import compute_metrics
 
-def permutation_feature_selection(df, X_vars, y_var, models, summary, all_results):
+def permutation_feature_selection(df, X_vars, y_var, c_var, models, summary, all_results):
 
     for name, model in models.items():
 
@@ -18,7 +18,7 @@ def permutation_feature_selection(df, X_vars, y_var, models, summary, all_result
         #     importance_type = "model"
         importance_type = "permutation"
 
-        results = permutation_importance_analysis(df, X_vars, y_var, model, 
+        results = permutation_importance_analysis(df, X_vars, y_var, c_var, model, 
                                 model_name = name, 
                                 importance_type = importance_type) 
                                 
@@ -37,10 +37,15 @@ def permutation_feature_selection(df, X_vars, y_var, models, summary, all_result
     return summary, all_results
 
 # ------------- permutation importance for  RF, GBM and MLP ---------------
-def permutation_importance_analysis(df, X_vars, y_var, model, model_name, importance_type):
+def permutation_importance_analysis(df, X_vars, y_var, c_var, model, model_name, importance_type):
 
-    y = df[y_var].values
+    y_orig = df[y_var].values
     results = []
+
+    if model_name in ("poisson", "tweedie"):
+        y = y_orig
+    else:
+        y = np.log1p(y_orig)
 
     # -------- Initial hyperparameter tuning --------
     param_grid = get_param_grid(model_name)
@@ -51,7 +56,9 @@ def permutation_importance_analysis(df, X_vars, y_var, model, model_name, import
     remaining = list(X_vars)
 
     # for k in range(1, len(X_vars) + 1):
-    while len(remaining) >= 1:
+    # while len(remaining) >= 1:
+    # while any(v not in c_var for v in remaining):
+    while True:
         X_sel = df[remaining].values
 
         # Tune at each subset
@@ -70,18 +77,22 @@ def permutation_importance_analysis(df, X_vars, y_var, model, model_name, import
             model_clone.fit(X_sel[train_idx], y[train_idx])
             y_pred[test_idx] = model_clone.predict(X_sel[test_idx])
 
+        use_log = model_name not in ("poisson", "tweedie")
+        if use_log:
+            y_pred = np.expm1(y_pred)
+
         mask = groups != "BR09"
-        metrics = compute_metrics(y[mask],y_pred[mask], len(remaining))
+        metrics = compute_metrics(y_orig[mask],y_pred[mask], len(remaining))
         # metrics = compute_metrics(y, y_pred, len(remaining))
 
         # -------- Importance ----------
         if hasattr(current_model, "named_steps"):
             # final_model = list(best_model.named_steps.values())[-1]
             final_model = current_model.named_steps["model"]
-            params = current_model.named_steps["model"].get_params()
+            # params = current_model.named_steps["model"].get_params()
         else:
             final_model = current_model
-            params = current_model.get_params()
+            # params = current_model.get_params()
         
         kernel_str = str(getattr(final_model, "kernel", None))
 
@@ -114,8 +125,22 @@ def permutation_importance_analysis(df, X_vars, y_var, model, model_name, import
         })
 
         # Remove the least important feature
-        worst_feature = ranked[-1][0]
+        # worst_feature = ranked[-1][0]
+        # remaining.remove(worst_feature)
+        
+        removable = [(feat, imp) for feat, imp in zip(remaining, importances) if feat not in c_var]
+
+        # if len(removable) == 0:
+        #     break
+        is_cvar_case = set(remaining) == set(c_var)
+        
+        if is_cvar_case:
+            break
+
+        worst_feature = sorted(removable, key=lambda x: x[1])[0][0]
         remaining.remove(worst_feature)
+
+        
 
     return results
 

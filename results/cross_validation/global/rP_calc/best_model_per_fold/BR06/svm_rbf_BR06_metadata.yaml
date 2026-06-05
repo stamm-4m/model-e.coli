@@ -1,0 +1,7 @@
+model: svm_rbf
+test_group: BR06
+features:
+- t_ind
+- P
+- I
+- Plag1

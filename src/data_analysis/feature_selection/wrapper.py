@@ -1,109 +1,86 @@
 
+import matplotlib
+matplotlib.use("Agg")
+
 import numpy as np
+from pathlib import Path
+import pandas as pd
 
-from sklearn.feature_selection import RFE
-from sklearn.model_selection import GridSearchCV
-from sklearn.base import clone
+from src.data_analysis.feature_selection.backward import backward_feature_selection 
+from src.data_analysis.feature_selection.permutation import permutation_feature_selection
+from src.data_analysis.feature_selection.plots_wrapper import (
+    plot_metric_comparison, plot_feature_heatmap_from_summary, plot_metrics_heatmap_from_summary) # 
+from src.utils.io import save_yaml, to_python_type, models_dict, save_wrapper_summary_table, timer
 
-from src.utils.io import select_optimal_model_feature, custom_group_split, get_param_grid
-from src.utils.metrics_io import compute_metrics
+# from sklearn.model_selection import cross_val_predict
+# from sklearn.model_selection import GroupKFold
 
-def wrapper_feature_selection(df, X_vars, y_var, models, summary, all_results):
+# ----------- Global function ------------
+@timer
+def wrapper_feature_selection(df, X_vars, y_var, c_var, model_names_w, model_names_p, out_path):
 
-    for name, model in models.items():
+    print(f"Starting RFE for {y_var} by wrapper models ... \n")
+    out_dir = Path(out_path)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    
+    all_results = {}
+    summary = {}
+    metrics = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE", "AIC", "BIC"]
 
-        results = rfe_analysis(df, X_vars, y_var, model, model_name=name)
+# ----------- Recursive Feature Selection (RFE) (Wrapper methods) ---------------
+    models_wrapper = models_dict(model_names_w)
+    
+    summary, all_results = backward_feature_selection(df, X_vars, y_var, c_var, models_wrapper, summary, all_results)
+    print(f"\nRFE for wrapper models finished \n")
 
-        print(f"Features selection for {name} model done")
+    wrapper_results = {k: v for k, v in all_results.items() if k in model_names_w}
 
-        all_results[name] = results
+# ----------- Feature selection based on permutation importance ---------------
+    models_permutation = models_dict(model_names_p)
 
-        best, best_score = select_optimal_model_feature(results)
+    summary, all_results = permutation_feature_selection(df, X_vars, y_var, c_var, models_permutation, summary, all_results)
+    print(f"\nPermutation feature selection finished \n")
 
-        # Saving the best model
-        # X_sel = df[best["features"]].values
-        # y = df[y_var].values
-        # model.fit(X_sel, y)
-        # save_model(model, name, out_dir/"models")
+    permutation_results = {k: v for k, v in all_results.items() if k in model_names_p}
 
-        summary[name] = {
-            "n_features": len(best["features"]),
-            "features": best["features"],
-            "metrics": best["metrics"]
-        }
+# ----------- Plot -----------------------
+    for m in metrics:
+        plot_metric_comparison(wrapper_results,metric_name=m,out_dir=out_dir / "metrics", model_type = "wrapper")
+        plot_metric_comparison(permutation_results,metric_name=m,out_dir=out_dir / "metrics", model_type = "permutation")
+    
+# ----------- Metrics ---------------
+    best_score = np.inf
+    best_global = None
 
-    return summary, all_results
+    for model_name, info in summary.items():
 
-# ---------------- RFE analysis for linear, tree and SVM---------------
+        score = info["metrics"]["AIC"]
 
-def rfe_analysis(df, X_vars, y_var, model, model_name):
+        if score < best_score:
+            best_score = score
+            best_global = model_name
 
-    y = df[y_var].values
+# ----------- YAML ---------------
+    yaml_data = {
+        "target": y_var,
+        "best_model": best_global,
+        "best_info": summary[best_global],
+        "models": summary
+    }
+    
+    yaml_data = to_python_type(yaml_data)
 
-    results = []
+    save_yaml(yaml_data, Path(out_path)/"wrapper_summary.yaml")
 
-    # ---------------- Hyperparameter tuning ----------------
-    param_grid = get_param_grid(model_name)
-    groups = df["Run_ID"].values
-    inner_cv = list(custom_group_split(groups, fixed_group="BR09"))
+    # Table and metrics of features 
+    excel_path = Path(out_path) / "metrics_global.xlsx"
+    save_wrapper_summary_table(yaml_data, excel_path)
+    df = pd.read_excel(excel_path)
+    plot_metrics_heatmap_from_summary(df, Path(out_path))
+    plot_feature_heatmap_from_summary(yaml_data, Path(out_path))
 
-    # importance_getter = get_importance_getter(best_model)
-    if model_name in ("svm_linear", "LASSO_w", "Ridge_w", "elasticnet_w"):
-        importance_getter = lambda est: np.abs(est.named_steps["model"].coef_).ravel()
-    elif model_name in ("tree", "rf_w", "gbm_w"):
-        importance_getter = "feature_importances_"
-    elif model_name == "linear":
-        importance_getter = lambda est: np.abs(est.coef_).ravel()
-        # importance_getter = "coef_"
-    else:
-        importance_getter = "auto"  
+   # return 
 
-    selected_vars = list(X_vars)
 
-    # ---------------- RFE loop ----------------
-    # k = 1
-    while len(selected_vars) >= 1:
-        X_sel = df[selected_vars].values
 
-        # Tune
-        grid = GridSearchCV(model, param_grid, cv=inner_cv,  # cv=5, 
-                            scoring="neg_mean_squared_error",
-                            n_jobs=-1)
-        grid.fit(X_sel, y, groups=groups)
-        current_model = grid.best_estimator_
 
-        # Fit model with best hyperparameters
-        # current_model.fit(X_sel, y)
-        y_pred = np.zeros_like(y, dtype=float)
-
-        for train_idx, test_idx in custom_group_split(groups, "BR09"):
-            model_clone = clone(current_model)
-            model_clone.fit(X_sel[train_idx], y[train_idx])
-            y_pred[test_idx] = model_clone.predict(X_sel[test_idx])
-
-        mask = groups != "BR09"
-        metrics = compute_metrics(y[mask], y_pred[mask],len(selected_vars))
-
-        results.append({
-            "k": len(selected_vars),
-            "features": selected_vars.copy(),
-            "metrics": metrics,
-            "best_params": current_model.get_params()
-        })
-
-        # ------ Stop condition --------
-        if len(selected_vars) == 1:
-            break
-        
-        # ---- RFE ----
-        X_rfe = X_sel[mask]
-        y_rfe = y[mask]
-        rfe = RFE(estimator = current_model, 
-            n_features_to_select = len(selected_vars) - 1,
-            importance_getter = importance_getter)
-        rfe.fit(X_rfe, y_rfe)
-        selected_vars = [v for v, s in zip(selected_vars, rfe.support_) if s]
-        
-        # k += 1
-
-    return results
