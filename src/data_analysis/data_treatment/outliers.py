@@ -35,6 +35,10 @@ def process_all_datasets(datasets, time_col="time", variable_list=None, results_
         br_id = get_br_id(dataset)
         print(f"Processing dataset: {br_id}")
 
+        # if br_id in ("BR06", "BR07", "BR08"):
+        #     # dataset = dataset.drop(dataset.index[-1])
+        #     dataset.df.drop(dataset.df.index[-1], inplace=True)
+
         br_results_dir = f"{results_root}/{br_id}"
         all_metrics[br_id] = {}
 

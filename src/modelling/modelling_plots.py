@@ -31,7 +31,7 @@ def plot_single_model(dataset, solution, model_name, output_dir):
     plt.close()
 
 
-def plot_multi_dataset_model(datasets, solutions, model_name, output_dir):
+def plot_multi_dataset_model(datasets, solutions, model_name, output_dir, P_ML=None, dense=False):
 
     n = len(datasets)
 
@@ -56,9 +56,16 @@ def plot_multi_dataset_model(datasets, solutions, model_name, output_dir):
         t_exp = dataset.t
         P_exp = dataset.data["P"]
 
-        sol = solutions[dataset_key]["sol"]
+        if dense:
+            sol = solutions[dataset_key]["dense"]
+        else:
+            sol = solutions[dataset_key]["sol"]
+        
         t_model = sol.t
-        P_model = sol.y[2]
+        if P_ML is not None:
+            P_model = P_ML[dataset_key]
+        else:
+            P_model = sol.y[2]
 
         ax.plot(t_exp, P_exp, "o", label="Exp")
         ax.plot(t_model, P_model, "-", label=model_name)

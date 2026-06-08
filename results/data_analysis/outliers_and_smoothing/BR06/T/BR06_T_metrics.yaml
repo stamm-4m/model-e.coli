@@ -18,10 +18,10 @@ special_outliers:
   details: {}
 statistics:
   raw:
-    mean: 32.41392857142857
-    std: 3.9427850828042432
+    mean: 32.541111111111114
+    std: 3.958333528265101
   treated:
     info: if 'smooth = True' refers to smoothed data
-    mean: 32.415789283839935
-    std: 3.942361973225791
-  MAPE_raw_vs_treated: 0.00598110374552839
+    mean: 32.543013407653596
+    std: 3.957826947599248
+  MAPE_raw_vs_treated: 0.006120133201706785

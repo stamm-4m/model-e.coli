@@ -16,15 +16,15 @@ class FedBatchBalances:
 
     def dfdt(self, t, state, FS, FA, ind_F):
         X, S, P, V = state # T also
-        # P = max(P, 0)
-        P = max(P, -1e-8)
+
+        # P = max(P, -1e-8)
 
         T = self.temperature.F(t)
 
         # V_real, dV_real = self.volume.F(t)
         # X_real, dX_real, mu_real = self.biomass.F(t)
 
-        induction = self.induction_P.F(t)
+        induction, t_ind = self.induction_P.F(t)
 
         dVdt = FS + FA 
         # dVdt = dV_real
@@ -78,6 +78,8 @@ class FedBatchBalances:
                 # "X": X_real, 
                 # "S": S, 
                 # "V": V_real,
+                "t": t, 
+                "t_ind": t-t_ind,
                 "P": P,
                 "T": T,
                 "I": induction,
@@ -99,9 +101,14 @@ class FedBatchBalances:
                 "dVdt_calc": dVdt
             }
 
-            # features = {k: np.float64(v) for k, v in features.items()}
-            features = {k: float(np.round(v, 6)) for k, v in features.items()}
+            features = {k: np.float64(v) for k, v in features.items()}
 
+            if self.kinetics.PMLmodel:
+                P_ML = self.kinetics.PML_model(features, self.br_id)
+                P_ML = np.clip(P_ML, 0, None)
+                # features["P"] = P_ML
+                features["P"] = np.mean([P, P_ML])
+            
             if self.kinetics.use_rp:
                 rP = self.kinetics.rp_hybrid(features, self.br_id)
             elif self.kinetics.use_qp:

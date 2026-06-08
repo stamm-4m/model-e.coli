@@ -9,18 +9,18 @@ special_outliers:
   applied: true
   details:
     last_max_pair:
-      last_index: 27
+      last_index: 26
       max_index: 25
       original_values:
-        last: 38.228571428571435
+        last: 38.4107142857143
         max: 38.84285714285721
-      final_value: 38.53571428571432
+      final_value: 38.62678571428576
 statistics:
   raw:
-    mean: 24.464249133912833
-    std: 14.995263554730942
+    mean: 23.95445941929585
+    std: 15.0302762794127
   treated:
     info: if 'smooth = True' refers to smoothed data
-    mean: 24.464249133912837
-    std: 14.995038870828234
-  MAPE_raw_vs_treated: 0.056934637637081384
+    mean: 23.954459419295855
+    std: 15.030161234976285
+  MAPE_raw_vs_treated: 0.04143702755577305

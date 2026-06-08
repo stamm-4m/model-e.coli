@@ -1,0 +1,6 @@
+model: rf_b
+test_group: BR05
+features:
+- t
+- t_ind
+- I

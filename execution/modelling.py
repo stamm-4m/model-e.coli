@@ -21,13 +21,15 @@ full_params = { k: cfg["kinetics"][k]["value"] for k in param_names }
 theta = [ cfg["kinetics"][k]["value"] for k in param_names ]
 
 model_configs = {
-    "parametric": None,
-    "global_qP": "results/cross_validation/global/qP_calc/best_model_per_fold",
-    "global_rP": "results/cross_validation/global/rP_calc/best_model_per_fold",
-    "global_ind_qP": "results/cross_validation/global_ind/qP_calc/best_model_per_fold",
-    "global_ind_rP": "results/cross_validation/global_ind/rP_calc/best_model_per_fold",
-    "induction_qP": "results/cross_validation/induction/qP_calc/best_model_per_fold",
-    "induction_rP": "results/cross_validation/induction/rP_calc/best_model_per_fold",
+    # "parametric": None,
+    # "global_qP": "results/cross_validation/global/qP_calc/best_model_per_fold",
+    # "global_rP": "results/cross_validation/global/rP_calc/best_model_per_fold",
+    # "global_ind_qP": "results/cross_validation/global_ind/qP_calc/best_model_per_fold",
+    # "global_ind_rP": "results/cross_validation/global_ind/rP_calc/best_model_per_fold",
+    # "induction_qP": "results/cross_validation/induction/qP_calc/best_model_per_fold",
+    # "induction_rP": "results/cross_validation/induction/rP_calc/best_model_per_fold",
+
+    "global_P": "results/cross_validation/global/P/best_model_per_fold",
 }
 
 MODEL_COLORS = {
@@ -38,6 +40,7 @@ MODEL_COLORS = {
         "global_ind_rP": "tab:red",
         "induction_qP": "tab:purple",
         "induction_rP": "tab:brown",
+        "global_P": "tab:red",
     }
 
 metrics_name = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE", "AIC", "BIC"]
@@ -46,9 +49,10 @@ plots = ("boxplot", "heatmap") # "by_run" "ranking"
 # --------------------- per fold ----------------------
 ensemble_mode = "fold"
 output_dir = output_dir_r / ensemble_mode
+dense = True
 
-results = Parallel(n_jobs=-1, backend="loky")( # -1
-    delayed(run_model)(name, path, output_dir, cfg, theta, param_names, full_params, ensemble_mode)
+results = Parallel(n_jobs=1, backend="loky")( # -1
+    delayed(run_model)(name, path, output_dir, cfg, theta, param_names, full_params, ensemble_mode, dense)
     for name, path in model_configs.items() )
 
 all_global_results = []
@@ -100,7 +104,7 @@ ensemble_mode = "global"
 output_dir = output_dir_r / ensemble_mode
 
 results = Parallel(n_jobs=1, backend="loky")( # -1
-    delayed(run_model)(name, path, output_dir, cfg, theta, param_names, full_params, ensemble_mode)
+    delayed(run_model)(name, path, output_dir, cfg, theta, param_names, full_params, ensemble_mode, dense)
     for name, path in model_configs.items() )
 
 all_global_results = []

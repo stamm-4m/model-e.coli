@@ -14,6 +14,7 @@ from src.core.reactor.balances import FedBatchBalances
 from src.core.reactor.fedbatch_model import FedBatchModel
 from src.utils.io import get_br_id, timer
 from src.utils.metrics_io import compute_metrics
+from src.utils.io import load_yaml
 
 @timer
 def build_experiments(cfg, kin, BR09=False):
@@ -94,7 +95,9 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
 
     for dataset, simulator, y0 in zip(datasets, simulators, y0s):
 
-        # br_id = get_br_id(dataset) 
+        br_id = get_br_id(dataset) 
+        # cfg = load_yaml("src/config/default_parameters.yaml")
+        # t_ind = cfg["bioreactor"][br_id]["t_ind"]["value"]
         # if br_id in ("BR07", "BR08"):
         #     t_span = (dataset.t[0], dataset.t[-2])
         #     t_eval = dataset.t[:-1]
@@ -108,16 +111,12 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
             y0 = y0,
             t_span = t_span ,
             t_eval = t_eval ) 
-        
-        X_model, S_model, P_model, V_model = sol.y
-        t_vals = sol.t
 
         if dense:
             sol_dense = simulator.run( 
                 y0 = y0,
                 t_span = t_span ,
-                t_eval = t_eval_dense, 
-                dense_ouput = True )
+                t_eval = t_eval_dense )
         else:
             sol_dense = None
 
@@ -131,13 +130,62 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
         mu_values = []
         dXdt_values = []
         dVdt_values = []
+        P_ML_values = []
+        P_ML_values_dense = []
 
+        if dense == True:
+            X_model, S_model, P_model, V_model = sol_dense.y
+            for i, t in enumerate(sol_dense.t):
+                X = X_model[i]
+                S = S_model[i]
+                T = simulator.model.balances.temperature.F(t)
+
+                ind_F, t_ind = simulator.model.balances.induction_P.F(t)
+                FS = simulator.model.feed_S.F(t)[0]
+                FA = simulator.model.feed_A.F(t)[0]
+
+                mu = kin.mu(X, S, T, ind_F)
+                mu_values.append(mu)
+
+                state = np.array([X_model[i], S_model[i], P_model[i], V_model[i]])           
+                derivatives = simulator.model.balances.dfdt(t, state, FS, FA, ind_F)
+
+                dXdt = derivatives[0]  
+                dXdt_values.append(dXdt)
+
+                dVdt = derivatives[3]  # 4th equation
+                dVdt_values.append(dVdt)
+                
+                if kin.PMLmodel == True and kin.hybrid == False:
+
+                    features =  {  # "X": X_real, # "S": S, # "V": V_real,
+                        "t": t, 
+                        "t_ind": t - t_ind,
+                        "T": T,
+                        "I": ind_F, # "mu": mu_real, 
+                        "FS_calc": FS,          # "dXdt": dX_real,# "dSdt": dSdt, # "dVdt": dV_real,# "Xlag1": self.prev_X_real, 
+                        "Xlag1_calc": X_model[i] if i == 0 else X_model[i-1],  
+                        "Plag1": 0 if i == 0 else P_ML_values_dense[i-1],
+                        "X_calc": X,
+                        "V_calc": V_model[i], 
+                        "mu_calc": mu, 
+                        "dXdt_calc": dXdt, 
+                        "dVdt_calc": dVdt}
+
+                    features = {k: np.float64(v) for k, v in features.items()}
+
+                    value = kin.PML_model(features, br_id)
+                    P_ML_values_dense.append( np.clip(value, 0, None) )
+                    # features["P"] = P_ML
+
+        X_model, S_model, P_model, V_model = sol.y
+        t_vals = sol.t
         for i, t in enumerate(t_vals):
             X = X_model[i]
             S = S_model[i]
             T = simulator.model.balances.temperature.F(t)
 
-            ind_F = simulator.model.balances.induction_P.F(t)
+            ind_F, t_ind = simulator.model.balances.induction_P.F(t)
             FS = simulator.model.feed_S.F(t)[0]
             FA = simulator.model.feed_A.F(t)[0]
 
@@ -152,10 +200,35 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
 
             dVdt = derivatives[3]  # 4th equation
             dVdt_values.append(dVdt)
+            
+            if kin.PMLmodel == True and kin.hybrid == False:
+
+                features =  {  # "X": X_real, # "S": S, # "V": V_real,
+                    "t": t, 
+                    "t_ind": t - t_ind,
+                    "T": T,
+                    "I": ind_F, # "mu": mu_real, 
+                    "FS_calc": FS,          # "dXdt": dX_real,# "dSdt": dSdt, # "dVdt": dV_real,# "Xlag1": self.prev_X_real, 
+                    "Xlag1_calc": X_model[i] if i == 0 else X_model[i-1],  
+                    "Plag1": 0 if i == 0 else P_ML_values[i-1],
+                    "X_calc": X,
+                    "V_calc": V_model[i], 
+                    "mu_calc": mu, 
+                    "dXdt_calc": dXdt, 
+                    "dVdt_calc": dVdt}
+
+                features = {k: np.float64(v) for k, v in features.items()}
+
+                value = kin.PML_model(features, br_id)
+                P_ML_values.append( np.clip(value, 0, None) )
+                # features["P"] = P_ML
+
 
         mu_values = np.array(mu_values)
         dVdt_values = np.array(dVdt_values)
         dXdt_values = np.array(dXdt_values)
+        P_ML_values = np.array(P_ML_values)
+        P_ML_values_dense = np.array(P_ML_values_dense)
 
         # Collect values for global regression metrics
         all_y_exp.append(dataset.data["X"])
@@ -163,9 +236,14 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
         all_y_exp.append(dataset.data["P"])
         all_y_exp.append(dataset.data["V"])
 
+        if kin.PMLmodel == True and kin.hybrid == False:
+            P_pred = P_ML_values
+        else:
+            P_pred = P_model
+
         all_y_model.append(X_model)
         all_y_model.append(S_model)
-        all_y_model.append(P_model)
+        all_y_model.append(P_pred)
         all_y_model.append(V_model)
 
         # Regression metrics per variable
@@ -176,7 +254,7 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
         metrics = {
             "X": compute_metrics(dataset.data["X"], X_model, k=len(theta)),
             "S": compute_metrics(dataset.data["S"], S_model, k=len(theta)),
-            "P": compute_metrics(dataset.data["P"], P_model, k=len(theta)),
+            "P": compute_metrics(dataset.data["P"], P_pred, k=len(theta)),
             "V": compute_metrics(dataset.data["V"], V_model, k=len(theta))
         }
 
@@ -184,7 +262,7 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
         residuals = np.concatenate([
             X_model - dataset.data["X"],
             S_model - dataset.data["S"],
-            P_model - dataset.data["P"],
+            P_pred - dataset.data["P"],
             V_model - dataset.data["V"]
         ])
 
@@ -200,6 +278,8 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
             "mu": mu_values,
             "dXdt": dXdt_values,
             "dVdt": dVdt_values,
+            "P_ML": P_ML_values,
+            "P_ML_dense": P_ML_values_dense,
         }
 
 

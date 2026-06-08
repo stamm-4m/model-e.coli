@@ -6,7 +6,7 @@ class InductionProfile:
 
     def F(self, t):
         if self.br_id == "BR09":
-            return float(0)
+            return float(0), self.t_ind
         else:
-            return float(t >= self.t_ind)
+            return float(t >= self.t_ind), self.t_ind
 
