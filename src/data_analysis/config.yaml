@@ -1,0 +1,32 @@
+global:
+  P:
+    exclude: [] 
+    c_var: []
+  qP_calc:
+    exclude: [] 
+    c_var: []
+  rP_calc:
+    exclude: [] 
+    c_var: []
+
+induction:
+  P:
+    exclude: [] 
+    c_var: []
+  qP_calc:
+    exclude: [] 
+    c_var: []
+  rP_calc:
+    exclude: []
+    c_var: []
+
+global_ind:
+  P:
+    exclude: [] 
+    c_var: []
+  qP_calc:
+    exclude: [] 
+    c_var: []
+  rP_calc:
+    exclude: [] # X_calc, V_calc, dXdt_calc, dVdt_calc, Xlag1_calc
+    c_var: []

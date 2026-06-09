@@ -1,0 +1,6 @@
+model: svm_rbf
+test_group: BR08
+features:
+- FS_calc
+- Plag1
+- V_calc

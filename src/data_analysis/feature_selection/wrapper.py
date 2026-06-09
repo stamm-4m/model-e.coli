@@ -17,9 +17,9 @@ from src.utils.io import save_yaml, to_python_type, models_dict, save_wrapper_su
 
 # ----------- Global function ------------
 @timer
-def wrapper_feature_selection(df, X_vars, y_var, c_var, model_names_w, model_names_p, out_path):
+def wrapper_feature_selection(df, X_vars, y_var, c_var, model_names_b, model_names_p, out_path):
 
-    print(f"Starting RFE for {y_var} by wrapper models ... \n")
+    print(f"Starting feature elimination for {y_var} ... \n")
     out_dir = Path(out_path)
     out_dir.mkdir(parents=True, exist_ok=True)
     
@@ -27,13 +27,14 @@ def wrapper_feature_selection(df, X_vars, y_var, c_var, model_names_w, model_nam
     summary = {}
     metrics = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE", "AIC", "BIC"]
 
-# ----------- Recursive Feature Selection (RFE) (Wrapper methods) ---------------
-    models_wrapper = models_dict(model_names_w)
+# ----------- (Wrapper methods) ----------------
+# ----------- Backward Feature Elimintaion (before RFE) ---------------
+    models_backward = models_dict(model_names_b)
     
-    summary, all_results = backward_feature_selection(df, X_vars, y_var, c_var, models_wrapper, summary, all_results)
-    print(f"\nRFE for wrapper models finished \n")
+    summary, all_results = backward_feature_selection(df, X_vars, y_var, c_var, models_backward, summary, all_results)
+    print(f"\nBackward feature selection finished \n")
 
-    wrapper_results = {k: v for k, v in all_results.items() if k in model_names_w}
+    backward_results = {k: v for k, v in all_results.items() if k in model_names_b}
 
 # ----------- Feature selection based on permutation importance ---------------
     models_permutation = models_dict(model_names_p)
@@ -44,9 +45,11 @@ def wrapper_feature_selection(df, X_vars, y_var, c_var, model_names_w, model_nam
     permutation_results = {k: v for k, v in all_results.items() if k in model_names_p}
 
 # ----------- Plot -----------------------
+    all_results = {**backward_results, **permutation_results}
     for m in metrics:
-        plot_metric_comparison(wrapper_results,metric_name=m,out_dir=out_dir / "metrics", model_type = "wrapper")
-        plot_metric_comparison(permutation_results,metric_name=m,out_dir=out_dir / "metrics", model_type = "permutation")
+        # plot_metric_comparison(backward_results,metric_name=m,out_dir=out_dir / "metrics", model_type = "backward")
+        # plot_metric_comparison(permutation_results,metric_name=m,out_dir=out_dir / "metrics", model_type = "permutation")
+        plot_metric_comparison(all_results,metric_name=m,out_dir=out_dir / "metrics")
     
 # ----------- Metrics ---------------
     best_score = np.inf

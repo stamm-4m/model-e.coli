@@ -1,0 +1,5 @@
+model: svm_linear
+test_group: global
+features:
+- I
+- Plag1

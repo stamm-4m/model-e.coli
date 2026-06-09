@@ -1,0 +1,8 @@
+model: tweedie
+test_group: BR04
+features:
+- P
+- I
+- Plag1
+- X_calc
+- V_calc

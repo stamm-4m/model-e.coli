@@ -110,7 +110,7 @@ def evaluate_models_leave_one_run(df, models_dict, y_var, run_col):
         param_grid = get_param_grid(model_name)
 
         # for fold, (train_idx, test_idx) in enumerate(gkf.split(X_all, y_all, groups)):
-        for fold, (train_idx, test_idx) in enumerate(custom_group_split(groups, fixed_group="BR09")):
+        for fold, (train_idx, test_idx) in enumerate(custom_group_split(groups, fixed_group=("BR09"))):
 
             X_train = X_all[train_idx]
             y_train = y_all[train_idx]
@@ -129,7 +129,7 @@ def evaluate_models_leave_one_run(df, models_dict, y_var, run_col):
             if param_grid:
                 # inner_cv = GroupKFold(n_splits=5)
                 # inner_cv = list(custom_group_split(groups[train_idx])) 
-                inner_cv = list(custom_group_split(groups[train_idx], fixed_group="BR09"))
+                inner_cv = list(custom_group_split(groups[train_idx], fixed_group=("BR09")))
                 grid = GridSearchCV(model, param_grid, cv=inner_cv,  
                                     scoring="neg_mean_squared_error",
                                     n_jobs=-1)
@@ -236,13 +236,13 @@ def train_and_save_best_model_per_fold(df, models, best_models, y_var, out_dir):
         param_grid = get_param_grid(best_model_name)
 
         # ========== PER FOLD ===============
-        for fold, (train_idx, test_idx) in enumerate(custom_group_split(groups, fixed_group="BR09")):
+        for fold, (train_idx, test_idx) in enumerate(custom_group_split(groups, fixed_group=("BR09"))):
 
             X_train = X_all[train_idx]
             y_train = y_all[train_idx]
             test_group = np.unique(groups[test_idx])[0]
             model = clone(base_model)
-            inner_cv = list(custom_group_split(groups[train_idx], fixed_group="BR09"))
+            inner_cv = list(custom_group_split(groups[train_idx], fixed_group=("BR09")))
 
             grid = GridSearchCV(model,param_grid,cv=inner_cv,
                 scoring="neg_mean_squared_error",n_jobs=-1)
@@ -265,7 +265,7 @@ def train_and_save_best_model_per_fold(df, models, best_models, y_var, out_dir):
 
     # ========= GLOBAL MODEL ================
         global_model = clone(base_model)
-        inner_cv_global = list(custom_group_split(groups, fixed_group="BR09"))
+        inner_cv_global = list(custom_group_split(groups, fixed_group=("BR09")))
 
         grid_global = GridSearchCV(global_model, param_grid, cv=inner_cv_global,
             scoring="neg_mean_squared_error", n_jobs=-1)

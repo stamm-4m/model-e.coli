@@ -1,0 +1,13 @@
+model: tweedie
+test_group: global
+features:
+- t
+- t_ind_ad
+- P
+- I
+- FS_calc
+- Plag1
+- X_calc
+- V_calc
+- mu_calc
+- dVdt_calc

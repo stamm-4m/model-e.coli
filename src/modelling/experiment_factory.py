@@ -103,6 +103,7 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
         #     t_eval = dataset.t[:-1]
         #     t_eval_dense = np.linspace(dataset.t[0], dataset.t[-2], 200)
         # else:
+        t_max = dataset.t[-1]
         t_span = (dataset.t[0], dataset.t[-1])
         t_eval = dataset.t
         t_eval_dense = np.linspace(dataset.t[0], dataset.t[-1], 200) 
@@ -161,6 +162,7 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
                     features =  {  # "X": X_real, # "S": S, # "V": V_real,
                         "t": t, 
                         "t_ind": t - t_ind,
+                        "t_ind_ad": (t - t_ind)/t_max,
                         "T": T,
                         "I": ind_F, # "mu": mu_real, 
                         "FS_calc": FS,          # "dXdt": dX_real,# "dSdt": dSdt, # "dVdt": dV_real,# "Xlag1": self.prev_X_real, 
@@ -206,6 +208,7 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
                 features =  {  # "X": X_real, # "S": S, # "V": V_real,
                     "t": t, 
                     "t_ind": t - t_ind,
+                    "t_ind_ad": (t - t_ind)/t_max,
                     "T": T,
                     "I": ind_F, # "mu": mu_real, 
                     "FS_calc": FS,          # "dXdt": dX_real,# "dSdt": dSdt, # "dVdt": dV_real,# "Xlag1": self.prev_X_real, 

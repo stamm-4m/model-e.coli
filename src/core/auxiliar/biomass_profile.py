@@ -16,6 +16,8 @@ class BiomassProfile:
         self.X = UnivariateSpline(t_exp, X_exp, s=s_calc_uni)
         self.dX = self.X.derivative()
         self.V_profile = V_profile
+        
+        self.t_max = t_exp.max()
 
     def F(self, t):
         V, dV = self.V_profile.F(t)

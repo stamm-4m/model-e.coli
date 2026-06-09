@@ -1,6 +1,0 @@
-model: rf_b
-test_group: global
-features:
-- t
-- t_ind
-- I

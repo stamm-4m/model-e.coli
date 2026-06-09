@@ -40,6 +40,7 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
         time_sb, time_ind = get_time_ranges(yaml_params, br_id)
 
         df["t_ind"] = df["t"] - time_ind
+        df["t_ind_ad"] = df["t_ind"] / df["t"].max()
 
         df_semibatch = df[(df["time"] >= time_sb) & (df["time"] < time_ind)].copy()
         df_induction = df[df["time"] >= time_ind].copy()

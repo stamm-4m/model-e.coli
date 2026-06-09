@@ -50,7 +50,7 @@ def permutation_importance_analysis(df, X_vars, y_var, c_var, model, model_name,
     # -------- Initial hyperparameter tuning --------
     param_grid = get_param_grid(model_name)
     groups = df["Run_ID"].values
-    inner_cv = list(custom_group_split(groups, fixed_group="BR09"))
+    inner_cv = list(custom_group_split(groups, fixed_group=("BR09")))
 
     # -------- Backward elimination loop --------
     remaining = list(X_vars)
@@ -59,6 +59,10 @@ def permutation_importance_analysis(df, X_vars, y_var, c_var, model, model_name,
     # while len(remaining) >= 1:
     # while any(v not in c_var for v in remaining):
     while True:
+
+        if len(remaining) == 0:
+            break  
+
         X_sel = df[remaining].values
 
         # Tune at each subset
@@ -129,12 +133,14 @@ def permutation_importance_analysis(df, X_vars, y_var, c_var, model, model_name,
         # remaining.remove(worst_feature)
         
         removable = [(feat, imp) for feat, imp in zip(remaining, importances) if feat not in c_var]
-
-        # if len(removable) == 0:
-        #     break
-        is_cvar_case = set(remaining) == set(c_var)
         
-        if is_cvar_case:
+        if set(remaining) == set(c_var):
+            break
+
+        if len(remaining) == 1 and len(c_var) == 0:
+            break
+
+        if len(removable) == 0:
             break
 
         worst_feature = sorted(removable, key=lambda x: x[1])[0][0]

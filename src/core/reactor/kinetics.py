@@ -262,7 +262,7 @@ class Kinetic_Models:
         # value = np.sum(weights * preds) / np.sum(weights)
 
         value = max(value, low_value)
-        value = min(value, 2)
+        value = min(value, 2.5)
 
         return value
 

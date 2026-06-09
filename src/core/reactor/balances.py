@@ -42,6 +42,7 @@ class FedBatchBalances:
         # dSdt = - (mu/Y_XS + m) * X + (dV_real * (self.Sf - S) / V_real)
         
         if self.kinetics.hybrid:
+            t_max = self.biomass.t_max
 
             # self.history.append((t, X, X_real, P, V, mu))
             # self.history.sort(key=lambda e: e[0])
@@ -80,6 +81,7 @@ class FedBatchBalances:
                 # "V": V_real,
                 "t": t, 
                 "t_ind": t-t_ind,
+                "t_ind_ad": (t-t_ind)/t_max,
                 "P": P,
                 "T": T,
                 "I": induction,

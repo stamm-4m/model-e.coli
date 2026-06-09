@@ -50,7 +50,7 @@ def backward_feature_analysis(df, X_vars, y_var, c_var, model, model_name):
     # ---------------- Hyperparameter tuning ----------------
     param_grid = get_param_grid(model_name)
     groups = df["Run_ID"].values
-    inner_cv = list(custom_group_split(groups, fixed_group="BR09"))
+    inner_cv = list(custom_group_split(groups, fixed_group=("BR09")))
 
     # importance_getter = get_importance_getter(best_model)
     if model_name in ("svm_linear", "poisson", "tweedie", "LASSO_b", "Ridge_b", "elasticnet_b", "poisson", "tweedie"):
@@ -70,6 +70,10 @@ def backward_feature_analysis(df, X_vars, y_var, c_var, model, model_name):
     # while any(v not in c_var for v in selected_vars):
     
     while True:
+
+        if len(selected_vars) == 0:
+            break  
+        
         X_sel = df[selected_vars].values
 
         # Tune
@@ -128,15 +132,16 @@ def backward_feature_analysis(df, X_vars, y_var, c_var, model, model_name):
         feat_imp = list(zip(selected_vars, importances))
         removable = [(v, imp) for v, imp in feat_imp if v not in c_var]
 
-        # if len(removable) == 0:
-        #     break   
-        #   
-        is_cvar_case = set(selected_vars) == set(c_var)
-        if is_cvar_case:
+        if set(selected_vars) == set(c_var):
+            break
+
+        if len(selected_vars) == 1 and len(c_var) == 0:
+            break
+
+        if len(removable) == 0:
             break
 
         var_to_remove = sorted(removable, key=lambda x: x[1])[0][0]
-
         selected_vars.remove(var_to_remove)
 
     return results

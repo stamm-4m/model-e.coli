@@ -163,7 +163,7 @@ def custom_group_split(groups, fixed_group=None):
     if fixed_group is None:
         test_groups = unique_groups  # Use all
     else:
-        test_groups = [g for g in unique_groups if g != fixed_group]
+        test_groups = [g for g in unique_groups if g not in fixed_group]
 
     for test_g in test_groups:
         test_idx = np.where(groups == test_g)[0]
@@ -197,14 +197,16 @@ def get_param_grid(model_name):
         
     elif model_name == "poisson":
         return {
-            "model__alpha": np.logspace(-6, 1, 10)
+            "model__alpha": np.logspace(-6, 1, 10),
+            "model__max_iter": [1000]
         }
         
     elif model_name == "tweedie":
         return {
             "model__power": [1.1, 1.3, 1.5, 1.7, 1.9],
             "model__alpha": np.logspace(-6, 1, 10),
-            "model__link": ["log"]
+            "model__link": ["log"],
+            "model__max_iter": [1000]
         }
 
     elif model_name in ("LASSO_p", "LASSO_b"):
