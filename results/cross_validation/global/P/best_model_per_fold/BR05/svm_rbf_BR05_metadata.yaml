@@ -1,0 +1,9 @@
+model: svm_rbf
+test_group: BR05
+features:
+- t
+- t_ind
+- t_ind_ad
+- I
+- X_calc
+- V_calc

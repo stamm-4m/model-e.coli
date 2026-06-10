@@ -52,7 +52,7 @@ all_features = ["t", "t_ind", "t_ind_ad",
  
 target = ["qP_calc", "rP_calc", "P"] # "qP", "rP", "P"] 
 
-exclude_features = ["X", "S", "V", "mu", "dXdt", "dSdt", "dVdt", "Xlag1"] # in-line measurments  
+exclude_features = ["X", "S", "V", "mu", "dXdt", "dSdt", "dVdt", "Xlag1", "P", "Plag1"] # in-line measurments  
 vars_ = [v for v in all_features if v not in exclude_features]
 vars_P = [v for v in vars_ if v != "P"]
 
@@ -79,14 +79,13 @@ for name, df in dfs.items():
     base_fs = f"results/feature_selection/{name}"
     base_cv = f"results/cross_validation/{name}"
 
-    # # =================== EAD =================== 
-    # compute_ead(df, vars = vars_ + target[2*i:2*i+1], results_root=f"{base_ead}/qPrP") # qP and rP
-    # compute_ead(df, vars = vars_, results_root=f"{base_ead}/P") # P
+    # =================== EAD =================== 
+    compute_ead(df, vars = vars_ + target[2*i:2*i+2], results_root=f"{base_ead}")
     
     for y_var, X_vars in targets_loop:
-        # # =================== FEATURE SELECTION ===================
-        # # ------------------- Filter methods -------------------
-        # filter_feature_selection(df, X_vars = X_vars, y_var = y_var, out_dir=f"{base_fs}/filter/{y_var}")                                                                 
+        # =================== FEATURE SELECTION ===================
+        # ------------------- Filter methods -------------------
+        filter_feature_selection(df, X_vars = X_vars, y_var = y_var, out_dir=f"{base_fs}/filter/{y_var}")                                                                 
 
         # ------------------- Wrapper -------------------
         cfg = config[name][y_var]

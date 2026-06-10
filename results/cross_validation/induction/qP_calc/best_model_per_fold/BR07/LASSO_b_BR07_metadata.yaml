@@ -1,0 +1,6 @@
+model: LASSO_b
+test_group: BR07
+features:
+- T
+- FS_calc
+- V_calc

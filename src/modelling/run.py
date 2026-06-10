@@ -24,7 +24,7 @@ def run_model(model_name, model_path, output_dir, cfg, theta, param_names, full_
         parts = Path(model_path).parts
         subpath = parts[parts.index("cross_validation") + 1]
         model_output_dir = Path(output_dir) / subpath
-    elif model_name in ("global_P"):
+    elif model_name in ("global_P","global_ind_P","induction_P"):
         kin = Kinetic_Models(hybrid=False, PMLmodel = True, models_folder_P=model_path)
         parts = Path(model_path).parts
         subpath = parts[parts.index("cross_validation") + 1]

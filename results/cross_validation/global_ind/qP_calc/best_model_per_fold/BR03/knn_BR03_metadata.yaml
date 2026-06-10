@@ -1,4 +1,6 @@
 model: knn
 test_group: BR03
 features:
-- P
+- t
+- t_ind_ad
+- V_calc

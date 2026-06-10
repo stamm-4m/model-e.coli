@@ -1,8 +1,7 @@
 model: tweedie
 test_group: BR05
 features:
-- P
+- t_ind
+- t_ind_ad
 - I
-- Plag1
 - X_calc
-- V_calc

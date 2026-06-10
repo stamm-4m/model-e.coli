@@ -21,27 +21,33 @@ full_params = { k: cfg["kinetics"][k]["value"] for k in param_names }
 theta = [ cfg["kinetics"][k]["value"] for k in param_names ]
 
 model_configs = {
-    # "parametric": None,
-    # "global_qP": "results/cross_validation/global/qP_calc/best_model_per_fold",
-    # "global_rP": "results/cross_validation/global/rP_calc/best_model_per_fold",
-    # "global_ind_qP": "results/cross_validation/global_ind/qP_calc/best_model_per_fold",
-    # "global_ind_rP": "results/cross_validation/global_ind/rP_calc/best_model_per_fold",
-    # "induction_qP": "results/cross_validation/induction/qP_calc/best_model_per_fold",
-    # "induction_rP": "results/cross_validation/induction/rP_calc/best_model_per_fold",
+    "parametric": None,
 
+    "global_qP": "results/cross_validation/global/qP_calc/best_model_per_fold",
+    "global_rP": "results/cross_validation/global/rP_calc/best_model_per_fold",
     "global_P": "results/cross_validation/global/P/best_model_per_fold",
+
+    "global_ind_qP": "results/cross_validation/global_ind/qP_calc/best_model_per_fold",
+    "global_ind_rP": "results/cross_validation/global_ind/rP_calc/best_model_per_fold",
+    "global_ind_P": "results/cross_validation/global_ind/P/best_model_per_fold",
+
+    "induction_qP": "results/cross_validation/induction/qP_calc/best_model_per_fold",
+    "induction_rP": "results/cross_validation/induction/rP_calc/best_model_per_fold",
+    "induction_P": "results/cross_validation/induction/P/best_model_per_fold",
 }
 
 MODEL_COLORS = {
-        "parametric": "black",
-        "global_qP": "tab:blue",
-        "global_rP": "tab:orange",
-        "global_ind_qP": "tab:green",
-        "global_ind_rP": "tab:red",
-        "induction_qP": "tab:purple",
-        "induction_rP": "tab:brown",
-        "global_P": "tab:red",
-    }
+    "parametric": "black",
+    "global_qP": "tab:blue",
+    "global_rP": "tab:orange",
+    "global_ind_qP": "tab:green",
+    "global_ind_rP": "tab:red",
+    "induction_qP": "tab:purple",
+    "induction_rP": "tab:brown",
+    "global_P": "tab:pink",
+    "global_ind_P": "tab:gray",
+    "induction_P": "tab:cyan",
+}
 
 metrics_name = ["R2", "MAE", "MSE", "RMSE", "MAPE", "SCORE", "AIC", "BIC"]
 plots = ("boxplot", "heatmap") # "by_run" "ranking"

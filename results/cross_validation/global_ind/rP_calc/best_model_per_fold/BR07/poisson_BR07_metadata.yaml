@@ -1,0 +1,7 @@
+model: poisson
+test_group: BR07
+features:
+- t_ind
+- t_ind_ad
+- I
+- X_calc

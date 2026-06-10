@@ -280,11 +280,6 @@ feeds:
       unit: h, h, L/h, L
 
 simulation:
-  # t_span: 
-  #   value: [0, 20]
-  #   units: h
-  # n_points: 
-  #   400
   method_ode: 
     type : Radau # BDF #  Radau
   rtol_ode: 

@@ -53,7 +53,7 @@ def backward_feature_analysis(df, X_vars, y_var, c_var, model, model_name):
     inner_cv = list(custom_group_split(groups, fixed_group=("BR09")))
 
     # importance_getter = get_importance_getter(best_model)
-    if model_name in ("svm_linear", "poisson", "tweedie", "LASSO_b", "Ridge_b", "elasticnet_b", "poisson", "tweedie"):
+    if model_name in ("svm_linear", "poisson", "tweedie", "LASSO_b", "Ridge_b", "elasticnet_b"):
         importance_getter = lambda est: np.abs(est.named_steps["model"].coef_).ravel()
     elif model_name in ("tree", "rf_b", "gbm_b"):
         importance_getter = "feature_importances_"

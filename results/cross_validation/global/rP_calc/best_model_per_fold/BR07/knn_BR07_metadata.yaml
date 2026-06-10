@@ -1,0 +1,14 @@
+model: knn
+test_group: BR07
+features:
+- t
+- t_ind
+- t_ind_ad
+- T
+- I
+- FS_calc
+- V_calc
+- mu_calc
+- dXdt_calc
+- dVdt_calc
+- Xlag1_calc

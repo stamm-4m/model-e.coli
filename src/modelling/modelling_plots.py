@@ -62,10 +62,14 @@ def plot_multi_dataset_model(datasets, solutions, model_name, output_dir, P_ML=N
             sol = solutions[dataset_key]["sol"]
         
         t_model = sol.t
-        if P_ML is not None:
+        if P_ML is not None and P_ML.get(dataset_key) is not None:
             P_model = P_ML[dataset_key]
         else:
             P_model = sol.y[2]
+
+        if t_model is None or P_model is None:
+            print(f"[ERROR] {model_name} - {dataset_name}: missing data")
+            continue
 
         ax.plot(t_exp, P_exp, "o", label="Exp")
         ax.plot(t_model, P_model, "-", label=model_name)

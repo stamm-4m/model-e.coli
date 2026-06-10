@@ -1,0 +1,7 @@
+model: rf_b
+test_group: BR02
+features:
+- t_ind_ad
+- T
+- I
+- FS_calc
