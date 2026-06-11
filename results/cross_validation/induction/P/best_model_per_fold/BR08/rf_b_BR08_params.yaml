@@ -1,4 +1,4 @@
-max_depth: null
+max_depth: 5
 max_features: sqrt
-min_samples_split: 5
+min_samples_split: 2
 n_estimators: 100

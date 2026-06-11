@@ -21,7 +21,7 @@ full_params = { k: cfg["kinetics"][k]["value"] for k in param_names }
 theta = [ cfg["kinetics"][k]["value"] for k in param_names ]
 
 model_configs = {
-    "parametric": None,
+    # "parametric": None,
 
     "global_qP": "results/cross_validation/global/qP_calc/best_model_per_fold",
     "global_rP": "results/cross_validation/global/rP_calc/best_model_per_fold",

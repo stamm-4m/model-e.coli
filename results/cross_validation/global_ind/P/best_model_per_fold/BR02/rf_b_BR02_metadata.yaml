@@ -1,6 +1,0 @@
-model: rf_b
-test_group: BR02
-features:
-- t_ind
-- t_ind_ad
-- I

@@ -52,7 +52,7 @@ all_features = ["t", "t_ind", "t_ind_ad",
  
 target = ["qP_calc", "rP_calc", "P"] # "qP", "rP", "P"] 
 
-exclude_features = ["X", "S", "V", "mu", "dXdt", "dSdt", "dVdt", "Xlag1", "P", "Plag1"] # in-line measurments  
+exclude_features = ["X", "S", "V", "mu", "dXdt", "dSdt", "dVdt", "Xlag1", "P", "Plag1", "t_ind"] # in-line measurments  
 vars_ = [v for v in all_features if v not in exclude_features]
 vars_P = [v for v in vars_ if v != "P"]
 

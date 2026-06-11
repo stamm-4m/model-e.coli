@@ -1,6 +1,7 @@
 model: rf_b
 test_group: BR08
 features:
+- t
 - t_ind_ad
 - T
 - I

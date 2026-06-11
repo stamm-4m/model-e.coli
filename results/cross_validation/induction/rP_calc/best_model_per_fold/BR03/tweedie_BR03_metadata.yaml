@@ -1,7 +1,0 @@
-model: tweedie
-test_group: BR03
-features:
-- t_ind
-- t_ind_ad
-- I
-- X_calc

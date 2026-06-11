@@ -81,7 +81,7 @@ class FedBatchBalances:
                 # "V": V_real,
                 "t": t, 
                 "t_ind": t-t_ind,
-                "t_ind_ad": (t-t_ind)/t_max,
+                "t_ind_ad": (t-t_ind)/(t_max-t_ind),
                 "P": P,
                 "T": T,
                 "I": induction,

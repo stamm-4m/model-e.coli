@@ -2,11 +2,11 @@ model: knn
 test_group: BR08
 features:
 - t
-- t_ind
 - t_ind_ad
 - T
 - I
 - FS_calc
+- X_calc
 - V_calc
 - mu_calc
 - dXdt_calc
