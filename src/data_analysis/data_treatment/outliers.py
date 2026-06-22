@@ -7,6 +7,7 @@ from scipy.ndimage import gaussian_filter1d
 from src.data_analysis.data_treatment.plots_outlier_derivative import plot_outlier_diagnostics
 from src.utils.io import save_yaml, get_br_id, timer
 from statsmodels.nonparametric.smoothers_lowess import lowess
+from skmisc.loess import loess
 from src.data_analysis.data_treatment.processing import add_T_ind
  
 # def data_unification(datasets, files_names):
@@ -103,16 +104,24 @@ def treat_data(df,time_col,variable_col,file_id=None,results_dir=False,
     has_outliers = len(outlier_indices) > 0
 
     # --- Candidate replacements ---
+    s = pd.Series(x)
+
+    model = loess(time, x, span=window_outlier/len(x), degree=2)
+    model.fit()
+    loess_vals = np.asarray(model.outputs.fitted_values)
+
     candidates = {
-        "movmean": pd.Series(x).rolling(window = window_outlier, center=True).mean().to_numpy(),
-        "movmedian": pd.Series(x).rolling(window = window_outlier, center=True).median().to_numpy(),
-        "gaussian": gaussian_filter1d(x, sigma= (window_outlier-1)/6), # sigma=2 it is needed to calculate sigma for a movile window
-        "rlowess": lowess(x, np.arange(len(x)), frac= window_outlier/len(x), return_sorted=False),
-        "sgolay": savgol_filter(x, window_outlier, sg_order), # window_outlier = 11
+        "movmean": s.rolling(window = window_outlier, center=True, min_periods=1).mean().to_numpy(),
+        "movmedian": s.rolling(window = window_outlier, center=True, min_periods=1).median().to_numpy(),
+        "gaussian": gaussian_filter1d(x, sigma= (window_outlier-1)/6, mode='reflect'), # sigma=2 it is needed to calculate sigma for a movile window
+        "lowess": lowess(x, time, frac=window_outlier/len(x), it=3, return_sorted=False),
+        "loess": loess_vals,
+        "sgolay": savgol_filter(x, window_outlier, polyorder = 2), # window_outlier = 11
         "mean_methods": (
-            lowess(x, np.arange(len(x)), frac= window_outlier/len(x), return_sorted=False) + 
-            savgol_filter(x, window_outlier, sg_order) + 
-            pd.Series(x).rolling(window = window_outlier, center=True).median().to_numpy() 
+            # loess_vals +
+            lowess(x, time, frac= window_outlier/len(x), it=3, return_sorted=False) + 
+            savgol_filter(x, window_outlier, polyorder = 2) + 
+            s.rolling(window = window_outlier, center=True, min_periods=1).median().to_numpy() 
             ) / 3
     }
 
@@ -252,30 +261,39 @@ def treat_data(df,time_col,variable_col,file_id=None,results_dir=False,
 
 # -------- Outliers function detection based on mobile window median ------- **
 
-def movmedian_outliers(x, window=5, thresh=3.5): #  (3 unal // thresh=3.5 Tukey, Iglewicz & Hoaglin) *** Search Hampel / Tukey
+def movmedian_outliers(x, window=5, thresh=3):    
+    """
+    Hampel filter with adaptative window at edges
+    """
+    # Hampel clásico thresh 3 -Hampel (1974)-
+    # Z-score clásico 3 -regla empírica- 
+    # Modified Z-score thresh 3.5 -Iglewicz & Hoaglin (1993)-
+    
     x = np.asarray(x)
+    n = len(x)
+    k = window // 2
+    med_local = np.zeros(n)
+    mad_local = np.zeros(n)
+    
+    for i in range(n):
+        start = max(0, i - k)
+        end = min(n, i + k + 1)
 
-    med_local = pd.Series(x).rolling(window, center=True).median() # Local MEDian 
-    mad_local = (np.abs(x - med_local)).rolling(window, center=True).median() # type: ignore # Local Median Absolute Deviation
+        w = x[start:end]
+        
+        med = np.median(w)
+        mad = np.median(np.abs(w - med))
 
-    med_global = np.median(x)
-    mad_global = np.median(np.abs(x - med_global))
-    c = 1 / 0.67449 # 1.4826 (the 75th percentile of a standard normal distribution \sigma )
+        med_local[i] = med
+        mad_local[i] = mad
 
-    z = np.abs(x - med_local) / (c * mad_local) 
-    # MAD_{Gaussian} ​= \sigma * 0.67449
-    # Z-score = ( x - mean ) / sigma
-    # Z-score = ( x - med ) / MAD_{Gaussian}
-
-    # # ---------- movmedian inside adn global MAD only at edges ----------
-    # edge = np.isnan(z)
-    # z[edge] = np.abs(x[edge] - med_global) / (1.4826 * mad_global)
+    c = 1 / 0.67449 # 1.4826 ( 75th percentile of a standard normal distribution \sigma )
+    mad_local[mad_local == 0] = np.nan
+    z = np.abs(x - med_local) / (c * mad_local)
 
     outliers = z > thresh
 
-    # --------- borders as non‑outliers ---------
-    outliers = outliers.fillna(False).to_numpy()
+    # --------- NaN to False ---------
+    outliers = np.nan_to_num(outliers, nan=False)
 
     return outliers 
-
-
