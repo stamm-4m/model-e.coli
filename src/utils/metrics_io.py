@@ -25,6 +25,12 @@ def compute_metrics(y_true, y_pred, k, k_norm=0):
     bic = n * np.log(mse) + k * np.log(n)
     
     # Base score (normalize: RMSE smaller is better, R2 larger is better)
+    
+    # n_features_total = 10
+    # nrmse = rmse / np.std(y_true)
+    # k_norm = k / n_features_total
+    # score = alpha * nrmse + (1 - alpha) * (1 - r2) + lambda_k * k_norm 
+
     score = alpha * mse + (1 - alpha) * (1 - r2) + lambda_k * k /20
 
     if r2 < 0:
