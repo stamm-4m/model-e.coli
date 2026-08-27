@@ -1,4 +1,14 @@
+"""
+Nanobody-based Antivenom Production with E. coli Reactor Simulation 
+List of functions:
+- plot_outlier_diagnostics:             
+- plot_all_derivatives
 
+Author: Juan Camilo Castaño Sanchez
+Email: jcastano-san@insa-toulose.fr
+Date: 01/09/2026
+
+"""
 import matplotlib.pyplot as plt
 from pathlib import Path
 import numpy as np
@@ -156,22 +166,15 @@ def plot_all_derivatives(t,results,variables,br_id,out_dir):
         else:
             t_dense = np.linspace(t.min(), t.max(), 500)
 
-        f  = results[var]["f"]
-        df  = results[var]["df"]
-        d2f = results[var]["d2f"]
-
-        # spline_cubic = results[var]["splines"]["Cubic"]
-        spline_uni = results[var]["splines"]["Univariate"]
+        signal = results[var]["signal"]
+        first_derivative = results[var]["derivatives"]
+        second_derivative = results[var]["second_derivatives"]
+        spline_uni = results[var]["spline"]["univariate"]
 
         # ---------- First row: Data ----------
         ax = axes[0, j]
-        # ax.scatter(t, f["taylor"], color="black", s=25, zorder=2, label="Taylor")
-        ax.scatter(t, f["grad"], color="grey", s=25, zorder=2, label="Gradient")
-        # ax.scatter(t, f["cubic"], s=20, alpha=1, zorder=2, color="green")
-        ax.scatter(t, f["uni"], s=20, zorder=2, color="red", label="UnivariateSpline")
-        # ax.scatter(t, f["mean"], s=20, zorder=2, marker="D", color="purple")
-        # ax.plot(t, f["mean"], marker="D", color="purple",linewidth=1, label="Mean Grad & UnivariateSpline")
-        # ax.plot(t_dense, spline_cubic(t_dense), label="CubicSpline", linewidth=1.4, alpha=0.6, zorder=3, color="green")
+        ax.scatter(t, signal["replaced"], color="grey", s=25, zorder=2, label="Replaced")
+        ax.scatter(t, signal["smooth"], s=20, zorder=2, color="red", label="Smoothed")
         if br_id != "BR09":
             ax.plot(t_dense, spline_uni(t_dense), linestyle="--", linewidth=1.3, zorder=4, color="red")
         ax.set_title(f"{var}", fontsize=15)
@@ -179,46 +182,31 @@ def plot_all_derivatives(t,results,variables,br_id,out_dir):
         # axes[0].legend()
         ax.grid(True, alpha=0.3)
         if j == 0:
-            ax.set_ylabel("f", fontsize=13)
+            ax.set_ylabel("signal", fontsize=13)
 
         # ---------- Second row: First derivative ----------
         ax = axes[1, j]
-        # ax.scatter(t, df["taylor"], color="black", s=20)
-        ax.scatter(t, df["grad"], color="grey", s=20)
-        # ax.scatter(t, df["cubic"], s=20, color="green")
-        ax.scatter(t, df["uni"], s=20, color="red")
-        # ax.scatter(t, df["mean"], s=20, marker="D", color="purple")
-        ax.plot(t, df["mean"], marker="D", color="purple",linewidth=1, label="Mean Grad & UnivariateSpline")
-        # ax.plot(t, df["taylor"], color="black",linewidth=1)
-        ax.plot(t, df["grad"], color="grey",linewidth=1)
-        # ax.plot(t_dense, spline_cubic.derivative()(t_dense), label="CubicSpline", linewidth=1.4, alpha=0.6, zorder=3, color="green")
+        ax.scatter(t, first_derivative["replaced"], color="grey", s=20)
+        ax.scatter(t, first_derivative["smooth"], s=20, color="red")
+        ax.plot(t, first_derivative["replaced"], color="grey",linewidth=1)
         if br_id != "BR09":
             ax.plot(t_dense, spline_uni.derivative()(t_dense), linestyle="--", linewidth=1.3, zorder=4, color="red")
-        # axes[1].set_xlabel("time")
-        # axes[1].set_title(f"{br_id} - {variable}")
-        # axes[1].legend()
         ax.grid(True, alpha=0.3)
         if j == 0:
-            ax.set_ylabel("f'", fontsize=13)
+            ax.set_ylabel("first derivative", fontsize=13)
 
         # ---------- Third row: Second derivative ----------
         ax = axes[2, j]
-        # ax.scatter(t, d2f["taylor"], color="black", s=20)
-        ax.scatter(t, d2f["grad"], color="grey", s=20)
-        # ax.scatter(t, d2f["cubic"], s=20, color="green")
-        ax.scatter(t, d2f["uni"], s=20, color="red")
-        # ax.scatter(t, d2f["mean"], s=20, marker="D", color="purple")
-        ax.plot(t, d2f["mean"], marker="D", color="purple",linewidth=1)
-        # ax.plot(t, d2f["taylor"], color="black",linewidth=1)
-        ax.plot(t, d2f["grad"], color="grey",linewidth=1)
-        # ax.plot(t_dense, spline_cubic.derivative(2)(t_dense), label="CubicSpline", linewidth=1.4, alpha=0.6, zorder=3, color="green")
+        ax.scatter(t, second_derivative["replaced"], color="grey", s=20)
+        ax.scatter(t, second_derivative["smooth"], s=20, color="red")
+        ax.plot(t, second_derivative["replaced"], color="grey",linewidth=1)
         if br_id != "BR09":
             ax.plot(t_dense, spline_uni.derivative(2)(t_dense), linestyle="--", linewidth=1.3, zorder=4, color="red")
         ax.set_xlabel("time", fontsize=12)
         # axes[2].legend()
         ax.grid(True, alpha=0.3)
         if j== 0 :
-            ax.set_ylabel("f''", fontsize=13)
+            ax.set_ylabel("second derivative", fontsize=13)
     
     # ---------- Global title ----------
     fig.suptitle(f"{br_id} data and derivatives",fontsize=17)#, y=0.97 )

@@ -1,3 +1,29 @@
+"""
+Nanobody-based Antivenom Production with E. coli Reactor Simulation 
+
+Dictionary of utility functions: yaml functions, model loading, saving, and selection, as well as data processing utilities.
+
+List of functions:
+- load_yaml: Load a YAML file and return its contents as a dictionary.
+- load_models_from_folder: Load machine learning models from a specified folder.
+- save_yaml: Save a dictionary to a YAML file.
+- get_time_ranges: Retrieve time ranges from a YAML dictionary for a specific bioreactor.
+- get_br_id: Extract the bioreactor ID from a dataset filename.
+- to_python_type: Convert various data types to Python-native types for YAML serialization.
+- save_model: Save a machine learning model to a specified directory.
+- select_optimal_model_feature: Select the optimal model based on a scoring metric.
+- select_best_models: Select the best models from cross-validation results.
+- custom_group_split: Custom group splitting for cross-validation.
+- stringify_params: Convert model parameters to string representations for YAML serialization.
+- get_param_grid: Retrieve hyperparameter grids for different machine learning models.
+- models_dict: Return a dictionary of machine learning model instances based on specified model names.
+- save_wrapper_summary_table: Save a summary of model performance metrics to an Excel file.
+- timer: Decorator to measure the execution time of a function.
+
+Author: Juan Camilo Castaño Sanchez
+Email: jcastano-san@insa-toulose.fr
+Date: 01/09/2026
+"""
 
 import yaml
 from pathlib import Path
@@ -9,7 +35,6 @@ import time
 
 # from sklearn.compose import TransformedTargetRegressor
 # from sklearn.preprocessing import PowerTransformer
-
 
 def load_yaml(path: str | Path) -> dict:
     with open(path, "r") as f:
