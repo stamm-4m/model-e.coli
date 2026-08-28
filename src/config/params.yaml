@@ -15,6 +15,19 @@ Date: 01/09/2026
 # Bioreactors settings (Substrate titer, operational change times)
 # ------------------------------------------------------------------
 bioreactor: 
+  BR01:
+    Sf: # substrate titer in feed (g/L)
+      value: 286 # 298 
+      units: g/L
+    S0: # initial substrate titer in reactor (g/L)
+      value: 10
+      units: g/L
+    t_sb: # semi-batch time (h)
+      value: 5
+      units: h
+    t_ind: # induction time (h)
+      value: 10.1
+      units: h
   BR02:
     Sf: # substrate titer in feed (g/L)
       value: 286 # 298 
@@ -137,7 +150,7 @@ kinetics:
     value: 0.05618 # 0.0468
     units: 1/h
   m:
-    value: 0 # 0.001 # 0.0726
+    value: 0.001 # 0.001 # 0.0726
     units: 1/h
   Y_XS:
     value: 0.43575 # 0.4322 # 0.2361
@@ -165,6 +178,24 @@ kinetics:
 #             Substrate and Acid feed rates constants 
 # ------------------------------------------------------------------
 feeds:
+  BR01:
+    feed_S:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 5.0, 0.0, 0.0]
+        - [5.0, 7.7, 0.0, 0.01818]
+        - [7.7, 9.4, 0.0, 0.0549]
+        - [9.4, 10.0, 0.0, 0.1056]
+      unit: h, h, L/h2, L/h
+
+    feed_A:
+      type: OnOffFeed_Linear
+      value:
+        - [0.0, 5.0, 0.0, 0.0]
+        - [5.0, 7.7, 0.0, 0.0]
+        - [7.7, 9.4, 0.0, 0.0]
+        - [9.4, 10.0, 0.0, 0.0]
+      unit: h, h, L/h2, L/h
   BR02:
     feed_S:
       type: OnOffFeed_Linear
@@ -172,7 +203,7 @@ feeds:
         - [0.0, 3.4, 0.0, 0.0]
         - [3.4, 8.0, 0.013, 0.0015]
         - [8.0, 100.0, 0.0001, 0.0015]
-      unit: h, h, L/h, L
+      unit: h, h, L/h2, L/h
 
     feed_A:
       type: OnOffFeed_Linear
@@ -189,7 +220,7 @@ feeds:
         - [0.0, 4.8, 0.0, 0.0]
         - [4.8, 9.3, 0.011, 0.0015]
         - [9.3, 100.0, 0.0006, 0.0015]
-      unit: h, h, L/h, L
+      unit: h, h, L/h2,  L/h
 
     feed_A:
       type: OnOffFeed_Linear
@@ -206,7 +237,7 @@ feeds:
         - [0.0, 4.45, 0.0, 0.0]
         - [4.45, 9.9, 0.006, 0.0015]    # 5.6, 9.1, 0.006, 0.0015
         - [9.9, 100.0, 0.00005, 0.0015]
-      unit: h, h, L/h, L
+      unit: h, h, L/h2,  L/h
 
     feed_A:
       type: OnOffFeed_Linear
@@ -223,7 +254,7 @@ feeds:
         - [0.0, 5.6, 0.0, 0.0]
         - [5.6, 9.1, 0.006, 0.0015]
         - [9.1, 100.0, 0.00005, 0.0015]
-      unit: h, h, L/h, L
+      unit: h, h, L/h2, L/h
 
     feed_A:
       type: OnOffFeed_Linear
@@ -240,7 +271,7 @@ feeds:
         - [0.0, 4.3, 0.0, 0.0]
         - [4.3, 9.0, 0.013, 0.0015]
         - [9.0, 100.0, 0.0003, 0.0015]
-      unit: h, h, L/h, L
+      unit: h, h, L/h2, L/h
 
     feed_A:
       type: OnOffFeed_Linear
@@ -257,7 +288,7 @@ feeds:
         - [0.0, 3.9, 0.0, 0.0]
         - [3.9, 9.0, 0.01, 0.0015]
         - [9.0, 100.0, 0.0002, 0.0015]
-      unit: h, h, L/h, L
+      unit: h, h, L/h2, L/h
 
     feed_A:
       type: OnOffFeed_Linear
@@ -274,7 +305,7 @@ feeds:
         - [0.0, 3.6, 0.0, 0.0]
         - [3.6, 10.0, 0.01, 0.0015]
         - [10.0, 200.0, 0.0002, 0.0015]
-      unit: h, h, L/h, L
+      unit: h, h, L/h2, L/h
 
     feed_A:
       type: OnOffFeed_Linear
@@ -282,7 +313,7 @@ feeds:
         - [0.0, 3.6, 0.0, 0.0]
         - [3.6, 10.0, 0.01, 0.0015]
         - [10.0, 200.0, 0.0002, 0.0015]
-      unit: h, h, L/h, L
+      unit: h, h, L/h2, L/h
 
   BR09:
     feed_S:
@@ -291,7 +322,7 @@ feeds:
         - [0.0, 3.6, 0.0, 0.0]
         - [3.6, 10.0, 0.01, 0.0015]
         - [10.0, 200.0, 0.0002, 0.0015]
-      unit: h, h, L/h, L
+      unit: h, h, L/h2, L/h
 
     feed_A:
       type: OnOffFeed_Linear
@@ -299,7 +330,7 @@ feeds:
         - [0.0, 3.6, 0.0, 0.0]
         - [3.6, 10.0, 0.01, 0.0015]
         - [10.0, 200.0, 0.0002, 0.0015]
-      unit: h, h, L/h, L
+      unit: h, h, L/h2, L/h
 
 # ------------------------------------------------------------------
 #                     Simulation parameters 

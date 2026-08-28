@@ -1,0 +1,18 @@
+file: BR05
+variable: T
+outliers:
+  present: true
+  count: 1
+  indices:
+  - 14
+  replacement_methods:
+    14: mean rlowess sgolay movmedian
+statistics:
+  raw:
+    mean: 36.97500000000001
+    std: 0.10934872133291226
+  treated:
+    info: if 'smooth = True' refers to smoothed data
+    mean: 36.98543537414966
+    std: 0.028937567022343395
+  MAPE_raw_vs_treated: 0.13271204712776977

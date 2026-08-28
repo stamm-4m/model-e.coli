@@ -1,30 +1,26 @@
 
 
 from glob import glob
-import time
 from scipy.optimize import least_squares
-from fedbatch.utils.io import load_yaml, save_yaml
-from fedbatch.estimation.datasets import ExperimentDataset
-from fedbatch.core.kinetics import Kinetic_Models
-from fedbatch.utils.experiment_factory import build_experiments
-# from fedbatch.estimation.objective import MultiExperimentObjective
-# from fedbatch.estimation.postprocessing import compute_confidence_intervals
-from fedbatch.utils.visualization_correlation_io import plot_parameter_correlation
-from fedbatch.utils.visualization_fitting_io import plot_time_profiles_mc, plot_parity_mc #, plot_time_profiles, plot_parity, 
-from fedbatch.utils.execute_model_io import run_model_with_parameters
-from fedbatch.utils.visualization_residuals_io import qq_plot_residuals
-from fedbatch.utils.experiment_factory import build_experiments
+from src.utils.io import load_yaml, save_yaml
+from src.utils.experiment_factory import build_experiment, run_model_with_parameters
+from src.knowledge_based_workflow.data_treatment.standardization import DatasetStandardization
+from src.knowledge_based_workflow.model.core.kinetics import Kinetic_Models
+# from lmfit import Model, minimize, Parameters, conf_interval
+from src.utils.fitting_tools import MultiExperimentObjective, compute_confidence_intervals
+
+
+# from fedbatch.utils.visualization_correlation_io import plot_parameter_correlation
+# from fedbatch.utils.visualization_fitting_io import plot_time_profiles_mc, plot_parity_mc #, plot_time_profiles, plot_parity, 
+# from fedbatch.utils.visualization_residuals_io import qq_plot_residuals
 
 import numpy as np
 
-start = time.time()
-
-cfg = load_yaml("fedbatch/config/default_parameters.yaml")
+cfg = load_yaml("src/config/default_parameters.yaml")
 
 #--------------Load Datasets--------------------
-
 dataset_files = sorted( glob("data/processed/BR*.xls") )
-datasets = [ExperimentDataset(f) for f in dataset_files]
+datasets = [DatasetStandardization(f) for f in dataset_files]
 
 # Full parameter set from YAML (fixed defaults)
 full_params = {
@@ -34,18 +30,18 @@ full_params = {
 
 #--------------Define parameters (theta)----------------- (quit any as u wish)
 param_names = [
-    # "mu_max_p", 
-    # "mu_max_0", 
-    # "Ks", 
-    # "b", 
-    # "m", 
-    # "Y_XS", 
-    "alpha", 
-    "gamma_1", 
-    "Ap_1", 
-    "gamma_2", 
-    "Ap_2", 
-    "sigma"
+    "mu_max_p", 
+    "mu_max_0", 
+    "Ks", 
+    "b", 
+    "m", 
+    "Y_XS", 
+    # "alpha", 
+    # "gamma_1", 
+    # "Ap_1", 
+    # "gamma_2", 
+    # "Ap_2", 
+    # "sigma"
     ]
 
 #------------------Initial values for parameters estimation----------------
@@ -68,7 +64,7 @@ for name in param_names:
 #--------------kinetics and experiment--------------------
 
 kin = Kinetic_Models()
-datasets, simulators, y0s = build_experiments(cfg, kin)
+datasets, simulators, y0s = build_experiment(cfg, kin)
 
 #--------------Create the objetive--------------------
 
@@ -101,6 +97,7 @@ cov, std, ci = compute_confidence_intervals(result)
 #                 f"{param_names[i]} ↔ {param_names[j]} : "
 #                 f"{corr[i, j]:.2f}"
 #             )
+
 
 #---------------------Simulated with parameters fitted------------------------
 results_dict = {
@@ -151,65 +148,57 @@ output_path = "results/estimation/kinetic_fit_results.yaml"
 save_yaml(results_dict, output_path)
 print(f"Results saved to {output_path}")
 
-end_1 = time.time()
-
-print(f"Tiempo de ejecución: {end_1 - start:.4f} segundos")
-
 #-------------Plots---------------------------
 
-corr = plot_parameter_correlation(
-    cov,
-    param_names,
-    threshold=0.8,
-    savepath="results/plots/processed/parameter_correlation.png"
-)
+# corr = plot_parameter_correlation(
+#     cov,
+#     param_names,
+#     threshold=0.8,
+#     savepath="results/plots/processed/parameter_correlation.png"
+# )
 
-# QQ plot
-qq_plot_residuals(
-        all_residuals,
-        title="Q-Q plot — global residuals",
-        savepath=f"results/plots/processed/qq_residuals_global.png"
-    )
+# # QQ plot
+# qq_plot_residuals(
+#         all_residuals,
+#         title="Q-Q plot — global residuals",
+#         savepath=f"results/plots/processed/qq_residuals_global.png"
+#     )
 
-for dataset, simulator in zip(datasets, simulators):
-    name = dataset.path.split("/")[-1].replace(".xls", "")
+# for dataset, simulator in zip(datasets, simulators):
+#     name = dataset.path.split("/")[-1].replace(".xls", "")
 
-    # plot_time_profiles(
-    plot_time_profiles_mc(
-        dataset,
-        simulator,
-        kin,
-        result.x,
-        cov,
-        param_names,
-        full_params,  
-        n_samples=300,
-        savepath=f"results/plots/{name}_mc_time.png",  # savepath=f"results/plots/{name}_time.png"
-        cfg_tdense=True
-    )
+#     # plot_time_profiles(
+#     plot_time_profiles_mc(
+#         dataset,
+#         simulator,
+#         kin,
+#         result.x,
+#         cov,
+#         param_names,
+#         full_params,  
+#         n_samples=300,
+#         savepath=f"results/plots/{name}_mc_time.png",  # savepath=f"results/plots/{name}_time.png"
+#         cfg_tdense=True
+#     )
 
-    # plot_parity(
-    plot_parity_mc(
-        dataset,
-        simulator,
-        kin,
-        result.x,
-        cov,
-        param_names,
-        full_params, 
-        n_samples=300,
-        savepath=f"results/plots/{name}_mc_parity.png"
-        # savepath=f"results/plots/{name}_parity.png"
-    )
-
-end_2 = time.time()
-
-print(f"Tiempo de ejecución total: {end_2 - start:.4f} segundos")
+#     # plot_parity(
+#     plot_parity_mc(
+#         dataset,
+#         simulator,
+#         kin,
+#         result.x,
+#         cov,
+#         param_names,
+#         full_params, 
+#         n_samples=300,
+#         savepath=f"results/plots/{name}_mc_parity.png"
+#         # savepath=f"results/plots/{name}_parity.png"
+#     )
 
 # ---------------- Save updated parameters to YAML (kinetics only) ----------------
 
 # Reload original configuration (safe practice)
-updated_cfg = load_yaml("fedbatch/config/default_parameters.yaml")
+updated_cfg = load_yaml("src/config/params.yaml")
 
 # Update only the kinetics parameter values
 for name, value in zip(param_names, result.x):
@@ -219,7 +208,6 @@ for name, value in zip(param_names, result.x):
     updated_cfg["kinetics"][name]["value"] = float(value)
 
 updated_cfg.setdefault("estimation_metadata", {})
-updated_cfg["estimation_metadata"]["date_utc"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
 updated_cfg["estimation_metadata"]["source"] = "least_squares fit"
 # updated_cfg["estimation_metadata"]["n_parameters"] = len(param_names)
 updated_cfg["estimation_metadata"]["fitted_parameters"] = list(param_names)
@@ -227,63 +215,8 @@ updated_cfg["estimation_metadata"]["fixed_parameters"] = [
     k for k in updated_cfg["kinetics"] if k not in param_names
 ]
 
-
 # Save updated configuration
 updated_cfg_path = "results/estimation/updated_parameters.yaml"
 save_yaml(updated_cfg, updated_cfg_path)
 
 print(f"Updated parameters saved to {updated_cfg_path}")
-
-import numpy as np
-
-def compute_confidence_intervals(result, alpha=0.05):
-    J = result.jac
-    n_res, n_par = J.shape
-
-    sigma2 = 2 * result.cost / (n_res - n_par)
-    cov = sigma2 * np.linalg.inv(J.T @ J)
-    std = np.sqrt(np.diag(cov))
-
-    z = 1.96  # 95% CI
-    ci = np.vstack([
-        result.x - z * std,
-        result.x + z * std
-    ]).T
-
-    return cov, std, ci
-
-
-class MultiExperimentObjective:
-    def __init__(self, datasets, simulators, model, y0s, param_names, full_params):
-        self.datasets = datasets
-        self.simulators = simulators
-        self.model = model
-        self.y0s = y0s
-        self.param_names = param_names
-        self.full_params = full_params
-
-
-    def __call__(self, theta):
-        
-        params = self.full_params.copy()
-
-        for name, value in zip(self.param_names, theta):
-            params[name] = value
-
-        self.model.set_params(params)
-
-        residuals = []
-
-        for dataset, sim, y0 in zip(self.datasets, self.simulators, self.y0s):
-
-            sol = sim.run(
-                t_span=(dataset.t[0], dataset.t[-1]),
-                y0=y0,
-                t_eval=dataset.t
-            )
-
-            # residuals.extend(sol.y[0,:] - dataset.data["X"])
-            # residuals.extend(sol.y[1,:] - dataset.data["S"])
-            residuals.extend(sol.y[2,:] - dataset.data["P"])
-
-        return np.array(residuals)

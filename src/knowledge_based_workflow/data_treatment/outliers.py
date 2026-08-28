@@ -62,6 +62,8 @@ def outliers_and_smoothing(datasets, time_col="time", variable_list=None, result
         if variable_list == None:
             variable_list = dataset.data.keys()
 
+        plots_dict = {}
+
         for variable_col in variable_list:
             # print(f"  └─ Signal: {variable_col}")
 
@@ -73,7 +75,7 @@ def outliers_and_smoothing(datasets, time_col="time", variable_list=None, result
                     variable_col=variable_col,file_id=br_id,
                     results_dir=variable_results_dir,smooth=smooth # type: ignore
                 )
-
+            
             # -------- Save metrics --------
             all_metrics[br_id][variable_col] = metrics
             # if metrics["outliers"]["present"]:
@@ -82,31 +84,33 @@ def outliers_and_smoothing(datasets, time_col="time", variable_list=None, result
             # -------- Save smoothed data --------
             smoothed_datasets[br_id][variable_col] = x_smooth
             smoothed_datasets[br_id][f"d{variable_col}dt"] = dxdt_smooth
+            smoothed_datasets[br_id][f"d2{variable_col}dt2"] = np.gradient(dxdt_smooth, time, edge_order=2) 
 
             replaced_datasets[br_id][variable_col] = x_replaced
             replaced_datasets[br_id][f"d{variable_col}dt"] = dxdt_replaced
+            replaced_datasets[br_id][f"d2{variable_col}dt2"] = np.gradient(dxdt_replaced, time, edge_order=2) 
 
             smoothed_datasets[br_id]["I"] = dataset.df["I"].to_numpy()
             replaced_datasets[br_id]["I"]  = dataset.df["I"].to_numpy()
 
-            plot_results[variable_col] = {
+            plots_dict[variable_col] = {
                 "signal": {
-                    "replace": x_replaced,
+                    "replaced": x_replaced,
                     "smooth": x_smooth,
                 },
                 "derivatives": {
-                    "replace": dxdt_replaced,
+                    "replaced": dxdt_replaced,
                     "smooth": dxdt_smooth,
                 },
                 "second_derivatives": {
-                    "replace": dxdt_replaced,
-                    "smooth": dxdt_smooth,
+                    "replaced": np.gradient(dxdt_replaced, time, edge_order=2) ,
+                    "smooth": np.gradient(dxdt_smooth, time, edge_order=2) ,
                 },
                 "spline": {
                     "univariate": spline,},
             }
 
-        plot_all_derivatives(t=time,results=plot_results,variables=["X", "S", "P", "V"],br_id=br_id, out_dir=br_results_dir,)
+        plot_all_derivatives(t=time,results=plots_dict,variables=["X", "S", "P", "V"],br_id=br_id, out_dir=br_results_dir,)
 
     # -------- Save global metrics --------  
     save_yaml( all_metrics,
@@ -161,7 +165,7 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
         "lowess": lowess(x, time, frac=window_outlier/len(x), it=3, return_sorted=False),
         "loess": loess_vals,
         "sgolay": savgol_filter(x, window_outlier, polyorder = 2), # window_outlier = 11
-        "mean_methods": (
+        "mean rlowess sgolay movmedian": (
             # loess_vals +
             lowess(x, time, frac= window_outlier/len(x), it=3, return_sorted=False) + 
             savgol_filter(x, window_outlier, polyorder = 2) + 
@@ -180,7 +184,7 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
         #     if not np.isnan(candidates[m][idx])
         # }
         # best_method = max(diffs, key=diffs.get) 
-        best_method = "mean_methods" # rlowess sgolay movmedian
+        best_method = "mean rlowess sgolay movmedian"
         x_replaced[idx] = candidates[best_method][idx]
         selected_method_per_outlier[idx] = best_method
 
@@ -203,17 +207,45 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
         # x_smooth = np.maximum(x_smooth, 0)
 
         # --- Smoothing with own function ---
+        idx_start = None
+        idx_end = None
+        x_in=x_replaced
+        t_in=time
+
         if variable_col in ("X", "P") and len(x) > 0:
             monotonicity = "increasing"
+            if variable_col == "P":
+                mask = df["P"] > 0
+                if mask.any():
+                    idx_start = np.where(mask)[0][0]
+                    x_in = x_replaced[idx_start-1:]
+                    t_in = time[idx_start-1:]
+
         elif variable_col in ("S") and len(x) > 0:
             monotonicity = "decreasing"
+            mask = df["S"] > 1e-3
+            if mask.any():
+                idx_end = np.where(mask)[0][-1]
+                x_in = x_replaced[:idx_end+2]
+                t_in = time[:idx_end+2]
         else:
             monotonicity = None
 
-        output_dic = smooth_and_differentiate( time, x_replaced, monotonicity=monotonicity)
+        output_dic = smooth_and_differentiate( t=t_in, x=x_in, monotonicity=monotonicity)
 
-        x_smooth = output_dic["x_smooth"]
-        dxdt_smooth = output_dic["dxdt"] 
+        x_smooth = x_replaced.copy()
+        dxdt_smooth = dxdt_replaced.copy()
+
+        if variable_col == "P" and idx_start is not None:
+            x_smooth[idx_start:] = output_dic["x_smooth"][1:]
+            dxdt_smooth[idx_start:] = output_dic["dxdt"] [1:]
+        elif variable_col == "S" and idx_end is not None:
+            x_smooth[:idx_end+1] = output_dic["x_smooth"][:-1]
+            dxdt_smooth[:idx_end+1] = output_dic["dxdt"][:-1] 
+        else:
+            x_smooth = output_dic["x_smooth"]
+            dxdt_smooth = output_dic["dxdt"] 
+
         spline = output_dic["spline"]
 
         # dxdt = output_dic["dxdt_mean"]
@@ -316,7 +348,7 @@ def movmedian_outliers(x, window=5, thresh=3):
 
     return outliers 
 
-def smooth_and_differentiate( t, x, bounds=(0.01, 5.0), monotonicity = None, plot=True, ):
+def smooth_and_differentiate( t, x, monotonicity = None, plot=False, bounds=(0.0001, 3.0) ):
     """
     Smooth x(t) and compute its derivatives.
 
@@ -345,6 +377,12 @@ def smooth_and_differentiate( t, x, bounds=(0.01, 5.0), monotonicity = None, plo
 
     # Selection of s using the same conceptual criterion
     # as the original objective function.
+
+    bounds = (
+            0.01*np.var(x)*len(x),
+            10*np.var(x)*len(x)
+        )
+    
     optimization = minimize_scalar(
         spline_objective_function,
         bounds=bounds,
@@ -360,7 +398,7 @@ def smooth_and_differentiate( t, x, bounds=(0.01, 5.0), monotonicity = None, plo
     dxdt_smooth = np.gradient(x_smooth, t, edge_order=2)
     d2xdt2_smooth = np.gradient(dxdt_smooth, t, edge_order=2)
 
-    fig = plot_results(
+    fig = plot_derivatives(
         t=t,
         x=x,
         x_smooth=x_smooth,
@@ -397,7 +435,9 @@ def spline_objective_function(s, t, x, monotonicity = None):
     dxdt_pred = np.gradient(x_pred, t, edge_order=2)
     d2xdt2 = np.gradient(dxdt_pred, t, edge_order=2)
 
-    loss_fit = np.sum((x - x_pred)**2) # np.sum((dxdt - dxdt_pred) ** 2)
+    loss_negative = np.sum(np.minimum(x_pred, 0.0)**2)
+
+    loss_fit = np.sum(((x - x_pred)/(np.std(x)+1e-12))**2) # np.sum((dxdt - dxdt_pred) ** 2)
 
     if monotonicity == "increasing":
         loss_monotonicity = np.sum(
@@ -412,22 +452,25 @@ def spline_objective_function(s, t, x, monotonicity = None):
     else:
         loss_monotonicity = 0.0
 
-    loss_smoothness = np.mean(d2xdt2**2)
+    loss_smoothness = np.mean((d2xdt2/(np.std(d2xdt2)+1e-12))**2)
 
     signs = np.sign(d2xdt2)
-    oscillation_count = 0
-    for i in range(3, len(signs)):
-        window = signs[i-3:i+1]
-        alternating = np.all(window[:-1] != window[1:])
+    # oscillation_count = 0
+    # for i in range(3, len(signs)):
+    #     window = signs[i-3:i+1]
+    #     alternating = np.all(window[:-1] != window[1:])
 
-        if alternating:
-            oscillation_count += 1
+    #     if alternating:
+    #         oscillation_count += 1
+    
+    loss_oscillation = np.sum( np.abs(np.diff(signs)))
 
-    loss = ( loss_fit + 100.0 * loss_monotonicity + 0.01 * loss_smoothness + 1.0 * oscillation_count)
+    loss = ( loss_fit + 1000.0 * loss_monotonicity + 1.0 * loss_smoothness + 10 * loss_oscillation + 10000 * loss_negative) # oscillation_count
+    # loss = ( loss_fit + 1000.0 * loss_monotonicity + 1.0 * loss_smoothness + 1.0 * loss_oscillation + 1000.0 * loss_negative) 
 
     return float(loss)
 
-def plot_results(t,x,x_smooth,dxdt,d2xdt2,show=True,):
+def plot_derivatives(t,x,x_smooth,dxdt,d2xdt2,show=True,):
     """Generate figure with original signal, smoothing and derivatives."""
     fig, axes = plt.subplots( 3,1,figsize=(10, 10), sharex=True,)
 
@@ -451,8 +494,9 @@ def plot_results(t,x,x_smooth,dxdt,d2xdt2,show=True,):
 
     fig.tight_layout()
 
-    if show:
-        plt.show()
+    # if show:
+    #     # plt.show()
+    plt.close(fig)
 
     return fig
 

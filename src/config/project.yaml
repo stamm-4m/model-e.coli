@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+#       General information about the configuration file
+# ------------------------------------------------------------------
+
+workflow:
+  data_analysis: true
+  parameter_estimation: true
+  simulation: false
+
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed/BR_processed.xlsx"
+  parameters: "src/config/params.yaml"
+  estimation_parameters: "src/config/params.yaml"
+  results:
+    ead: "results/data_analysis/ead"
+    estimation: "results/estimation"
+    plots: "results/plots"
+
+estimation:
+  fitted_parameters: # "alpha", "gamma_1","Ap_1","gamma_2", "Ap_2","sigma"
+    - mu_max_p
+    - mu_max_0
+    - Ks
+    - b
+    - m
+    - Y_XS

@@ -22,11 +22,9 @@ Configuration files expected at:
     └── simulation.yaml          ← ODE solver settings, time horizon, output options
 """
 
-import pandas as pd
-from pathlib import Path
-from src.knowledge_based_workflow.data_treatment.treatment_main import DataTreatment
-from src.knowledge_based_workflow.data_treatment.ead import compute_ead
 from src.utils.io import load_yaml
+from src.knowledge_based_workflow.model_analysis.data_analysis import DataAnalysisWorkflow
+from src.knowledge_based_workflow.model_analysis.parameter_estimation import ParameterEstimationWorkflow
 
 # def main():
 #     # ============================================================
@@ -44,25 +42,30 @@ from src.utils.io import load_yaml
 #     # ============================================================
 #     ...
 
-path_raw_files = Path("data/raw")
-yaml_path = "src/config/params.yaml"
-config = load_yaml(yaml_path)
-vars = ["X", "S", "P", "V", "mu", "qP", "qP_2", "rX", "rP", "dXdt", "dSdt", "dPdt", "dVdt", "T", "I"]
+def main():
 
-# =================== Data-frame generation ===================
-treat_data = DataTreatment(path_raw_files)
-df_global, df_induction = treat_data.data_frame(yaml_path)
+    print("Starting project workflow...")
+    
+    cfg = load_yaml("src/config/project.yaml")
+        
+    if cfg["workflow"]["data_analysis"]:
 
-# =================== Data-frame load ===================
-# df_global = pd.read_excel(r"data/processed/BR_processed.xlsx")
-# df_induction = pd.read_excel(r"data/processed/BR_processed_ind.xlsx")
+        DataAnalysisWorkflow(
+            raw_data_path = cfg["paths"]["raw_data"],
+            yaml_path = cfg["paths"]["parameters"],
+            ead_path = cfg["paths"]["results"]["ead"]
+        ).run()
 
-dfs = {"global": df_global, "induction": df_induction}
+    if cfg["workflow"]["parameter_estimation"]:
 
-# =================== Computation ===================
-for name, df in dfs.items():
-    print(f"\n===== {name.upper()} =====")
-    # ---------- paths ----------
-    base_ead = f"results/data_analysis/ead/{name}"
-    # =================== EAD =================== 
-    compute_ead(df, vars, results_root=f"{base_ead}")
+        param_names = cfg["estimation"]["fitted_parameters"]  
+        ParameterEstimationWorkflow(
+            config_path=cfg["paths"]["parameters"], 
+            param_names=param_names
+        ).run()
+
+    # if cfg["workflow"]["simulation"]:
+    #     SimulationWorkflow().run()
+
+if __name__ == "__main__":
+    main()

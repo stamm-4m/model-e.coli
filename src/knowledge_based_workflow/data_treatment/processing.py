@@ -10,10 +10,10 @@ Date: 01/09/2026
 
 import numpy as np
 import pandas as pd
-from src.utils.io import load_yaml, get_time_ranges, timer, get_br_id
-from src.knowledge_based_workflow.model.core.kinetics import Kinetic_Models
-from src.utils.experiment_factory import build_experiments, run_model_with_parameters
-from src.knowledge_based_workflow.model.auxiliar.feed_factory import create_feed
+from src.utils.io import load_yaml, get_time_ranges # , timer, get_br_id
+# from src.knowledge_based_workflow.model.core.kinetics import Kinetic_Models
+# from src.utils.experiment_factory import build_experiment, run_model_with_parameters
+# from src.knowledge_based_workflow.model.auxiliar.feed_factory import create_feed
 
 # ------------------- Computes qP and mu and unifies dataframes --------------
 # @timer
@@ -23,7 +23,7 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
     df_global = []
     df_induction_all = []
 
-    df_calc = calculate_features(BR09=True)
+    # df_calc = calculate_features(BR09=True)
 
     for br_id in datasets:
 
@@ -44,20 +44,22 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
         _, time_ind = get_time_ranges(yaml_params, br_id)
 
          # -- Add calculated features --
-        calc_features = df_calc[br_id]
+        # calc_features = df_calc[br_id]
 
         # df_semibatch = df[(df["time"] >= time_sb) & (df["time"] < time_ind)].copy()
         df_induction = df[df["time"] >= time_ind].copy()
+        if df_induction.empty:
+            # print(f"{br_id}: does not have times >= {time_ind}. Dataset ignored.")
+            continue
 
         # mu and qp calculation
         if t_ind_exp == True:
-            df = calc_mu_qp_rp(df, calc_features, time_ind)
-            df_induction = calc_mu_qp_rp(df_induction, calc_features, time_ind)
+            df = calc_mu_qp_rp(df, time_ind)
+            df_induction = calc_mu_qp_rp(df_induction, time_ind)
         else:
-            df = calc_mu_qp_rp(df, calc_features, t_ind=None)
-            df_induction = calc_mu_qp_rp(df_induction, calc_features, t_ind=None)
+            df = calc_mu_qp_rp(df, t_ind=None)
+            df_induction = calc_mu_qp_rp(df_induction, t_ind=None)
 
-        # Final df
         df_global.append(df)
         df_induction_all.append(df_induction)
 
@@ -69,7 +71,7 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
 # -------------------------- mu, qp & rp function ---------------------------------------
 
-def calc_mu_qp_rp(df, calc_features, t_ind=None):
+def calc_mu_qp_rp(df, t_ind=None): # calc_features,
 
     df = df.sort_values("time").copy()
 
@@ -92,7 +94,10 @@ def calc_mu_qp_rp(df, calc_features, t_ind=None):
     # low_qp = 0 # 1e-6
     # low_rp = 0 # 1e-5
 
-    mu_calc = calc_features["mu"]
+    # mu_calc = calc_features["mu"]
+
+    rx    =  dXdt + (dVdt * X / V)      
+    mu = (1/X) * ( dXdt ) + (1/V) * ( dVdt )
     
     if t_ind != None:
         for i in range(n):
@@ -103,14 +108,11 @@ def calc_mu_qp_rp(df, calc_features, t_ind=None):
             else:
                 rp[i] = dPdt[i] + (dVdt[i] * P[i] / V[i])
                 qp[i] = rp[i] / X[i]
-                qp_2[i] = (rp[i] - mu_calc[i] * P)/ X[i]
+                qp_2[i] = (rp[i] - mu[i] * P[i])/ X[i]
 
     else:
         rp    =  dPdt + (dVdt * P / V)  
         qp    = rp / X
-
-    rx    =  dXdt + (dVdt * X / V)      
-    mu = (1/X) * ( dXdt ) + (1/V) * ( dVdt )
 
     # mu = np.clip(mu, 0, None)
     # qp = np.clip(qp, low_qp, None)
@@ -145,27 +147,27 @@ def add_T_ind(df,n_ultimos=4):
 
     return df 
 
-# --- Calculate features ---
-def calculate_features(BR09, in_dir = "src/config/params.yaml"):
+# # --- Calculate features ---
+# def calculate_features(BR09, in_dir = "src/config/params.yaml"):
 
-    # Same code as mode_profile.py
-    cfg = load_yaml(in_dir)
+#     # Same code as mode_profile.py
+#     cfg = load_yaml(in_dir)
 
-    kin = Kinetic_Models()
-    datasets, simulators, y0s = build_experiments(cfg, kin, BR09)
-    param_names = list(cfg["kinetics"].keys())
-    full_params = { k: cfg["kinetics"][k]["value"] for k in param_names }
-    theta = [ cfg["kinetics"][k]["value"] for k in param_names ]
+#     kin = Kinetic_Models()
+#     datasets, simulators, y0s = build_experiments(cfg, kin, BR09)
+#     param_names = list(cfg["kinetics"].keys())
+#     full_params = { k: cfg["kinetics"][k]["value"] for k in param_names }
+#     theta = [ cfg["kinetics"][k]["value"] for k in param_names ]
     
-    _, _, _, solutions = run_model_with_parameters (
-        datasets=datasets, simulators=simulators, y0s=y0s, kin=kin, theta=theta, param_names=param_names, full_params=full_params)
+#     _, _, _, solutions = run_model_with_parameters (
+#         datasets=datasets, simulators=simulators, y0s=y0s, kin=kin, theta=theta, param_names=param_names, full_params=full_params)
     
-    results = {}
+#     results = {}
 
-    for dataset in datasets:
-        br_id = get_br_id(dataset)
-        sol_block = solutions[dataset.path]
+#     for dataset in datasets:
+#         br_id = get_br_id(dataset)
+#         sol_block = solutions[dataset.path]
 
-        results[br_id] = { "mu": sol_block["mu"], }
+#         results[br_id] = { "mu": sol_block["mu"], }
 
-    return results
+#     return results

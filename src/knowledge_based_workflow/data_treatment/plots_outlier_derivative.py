@@ -23,19 +23,24 @@ def plot_outlier_diagnostics(
     save_dir=None, prefix="", has_outliers=False
 ):
     
-    has_special_outliers = (
-        metrics.get("special_outliers", {}).get("applied", False)
-        and len(metrics.get("special_outliers", {}).get("details", {})) > 0
-    )
+    # has_special_outliers = (
+    #     metrics.get("special_outliers", {}).get("applied", False)
+    #     and len(metrics.get("special_outliers", {}).get("details", {})) > 0
+    # )
 
     if method_style is None:
         METHOD_STYLE = {
-            "movmean":   {"marker": "+", "color": "orange"},
-            "movmedian":{"marker": "*", "color": "gold"},
-            "gaussian": {"marker": "s", "color": "purple"},
-            "rlowess":  {"marker": "D", "color": "green"},
-            "sgolay":   {"marker": "v", "color": "red"},
-        }
+            "movmean":   {"marker": "+", "color": "#1f77b4"},
+            "movmedian": {"marker": "*", "color": "#ff7f0e"},
+            "gaussian":  {"marker": "s", "color": "#2ca02c"},
+            "lowess":    {"marker": "o", "color": "#d62728"},
+            "loess":     {"marker": "D", "color": "#9467bd"},
+            "sgolay":    {"marker": "^", "color": "#8c564b"},
+            "mean rlowess sgolay movmedian": {
+                "marker": "X",
+                "color": "black"
+            }
+}
     else:
         METHOD_STYLE = method_style
 
@@ -73,27 +78,27 @@ def plot_outlier_diagnostics(
                         dpi=300, bbox_inches="tight")
         plt.close(fig1)
 
-    if has_outliers or has_special_outliers:
+    if has_outliers : # or has_special_outliers:
     # ---------- FIG 2: REPLACED + SMOOTHED ----------
         fig2, ax2 = plt.subplots(figsize=(10, 4))
 
         ax2.plot(time, x, "o", label="Raw data", alpha=0.4, markersize=4)
 
-        special_indices = set()
-        if metrics["special_outliers"]["applied"]:
-            for block in metrics["special_outliers"]["details"].values():
-                special_indices.update(
-                    i for i in [
-                        block.get("first_index"),
-                        block.get("min_index"),
-                        block.get("last_index"),
-                        block.get("max_index")
-                    ] if i is not None
-                )
+        # special_indices = set()
+        # if metrics["special_outliers"]["applied"]:
+        #     for block in metrics["special_outliers"]["details"].values():
+        #         special_indices.update(
+        #             i for i in [
+        #                 block.get("first_index"),
+        #                 block.get("min_index"),
+        #                 block.get("last_index"),
+        #                 block.get("max_index")
+        #             ] if i is not None
+        #         )
 
         for idx, method in selected_method_per_outlier.items():
-            if idx in special_indices:
-                continue
+            # if idx in special_indices:
+            #     continue
             style = METHOD_STYLE.get(method, {"marker": "o", "color": "black"})
             ax2.scatter(time[idx], x_replaced[idx],
                         marker=style["marker"],
@@ -103,25 +108,25 @@ def plot_outlier_diagnostics(
         if x_smooth is not None:
             ax2.plot(time, x_smooth, linewidth=2,
                     color="blue", linestyle="--",
-                    label="Savitzky-Golay smoothing")
+                    label="Smoothing")
 
-        # Special outliers
-        already_labeled = False
-        if metrics["special_outliers"]["applied"]:
-            for block in metrics["special_outliers"]["details"].values():
-                for idx in [block.get("first_index"), block.get("min_index"),
-                            block.get("last_index"), block.get("max_index")]:
-                    if idx is not None:
-                        label = "Special outlier" if not already_labeled else None
-                        ax2.plot(
-                            time[idx],
-                            x_replaced[idx],"x",
-                            # s=50,
-                            color="black",
-                            label=label, markersize=7
-                            # zorder=2
-                        )
-                        already_labeled = True
+        # # Special outliers
+        # already_labeled = False
+        # if metrics["special_outliers"]["applied"]:
+        #     for block in metrics["special_outliers"]["details"].values():
+        #         for idx in [block.get("first_index"), block.get("min_index"),
+        #                     block.get("last_index"), block.get("max_index")]:
+        #             if idx is not None:
+        #                 label = "Special outlier" if not already_labeled else None
+        #                 ax2.plot(
+        #                     time[idx],
+        #                     x_replaced[idx],"x",
+        #                     # s=50,
+        #                     color="black",
+        #                     label=label, markersize=7
+        #                     # zorder=2
+        #                 )
+        #                 already_labeled = True
 
         handles, labels = ax2.get_legend_handles_labels()
         by_label = dict(zip(labels, handles))
@@ -157,26 +162,17 @@ def plot_all_derivatives(t,results,variables,br_id,out_dir):
     )
     for j, var in enumerate(variables):
 
-        if var == "P":
-            idx_min = results[var]["idx"]["start"]
-            t_dense = np.linspace(t[idx_min], t.max(), 500)
-        elif var == "S":
-            idx_max = results[var]["idx"]["end"]
-            t_dense = np.linspace(t.min(), t[idx_max], 500)
-        else:
-            t_dense = np.linspace(t.min(), t.max(), 500)
-
         signal = results[var]["signal"]
         first_derivative = results[var]["derivatives"]
         second_derivative = results[var]["second_derivatives"]
-        spline_uni = results[var]["spline"]["univariate"]
+        # spline_uni = results[var]["spline"]["univariate"]
 
         # ---------- First row: Data ----------
         ax = axes[0, j]
         ax.scatter(t, signal["replaced"], color="grey", s=25, zorder=2, label="Replaced")
         ax.scatter(t, signal["smooth"], s=20, zorder=2, color="red", label="Smoothed")
-        if br_id != "BR09":
-            ax.plot(t_dense, spline_uni(t_dense), linestyle="--", linewidth=1.3, zorder=4, color="red")
+        # if br_id != "BR09":
+        #     ax.plot(t_dense, spline_uni(t_dense), linestyle="--", linewidth=1.3, zorder=4, color="red")
         ax.set_title(f"{var}", fontsize=15)
         # axes[0].set_xlabel("time")
         # axes[0].legend()
@@ -189,8 +185,8 @@ def plot_all_derivatives(t,results,variables,br_id,out_dir):
         ax.scatter(t, first_derivative["replaced"], color="grey", s=20)
         ax.scatter(t, first_derivative["smooth"], s=20, color="red")
         ax.plot(t, first_derivative["replaced"], color="grey",linewidth=1)
-        if br_id != "BR09":
-            ax.plot(t_dense, spline_uni.derivative()(t_dense), linestyle="--", linewidth=1.3, zorder=4, color="red")
+        # if br_id != "BR09":
+        #     ax.plot(t_dense, spline_uni.derivative()(t_dense), linestyle="--", linewidth=1.3, zorder=4, color="red")
         ax.grid(True, alpha=0.3)
         if j == 0:
             ax.set_ylabel("first derivative", fontsize=13)
@@ -200,8 +196,8 @@ def plot_all_derivatives(t,results,variables,br_id,out_dir):
         ax.scatter(t, second_derivative["replaced"], color="grey", s=20)
         ax.scatter(t, second_derivative["smooth"], s=20, color="red")
         ax.plot(t, second_derivative["replaced"], color="grey",linewidth=1)
-        if br_id != "BR09":
-            ax.plot(t_dense, spline_uni.derivative(2)(t_dense), linestyle="--", linewidth=1.3, zorder=4, color="red")
+        # if br_id != "BR09":
+        #     ax.plot(t_dense, spline_uni.derivative(2)(t_dense), linestyle="--", linewidth=1.3, zorder=4, color="red")
         ax.set_xlabel("time", fontsize=12)
         # axes[2].legend()
         ax.grid(True, alpha=0.3)
@@ -213,7 +209,7 @@ def plot_all_derivatives(t,results,variables,br_id,out_dir):
 
     # ---------- Global legend ----------
     fig.legend(
-            ["Gradient points", "UnivariateSpline","Mean Grad & UnivariateSpline"],
+            ["Gradient points", "UnivariateSpline"], # ,"Mean Grad & UnivariateSpline"],
             loc="upper center",
             bbox_to_anchor=(0.5, 0.95),
             ncol=4,
