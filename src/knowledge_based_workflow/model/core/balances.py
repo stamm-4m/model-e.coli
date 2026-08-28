@@ -64,7 +64,7 @@ class FedBatchBalances:
                 "I": induction,
                 "mu": rX/X, 
                 "FS": FS }
-            rP = self.DataDrivenModel(features)  
+            rP = rP # self.DataDrivenModel(features)  
 
         dVdt = FS + FA 
         dXdt = rX - (dVdt * X / V)

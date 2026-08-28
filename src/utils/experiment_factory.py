@@ -1,23 +1,22 @@
+"""
+    Build datasets, simulators and initial conditions for all BR experiments.
+"""
 
 import numpy as np
 from glob import glob
-
-from src.data_analysis.data_treatment.data import ExperimentDataset
-from src.core.auxiliar.temperature_profile import TemperatureProfile
-from src.core.auxiliar.volume_profile import VolumeProfile
-from src.core.auxiliar.biomass_profile import BiomassProfile
-from src.core.auxiliar.induction_func import InductionProfile
-from src.core.auxiliar.feed_factory import create_feed
-from src.core.auxiliar.simulator import Simulator
-from src.core.auxiliar.initial_conditions import build_initial_state
-from src.core.reactor.balances import FedBatchBalances
-from src.core.reactor.fedbatch_model import FedBatchModel
+from src.knowledge_based_workflow.data_treatment.standardization import DatasetStandardization
+from src.knowledge_based_workflow.model.auxiliar.temperature_profile import TemperatureProfile
+from src.knowledge_based_workflow.model.auxiliar.induction import InductionProfile
+from src.knowledge_based_workflow.model.auxiliar.feed_factory import create_feed
+from src.knowledge_based_workflow.model.auxiliar.simulator import Simulator
+from src.knowledge_based_workflow.model.auxiliar.initial_conditions import DatasetInitialState, ConfigInitialState
+from src.knowledge_based_workflow.model.core.balances import FedBatchBalances
 from src.utils.io import get_br_id, timer
 from src.utils.metrics_io import compute_metrics
 from src.utils.io import load_yaml
 
 @timer
-def build_experiments(cfg, kin, BR09=False):
+def build_experiment(cfg, kin, BR09=False, rP_scenario=0):
     """
     Build datasets, simulators and initial conditions for all BR experiments.
     """
@@ -26,7 +25,7 @@ def build_experiments(cfg, kin, BR09=False):
     else:
         dataset_files = [f for f in sorted(glob("data/raw/BR*.xls")) if "BR09" not in f]
 
-    datasets = [ExperimentDataset(f) for f in dataset_files]
+    datasets = [DatasetStandardization(f) for f in dataset_files]
 
     simulators = []
     y0s = []
@@ -36,10 +35,6 @@ def build_experiments(cfg, kin, BR09=False):
 
         T_profile = TemperatureProfile(dataset.t, dataset.T)
 
-        V_profile = VolumeProfile(dataset.t, dataset.V)
-
-        X_profile = BiomassProfile(dataset.t, dataset.X, V_profile)
-
         t_ind = cfg["bioreactor"][br_id]["t_ind"]["value"]
         I_profile = InductionProfile(t_ind, br_id)
 
@@ -47,20 +42,11 @@ def build_experiments(cfg, kin, BR09=False):
         feed_S = create_feed(feed_cfg["feed_S"])
         feed_A = create_feed(feed_cfg["feed_A"])
 
-        balances = FedBatchBalances(
-            kinetics=kin,
+        model = FedBatchBalances(
+            kinetics=kin, temperature_profile=T_profile, induction_profile=I_profile,
             Sf=cfg["bioreactor"][br_id]["Sf"]["value"],
-            temperature_profile=T_profile,
-            volume_profile=V_profile,
-            biomass_profile=X_profile,
-            induction_profile=I_profile,
-            br_id = br_id
-        )
-
-        model = FedBatchModel(
-            balances=balances,
-            feed_S=feed_S,
-            feed_A=feed_A
+            feed_S = feed_S, feed_A = feed_A,
+            br_id = br_id, rP_scenario=rP_scenario
         )
 
         method = cfg["simulation"]["method_ode"]["type"]
@@ -71,13 +57,17 @@ def build_experiments(cfg, kin, BR09=False):
         sim = Simulator(model, method, rtol, atol, max_step)
         simulators.append(sim)
 
-        y0 = build_initial_state(cfg, br_id, dataset)
+        InSt = ConfigInitialState(cfg, br_id)
+        y0 = InSt()
         y0s.append(y0)
 
     return datasets, simulators, y0s
 
 @timer
 def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_names, full_params, dense = False):
+    """
+    Build datasets, simulators and initial conditions for all BR experiments.
+    """
     # Update model with optimal parameters
 
     # if kin.hybrid == False:
