@@ -13,9 +13,9 @@ BR01:
         std: 6.373763023003184
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 7.21672132610731
-        std: 6.355938518489261
-      MAPE_raw_vs_treated: 17.231606955957194
+        mean: 7.221201431298838
+        std: 6.351143231575867
+      MAPE_raw_vs_treated: 8.342309267544461
   S:
     file: BR01
     variable: S
@@ -30,9 +30,9 @@ BR01:
         std: 3.3110562683512894
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.3494753110763145
-        std: 3.229341597792635
-      MAPE_raw_vs_treated: 3317.692861500238
+        mean: 2.4083874125195854
+        std: 3.283454322336061
+      MAPE_raw_vs_treated: 450.45429894726243
   V:
     file: BR01
     variable: V
@@ -42,16 +42,16 @@ BR01:
       indices:
       - 7
       replacement_methods:
-        7: mean rlowess sgolay movmedian
+        7: movmedian
     statistics:
       raw:
         mean: 1.6320295828168105
         std: 0.08577852937911977
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.632626144556437
-        std: 0.08474496094982921
-      MAPE_raw_vs_treated: 0.4535528562598857
+        mean: 1.6330142542556458
+        std: 0.08433389555251736
+      MAPE_raw_vs_treated: 0.46806712114913523
   P:
     file: BR01
     variable: P
@@ -83,9 +83,9 @@ BR01:
         std: 0.014642555519205366
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 36.994736842105254
-        std: 0.008318667127956104
-      MAPE_raw_vs_treated: 0.026183512424411085
+        mean: 36.99473684210527
+        std: 0.014642555519205366
+      MAPE_raw_vs_treated: 0.0
 BR02:
   X:
     file: BR02
@@ -101,9 +101,9 @@ BR02:
         std: 10.452026647560286
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 17.478653187253357
-        std: 10.265355384774134
-      MAPE_raw_vs_treated: 88.39033747545648
+        mean: 17.482074883530757
+        std: 10.43570552344491
+      MAPE_raw_vs_treated: 3.5169371164974614
   S:
     file: BR02
     variable: S
@@ -118,9 +118,9 @@ BR02:
         std: 2.9607032971645153
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.393889404797563
-        std: 2.95414870824349
-      MAPE_raw_vs_treated: 3.9955652437235747
+        mean: 1.4009678293989758
+        std: 2.9710465426008676
+      MAPE_raw_vs_treated: 3.9125825403072545
   V:
     file: BR02
     variable: V
@@ -135,9 +135,9 @@ BR02:
         std: 0.10431532109068187
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.5828009253440125
-        std: 0.09098059625320286
-      MAPE_raw_vs_treated: 2.5758547797272255
+        mean: 1.582800925344012
+        std: 0.1022279011053924
+      MAPE_raw_vs_treated: 0.6238771957265768
   P:
     file: BR02
     variable: P
@@ -152,9 +152,9 @@ BR02:
         std: 0.6823961605570885
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 0.4580301873567076
-        std: 0.6805133424372248
-      MAPE_raw_vs_treated: 3.7161020339747233
+        mean: 0.4560253623051213
+        std: 0.6823290556781848
+      MAPE_raw_vs_treated: 0.4443977139518376
   T:
     file: BR02
     variable: T
@@ -169,9 +169,9 @@ BR02:
         std: 4.495037055630118
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 32.76352941176472
-        std: 4.150429479430846
-      MAPE_raw_vs_treated: 4.081135375873194
+        mean: 32.76352941176471
+        std: 4.495037055630118
+      MAPE_raw_vs_treated: 0.0
 BR03:
   X:
     file: BR03
@@ -187,9 +187,9 @@ BR03:
         std: 11.854021733290722
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 16.886646560846557
-        std: 11.520574620571637
-      MAPE_raw_vs_treated: 140.9540160554558
+        mean: 16.885472596695045
+        std: 11.827935787956319
+      MAPE_raw_vs_treated: 5.344752993299131
   S:
     file: BR03
     variable: S
@@ -204,9 +204,9 @@ BR03:
         std: 3.393682158888123
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.035455167659222
-        std: 3.387643190853616
-      MAPE_raw_vs_treated: 4.848717032497932
+        mean: 2.0454041908428326
+        std: 3.4086790563868905
+      MAPE_raw_vs_treated: 4.74173828858815
   V:
     file: BR03
     variable: V
@@ -221,9 +221,9 @@ BR03:
         std: 0.08167983696374527
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.5950974081420564
-        std: 0.06704807411305334
-      MAPE_raw_vs_treated: 2.429810845371777
+        mean: 1.595097408142057
+        std: 0.07719275216306751
+      MAPE_raw_vs_treated: 1.0679765570559352
   P:
     file: BR03
     variable: P
@@ -238,9 +238,9 @@ BR03:
         std: 0.6302550008190669
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 0.36245627666685887
-        std: 0.625262861450646
-      MAPE_raw_vs_treated: 6.625915073950026
+        mean: 0.3583763533521878
+        std: 0.6299318572938953
+      MAPE_raw_vs_treated: 0.44627296303242187
   T:
     file: BR03
     variable: T
@@ -256,8 +256,8 @@ BR03:
       treated:
         info: if 'smooth = True' refers to smoothed data
         mean: 34.21
-        std: 3.146591807030244
-      MAPE_raw_vs_treated: 3.18267719499807
+        std: 3.4334283158382664
+      MAPE_raw_vs_treated: 0.0
 BR04:
   X:
     file: BR04
@@ -273,9 +273,9 @@ BR04:
         std: 13.60015671142236
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 15.30535870937431
-        std: 13.509619503077133
-      MAPE_raw_vs_treated: 83.9432898758503
+        mean: 15.306325740052884
+        std: 13.582283531463588
+      MAPE_raw_vs_treated: 5.216618560526319
   S:
     file: BR04
     variable: S
@@ -286,17 +286,17 @@ BR04:
       - 10
       - 11
       replacement_methods:
-        10: mean rlowess sgolay movmedian
-        11: mean rlowess sgolay movmedian
+        10: movmedian
+        11: movmedian
     statistics:
       raw:
         mean: 2.752047619047619
         std: 3.7653111358974543
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.708443649924084
-        std: 3.7438341758442393
-      MAPE_raw_vs_treated: 684.2976476153717
+        mean: 2.735122991822274
+        std: 3.7792065151296965
+      MAPE_raw_vs_treated: 41.897551530862344
   V:
     file: BR04
     variable: V
@@ -311,9 +311,9 @@ BR04:
         std: 0.07744154185994265
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.6069010923098779
-        std: 0.07010149704441619
-      MAPE_raw_vs_treated: 1.6336267607327326
+        mean: 1.6069010923098772
+        std: 0.07151944931928285
+      MAPE_raw_vs_treated: 1.044059548617307
   P:
     file: BR04
     variable: P
@@ -340,16 +340,16 @@ BR04:
       indices:
       - 8
       replacement_methods:
-        8: mean rlowess sgolay movmedian
+        8: movmean
     statistics:
       raw:
         mean: 35.86142857142857
         std: 1.8233421320784102
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 35.86676857101544
-        std: 1.6532523448291654
-      MAPE_raw_vs_treated: 1.73504427613618
+        mean: 35.86828571428571
+        std: 1.8274447980160489
+      MAPE_raw_vs_treated: 0.018590600127810577
 BR05:
   X:
     file: BR05
@@ -360,16 +360,16 @@ BR05:
       indices:
       - 20
       replacement_methods:
-        20: mean rlowess sgolay movmedian
+        20: movmedian
     statistics:
       raw:
         mean: 14.527235619682845
         std: 12.963136881155828
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 14.500414673190406
-        std: 12.84132437026096
-      MAPE_raw_vs_treated: 141.05030424471238
+        mean: 14.454900087474005
+        std: 12.854129440272555
+      MAPE_raw_vs_treated: 4.648085485936142
   S:
     file: BR05
     variable: S
@@ -379,16 +379,16 @@ BR05:
       indices:
       - 10
       replacement_methods:
-        10: mean rlowess sgolay movmedian
+        10: movmedian
     statistics:
       raw:
         mean: 2.8567142857142858
         std: 3.800336315228369
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.8445172324593466
-        std: 3.781564486067563
-      MAPE_raw_vs_treated: 72.17905220254745
+        mean: 2.8541011939355605
+        std: 3.800344397019486
+      MAPE_raw_vs_treated: 10.570125503829164
   V:
     file: BR05
     variable: V
@@ -404,8 +404,8 @@ BR05:
       treated:
         info: if 'smooth = True' refers to smoothed data
         mean: 1.5781060736314696
-        std: 0.07046112744896404
-      MAPE_raw_vs_treated: 1.6483594595919588
+        std: 0.0724811430116824
+      MAPE_raw_vs_treated: 0.9568358905465303
   P:
     file: BR05
     variable: P
@@ -432,16 +432,16 @@ BR05:
       indices:
       - 14
       replacement_methods:
-        14: mean rlowess sgolay movmedian
+        14: movmedian
     statistics:
       raw:
         mean: 36.97500000000001
         std: 0.10934872133291226
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 36.98543537414966
-        std: 0.028937567022343395
-      MAPE_raw_vs_treated: 0.13271204712776977
+        mean: 36.99571428571429
+        std: 0.04354214472608067
+      MAPE_raw_vs_treated: 0.05671262344773513
 BR06:
   X:
     file: BR06
@@ -457,9 +457,9 @@ BR06:
         std: 14.995263554730942
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 24.464249133912826
-        std: 14.626331803432429
-      MAPE_raw_vs_treated: 269.47872165184464
+        mean: 24.467766018769556
+        std: 14.986558044782607
+      MAPE_raw_vs_treated: 5.042657961457807
   S:
     file: BR06
     variable: S
@@ -474,9 +474,9 @@ BR06:
         std: 4.243663797176844
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.1788324845317084
-        std: 4.218392187001889
-      MAPE_raw_vs_treated: 15.191188369301805
+        mean: 2.1625030537294765
+        std: 4.238514953489237
+      MAPE_raw_vs_treated: 1.9358151627645033
   V:
     file: BR06
     variable: V
@@ -487,17 +487,17 @@ BR06:
       - 15
       - 27
       replacement_methods:
-        15: mean rlowess sgolay movmedian
-        27: mean rlowess sgolay movmedian
+        15: movmedian
+        27: movmedian
     statistics:
       raw:
         mean: 1.9972775513138177
         std: 0.18545325615439687
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.9953546398420643
-        std: 0.16739179322136039
-      MAPE_raw_vs_treated: 2.8603608582477613
+        mean: 1.9923809601176568
+        std: 0.1771945241155945
+      MAPE_raw_vs_treated: 0.6300103641442556
   P:
     file: BR06
     variable: P
@@ -512,9 +512,9 @@ BR06:
         std: 0.5181853345379996
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 0.40766799212198385
-        std: 0.5179565365548773
-      MAPE_raw_vs_treated: 0.8528615123297558
+        mean: 0.40769410607719
+        std: 0.5179300216378033
+      MAPE_raw_vs_treated: 0.899122447297072
   T:
     file: BR06
     variable: T
@@ -529,9 +529,9 @@ BR06:
         std: 3.9427850828042432
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 32.41392857142854
-        std: 3.47675507290516
-      MAPE_raw_vs_treated: 4.412683604905147
+        mean: 32.41392857142857
+        std: 3.9427850828042432
+      MAPE_raw_vs_treated: 0.0
 BR07:
   X:
     file: BR07
@@ -542,16 +542,16 @@ BR07:
       indices:
       - 15
       replacement_methods:
-        15: mean rlowess sgolay movmedian
+        15: movmedian
     statistics:
       raw:
         mean: 18.583906525573195
         std: 11.42633283562402
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 18.616819468465764
-        std: 11.238108072244042
-      MAPE_raw_vs_treated: 114.31782155913224
+        mean: 18.623687524845227
+        std: 11.432193048580737
+      MAPE_raw_vs_treated: 3.0354113026724296
   S:
     file: BR07
     variable: S
@@ -566,9 +566,9 @@ BR07:
         std: 2.538021234889833
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.2445706794048699
-        std: 2.5299062044963363
-      MAPE_raw_vs_treated: 2.019649194378249
+        mean: 1.252896592632742
+        std: 2.551987429358743
+      MAPE_raw_vs_treated: 1.9168601421823064
   V:
     file: BR07
     variable: V
@@ -578,16 +578,16 @@ BR07:
       indices:
       - 26
       replacement_methods:
-        26: mean rlowess sgolay movmedian
+        26: movmedian
     statistics:
       raw:
         mean: 2.0778079640707308
         std: 0.2776447218258339
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.075861646656317
-        std: 0.2591476756236819
-      MAPE_raw_vs_treated: 3.677227308484131
+        mean: 2.072502608392074
+        std: 0.26896221335521975
+      MAPE_raw_vs_treated: 0.8865110603646111
   P:
     file: BR07
     variable: P
@@ -597,16 +597,16 @@ BR07:
       indices:
       - 26
       replacement_methods:
-        26: mean rlowess sgolay movmedian
+        26: movmedian
     statistics:
       raw:
         mean: 0.17249171996220344
         std: 0.2064632028778755
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 0.1675081732298194
-        std: 0.1950018038312393
-      MAPE_raw_vs_treated: 2.6921952495516743
+        mean: 0.1599932130958295
+        std: 0.17981754118783164
+      MAPE_raw_vs_treated: 3.68182919396805
   T:
     file: BR07
     variable: T
@@ -621,9 +621,9 @@ BR07:
         std: 2.501186508562942
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 34.59277777777779
-        std: 2.2245516323410377
-      MAPE_raw_vs_treated: 2.6465384785718107
+        mean: 34.592777777777776
+        std: 2.501186508562942
+      MAPE_raw_vs_treated: 0.0
 BR08:
   X:
     file: BR08
@@ -634,16 +634,16 @@ BR08:
       indices:
       - 24
       replacement_methods:
-        24: mean rlowess sgolay movmedian
+        24: movmedian
     statistics:
       raw:
         mean: 22.58339318936879
         std: 12.978327305883456
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 22.57250342413698
-        std: 12.693126724551616
-      MAPE_raw_vs_treated: 148.89409196435696
+        mean: 22.558893305253164
+        std: 12.937718657487045
+      MAPE_raw_vs_treated: 3.368409638405809
   S:
     file: BR08
     variable: S
@@ -658,9 +658,9 @@ BR08:
         std: 2.451144325738491
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.0123537105399163
-        std: 2.4501335244527187
-      MAPE_raw_vs_treated: 0.3367650721350267
+        mean: 1.0141813755749924
+        std: 2.45547827436667
+      MAPE_raw_vs_treated: 0.31450091042134837
   V:
     file: BR08
     variable: V
@@ -670,16 +670,16 @@ BR08:
       indices:
       - 24
       replacement_methods:
-        24: mean rlowess sgolay movmedian
+        24: movmedian
     statistics:
       raw:
         mean: 2.0125462899919864
         std: 0.19343072840312525
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.0108387118683226
-        std: 0.17767370721872155
-      MAPE_raw_vs_treated: 2.7612261325564407
+        mean: 2.0080434903845035
+        std: 0.1856991317141915
+      MAPE_raw_vs_treated: 0.7068801076071183
   P:
     file: BR08
     variable: P
@@ -689,16 +689,16 @@ BR08:
       indices:
       - 24
       replacement_methods:
-        24: mean rlowess sgolay movmedian
+        24: movmedian
     statistics:
       raw:
         mean: 0.16563589970012033
         std: 0.194333723352243
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 0.1599640635180326
-        std: 0.17895437969809994
-      MAPE_raw_vs_treated: 2.906899557834555
+        mean: 0.15031834016223558
+        std: 0.1573013918089058
+      MAPE_raw_vs_treated: 6.2129712377966975
   T:
     file: BR08
     variable: T
@@ -714,8 +714,8 @@ BR08:
       treated:
         info: if 'smooth = True' refers to smoothed data
         mean: 32.5302
-        std: 3.4962627749570445
-      MAPE_raw_vs_treated: 4.539039923526456
+        std: 3.9885712930822734
+      MAPE_raw_vs_treated: 0.0
 BR09:
   X:
     file: BR09
@@ -731,9 +731,9 @@ BR09:
         std: 10.243555501159952
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 19.57371212121214
-        std: 10.092842991541653
-      MAPE_raw_vs_treated: 75.5470553502805
+        mean: 19.572644398389333
+        std: 10.238748073798725
+      MAPE_raw_vs_treated: 1.5175429453654221
   S:
     file: BR09
     variable: S
@@ -748,9 +748,9 @@ BR09:
         std: 2.537699075619487
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.0310988191188042
-        std: 2.5036484947361353
-      MAPE_raw_vs_treated: 2.8173893164025188
+        mean: 1.0296375326400489
+        std: 2.5292431707577046
+      MAPE_raw_vs_treated: 1.2374127862356914
   V:
     file: BR09
     variable: V
@@ -765,9 +765,9 @@ BR09:
         std: 0.25625543161057607
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.11837377640996
-        std: 0.2492930861386769
-      MAPE_raw_vs_treated: 2.3120953648003533
+        mean: 2.118373776409961
+        std: 0.2548948889393837
+      MAPE_raw_vs_treated: 0.4698600297693295
   P:
     file: BR09
     variable: P
@@ -799,6 +799,6 @@ BR09:
         std: 3.9797934418760974
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 32.13539999999997
-        std: 3.382624325165021
-      MAPE_raw_vs_treated: 5.0142518422472975
+        mean: 32.1354
+        std: 3.9797934418760974
+      MAPE_raw_vs_treated: 0.0

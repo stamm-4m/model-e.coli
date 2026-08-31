@@ -16,15 +16,16 @@ from src.utils.metrics_io import compute_metrics
 from src.utils.io import load_yaml
 
 @timer
-def build_experiment(cfg, kin, BR09=False, rP_scenario=0,  hybrid=False, DataDrivenModel=None):
+def build_experiment(cfg, kin, rP_scenario=0,  hybrid=False, DataDrivenModel=None, BR09=False):
     """
     Build datasets, simulators and initial conditions for all BR experiments.
     """
-    if BR09:
-        dataset_files = [f for f in sorted(glob("data/raw/BR*.xls"))]
-    else:
-        dataset_files = [f for f in sorted(glob("data/raw/BR*.xls")) if "BR09" not in f]
+    # if BR09:
+    #     dataset_files = [f for f in sorted(glob("data/raw/BR*.xls"))]
+    # else:
+    #     dataset_files = [f for f in sorted(glob("data/raw/BR*.xls")) if "BR09" not in f]
 
+    dataset_files = [f for f in sorted(glob("data/raw/BR*.xls"))]
     datasets = [DatasetStandardization(f) for f in dataset_files]
 
     simulators = []
@@ -61,7 +62,7 @@ def build_experiment(cfg, kin, BR09=False, rP_scenario=0,  hybrid=False, DataDri
         simulators.append(sim)
 
         y0 = DatasetInitialState(dataset)
-        y0s.append(y0)
+        y0s.append(y0())
 
     return datasets, simulators, y0s
 
@@ -180,11 +181,11 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
             FS = simulator.model.feed_S(t)[0]
             FA = simulator.model.feed_A(t)[0]
 
-            mu = kin.mu(X, S, T, ind_F)
+            mu = kin.mu(S, T, ind_F)
             mu_values.append(mu)
 
             state = np.array([X_model[i], S_model[i], P_model[i], V_model[i]])           
-            derivatives = simulator.model.ODEs(t, state, FS, FA, ind_F)
+            derivatives = simulator.model.ODEs(t, state)
 
             dXdt = derivatives[0]  
             dXdt_values.append(dXdt)

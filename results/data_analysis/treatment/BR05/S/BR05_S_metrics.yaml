@@ -6,13 +6,13 @@ outliers:
   indices:
   - 10
   replacement_methods:
-    10: mean rlowess sgolay movmedian
+    10: movmedian
 statistics:
   raw:
     mean: 2.8567142857142858
     std: 3.800336315228369
   treated:
     info: if 'smooth = True' refers to smoothed data
-    mean: 2.8445172324593466
-    std: 3.781564486067563
-  MAPE_raw_vs_treated: 72.17905220254745
+    mean: 2.8541011939355605
+    std: 3.800344397019486
+  MAPE_raw_vs_treated: 10.570125503829164

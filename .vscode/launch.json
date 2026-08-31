@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [  
         {
-            "name": "Debug data_analysis.py",
+            "name": "Debug main.py",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/execution/data_analysis.py",
+            "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             // "redirectOutput": true,
             "justMyCode": true,
@@ -18,17 +18,17 @@
                 }
 
         },
-        {
-            "name": "Debug modellig.py",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/execution/modelling.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
+        // {
+        //     "name": "Debug modellig.py",
+        //     "type": "debugpy",
+        //     "request": "launch",
+        //     "program": "${workspaceFolder}/execution/modelling.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "env": {
+        //         "PYTHONPATH": "${workspaceFolder}"
+        //     }
+        // },
 
     ]
 }

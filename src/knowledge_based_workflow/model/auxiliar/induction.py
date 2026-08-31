@@ -14,7 +14,7 @@ class InductionProfile:
         self.br_id = br_id
 
     def __call__(self, t):
-        if self.br_id == "BR09":
+        if self.br_id in ( "BR01",  "BR09"):
             return float(0), self.t_ind
         else:
             return float(t >= self.t_ind), self.t_ind

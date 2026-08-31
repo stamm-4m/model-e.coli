@@ -34,7 +34,7 @@ def run_model(model_name, model_path, output_dir, cfg, theta, param_names, full_
     model_label = f"{model_name}_{kin.ensemble_mode}"
 
     print("Building experiments...")
-    datasets, simulators, y0s = build_experiments(cfg, kin, BR09=False)
+    datasets, simulators, y0s = build_experiments(cfg, kin) # , BR09=False)
 
     print("Running simulation...")
     ( per_dataset_metrics, global_metrics, _, solutions 
@@ -60,8 +60,6 @@ def run_model(model_name, model_path, output_dir, cfg, theta, param_names, full_
         if dataset_key not in solutions or "sol" not in solutions[dataset_key]:
                 continue
 
-        # 
-        
         # Save
         if dense == False:
             sol = solutions[dataset_key]["sol"]

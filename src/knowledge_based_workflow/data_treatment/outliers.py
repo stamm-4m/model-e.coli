@@ -19,6 +19,7 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 from skmisc.loess import loess
 from scipy.interpolate import UnivariateSpline
 from scipy.optimize import minimize_scalar
+from sklearn.isotonic import IsotonicRegression
  
 # @timer
 
@@ -70,7 +71,7 @@ def outliers_and_smoothing(datasets, time_col="time", variable_list=None, result
             variable_results_dir = f"{br_results_dir}/{variable_col}"
 
             # -------- Treatment data execution --------
-            x_smooth, x_replaced, dxdt_smooth, dxdt_replaced, _, metrics, spline, time = treat_data(
+            x_smooth, x_replaced, dxdt_smooth, dxdt_replaced, outliers, metrics, time = treat_data(
                     df=dataset.df, time_col=time_col,
                     variable_col=variable_col,file_id=br_id,
                     results_dir=variable_results_dir,smooth=smooth # type: ignore
@@ -106,8 +107,8 @@ def outliers_and_smoothing(datasets, time_col="time", variable_list=None, result
                     "replaced": np.gradient(dxdt_replaced, time, edge_order=2) ,
                     "smooth": np.gradient(dxdt_smooth, time, edge_order=2) ,
                 },
-                "spline": {
-                    "univariate": spline,},
+                # "spline": {
+                #     "univariate": spline,},
             }
 
         plot_all_derivatives(t=time,results=plots_dict,variables=["X", "S", "P", "V"],br_id=br_id, out_dir=br_results_dir,)
@@ -178,13 +179,13 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
     selected_method_per_outlier = {}
 
     for idx in np.where(outliers)[0]:
-        # diffs = {
-        #     m: abs(candidates[m][idx] - x[idx])
-        #     for m in candidates
-        #     if not np.isnan(candidates[m][idx])
-        # }
-        # best_method = max(diffs, key=diffs.get) 
-        best_method = "mean rlowess sgolay movmedian"
+        diffs = {
+            m: abs(candidates[m][idx] - x[idx])
+            for m in candidates
+            if not np.isnan(candidates[m][idx])
+        }
+        best_method = max(diffs, key=diffs.get) 
+        # best_method = "movmedian" # "mean rlowess sgolay movmedian"
         x_replaced[idx] = candidates[best_method][idx]
         selected_method_per_outlier[idx] = best_method
 
@@ -193,9 +194,9 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
     # --- Special Outlier replacement (Biomass and Protein titers) --- end of the code if necessary
 
     # --- Smoothing (Savitzky–Golay) ---
-    if smooth == True:
+    if smooth == True and variable_col not in ("T", "I"):
 
-        # # --- Smoothing Savitzky–Golay ---
+        # --- Smoothing Savitzky–Golay ---
         # x_smooth = savgol_filter(x_replaced, sg_window, sg_order) # window_outlier // sg_window
 
         # # eps = 1e-12
@@ -204,7 +205,9 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
         # for _ in range(5):
         #     x_smooth = np.maximum(x_smooth, 0)
         #     x_smooth = savgol_filter(x_smooth, sg_window, sg_order) # Iterative to avoid negative numbers # window_outlier
+        
         # x_smooth = np.maximum(x_smooth, 0)
+        # dxdt_smooth = np.gradient(x_smooth, time, edge_order=2)
 
         # --- Smoothing with own function ---
         idx_start = None
@@ -214,24 +217,29 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
 
         if variable_col in ("X", "P") and len(x) > 0:
             monotonicity = "increasing"
+            iso = IsotonicRegression(increasing=True)
             if variable_col == "P":
                 mask = df["P"] > 0
                 if mask.any():
                     idx_start = np.where(mask)[0][0]
                     x_in = x_replaced[idx_start-1:]
                     t_in = time[idx_start-1:]
-
+            x_iso = iso.fit_transform(t_in, x_in)
         elif variable_col in ("S") and len(x) > 0:
-            monotonicity = "decreasing"
+            # monotonicity = "decreasing"
+            monotonicity = None
+            iso = IsotonicRegression(increasing=False)
             mask = df["S"] > 1e-3
             if mask.any():
                 idx_end = np.where(mask)[0][-1]
                 x_in = x_replaced[:idx_end+2]
                 t_in = time[:idx_end+2]
+            x_iso = iso.fit_transform(t_in, x_in)
         else:
             monotonicity = None
+            x_iso = x_in
 
-        output_dic = smooth_and_differentiate( t=t_in, x=x_in, monotonicity=monotonicity)
+        output_dic = smooth_and_differentiate( t=t_in, x=x_iso, monotonicity=monotonicity, var=variable_col, x_replaced=x_replaced)
 
         x_smooth = x_replaced.copy()
         dxdt_smooth = dxdt_replaced.copy()
@@ -239,6 +247,7 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
         if variable_col == "P" and idx_start is not None:
             x_smooth[idx_start:] = output_dic["x_smooth"][1:]
             dxdt_smooth[idx_start:] = output_dic["dxdt"] [1:]
+
         elif variable_col == "S" and idx_end is not None:
             x_smooth[:idx_end+1] = output_dic["x_smooth"][:-1]
             dxdt_smooth[:idx_end+1] = output_dic["dxdt"][:-1] 
@@ -246,7 +255,7 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
             x_smooth = output_dic["x_smooth"]
             dxdt_smooth = output_dic["dxdt"] 
 
-        spline = output_dic["spline"]
+        # spline = output_dic["spline"]
 
         # dxdt = output_dic["dxdt_mean"]
         # smooth_metrics = output_dic["metrics"]
@@ -306,7 +315,7 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
             )
     
 
-    return x_smooth, x_replaced, dxdt_smooth, dxdt_replaced, outliers, metrics, spline, time
+    return x_smooth, x_replaced, dxdt_smooth, dxdt_replaced, outliers, metrics, time
 
 # -------- Outliers function detection based on mobile window median ------- **
 
@@ -348,7 +357,7 @@ def movmedian_outliers(x, window=5, thresh=3):
 
     return outliers 
 
-def smooth_and_differentiate( t, x, monotonicity = None, plot=False, bounds=(0.0001, 3.0) ):
+def smooth_and_differentiate( t, x, monotonicity = None, plot=False, bounds=(0.0001, 3.0), var = None, x_replaced=None):
     """
     Smooth x(t) and compute its derivatives.
 
@@ -378,10 +387,24 @@ def smooth_and_differentiate( t, x, monotonicity = None, plot=False, bounds=(0.0
     # Selection of s using the same conceptual criterion
     # as the original objective function.
 
-    bounds = (
+    if x_replaced is None:
+        x_replaced = x
+
+    if var != None:
+        if var == "X":
+            bounds = (0.1, 6) # (3, 5)
+        elif var == "S":
+            bounds = (0.01, 3)   # (0.01, 1)    
+        elif var == "V":
+            bounds = (0.0001, 0.01) #  (0.0001,0.01)
+        elif var == "P":
+            bounds = (0.0001,0.01) # (0.00001,0.001)
+    else:
+        bounds = (
             0.01*np.var(x)*len(x),
             10*np.var(x)*len(x)
         )
+
     
     optimization = minimize_scalar(
         spline_objective_function,
@@ -395,6 +418,28 @@ def smooth_and_differentiate( t, x, monotonicity = None, plot=False, bounds=(0.0
     # Final spline fitting using the same iterative penalty
     spline = UnivariateSpline(t, x, s=s_opt)
     x_smooth = spline(t)
+    
+    # --- final setting ---
+    # Strat
+    if var in ("X", "S"):
+        x0 = x_replaced[0]
+        x_smooth[0] = x0
+        if var in ("X"):
+            x_smooth = np.maximum(x_smooth, x0)
+    # Final
+    if var in ("X", ): # "P"):
+        # if var in ("P", ):
+        # x_smooth = np.maximum.accumulate(x_smooth)
+        # xmax = np.max(x_smooth)
+        # x_smooth[-1] = xmax
+        i_max = np.argmax(x_smooth)
+        if i_max != len(x_smooth)-1:
+            # avg = 0.5*(x_smooth[i_max] + x_smooth[-1])
+            # x_smooth[i_max] = avg
+            # x_smooth[-1] = avg
+            x_smooth[-1] = x_smooth[i_max]
+        
+    x_smooth = np.clip(x_smooth, 0, None)
     dxdt_smooth = np.gradient(x_smooth, t, edge_order=2)
     d2xdt2_smooth = np.gradient(dxdt_smooth, t, edge_order=2)
 
@@ -437,22 +482,24 @@ def spline_objective_function(s, t, x, monotonicity = None):
 
     loss_negative = np.sum(np.minimum(x_pred, 0.0)**2)
 
-    loss_fit = np.sum(((x - x_pred)/(np.std(x)+1e-12))**2) # np.sum((dxdt - dxdt_pred) ** 2)
+    # loss_fit = np.sum(((x - x_pred)/(np.std(x)+1e-12))**2) # np.sum((dxdt - dxdt_pred) ** 2)
 
     if monotonicity == "increasing":
         loss_monotonicity = np.sum(
-            np.minimum(dxdt_pred, 0.0)**2
+            np.abs(np.minimum(dxdt_pred, 0.0)) # **2
         )
 
     elif monotonicity == "decreasing":
         loss_monotonicity = np.sum(
-            np.maximum(dxdt_pred, 0.0)**2
+            np.maximum(dxdt_pred, 0.0) # **2
         )
 
     else:
         loss_monotonicity = 0.0
 
-    loss_smoothness = np.mean((d2xdt2/(np.std(d2xdt2)+1e-12))**2)
+    # loss_smoothness = np.mean((d2xdt2/(np.std(d2xdt2)+1e-12))**2)
+
+    loss_curvature = np.mean(np.abs(d2xdt2))
 
     signs = np.sign(d2xdt2)
     # oscillation_count = 0
@@ -465,7 +512,7 @@ def spline_objective_function(s, t, x, monotonicity = None):
     
     loss_oscillation = np.sum( np.abs(np.diff(signs)))
 
-    loss = ( loss_fit + 1000.0 * loss_monotonicity + 1.0 * loss_smoothness + 10 * loss_oscillation + 10000 * loss_negative) # oscillation_count
+    loss = ( 1e8 * loss_monotonicity + 1e3 * loss_curvature + 1e3 * loss_oscillation + 1e5 * loss_negative) # oscillation_count
     # loss = ( loss_fit + 1000.0 * loss_monotonicity + 1.0 * loss_smoothness + 1.0 * loss_oscillation + 1000.0 * loss_negative) 
 
     return float(loss)

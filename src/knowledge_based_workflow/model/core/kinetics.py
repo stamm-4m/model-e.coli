@@ -16,7 +16,7 @@ class Kinetic_Models:
     """
 
     def __init__(self):
-        pass   
+        self.params = {} 
 
     def set_params(self, params):
 
@@ -66,6 +66,6 @@ class Kinetic_Models:
                 ( self.gamma_2 * np.exp(- self.Ap_2 / T)) +
                   self.sigma
                 )
-            qp = - (- self.alpha * mu + beta )
+            qp = 0 # - (- self.alpha * mu + beta )
             # qp = abs(- self.alpha * mu + beta )
         return      qp                                    # [mg Nb * L / (g X * h)]

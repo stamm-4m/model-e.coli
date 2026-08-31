@@ -62,6 +62,13 @@ class MultiExperimentObjective:
                 t_eval=dataset.t
             )
 
+            if (not sol.success) or (sol.y.shape[1] != len(dataset.t)):
+                print("FAILED")
+                print(params)
+                print(sol.message)
+                residuals.extend(np.full(2 * len(dataset.t), 1e6))
+                continue
+
             residuals.extend( (sol.y[0,:] - dataset.data["X"]) / dataset.data["X"].std() )
             residuals.extend( (sol.y[1,:] - dataset.data["S"]) / dataset.data["S"].std() )
             # residuals.extend( (sol.y[2,:] - dataset.data["P"]) / dataset.data["P"].std() )
