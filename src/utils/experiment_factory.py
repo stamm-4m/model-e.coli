@@ -15,8 +15,26 @@ from src.utils.io import get_br_id, timer
 from src.utils.metrics_io import compute_metrics
 from src.utils.io import load_yaml
 
+class ProcessedDataset:
+
+    def __init__(self, br_id, df):
+
+        self.br_id = br_id
+
+        self.df = df
+
+        self.t = df["time"].to_numpy()
+
+        self.X = df["X"].to_numpy()
+        self.S = df["S"].to_numpy()
+        self.P = df["P"].to_numpy()
+        self.V = df["V"].to_numpy()
+        self.T = df["T"].to_numpy()
+
+        self.data = df
+
 @timer
-def build_experiment(cfg, kin, rP_scenario=0,  hybrid=False, DataDrivenModel=None, BR09=False):
+def build_experiment(cfg, kin,df_processed = None, rP_scenario=0,  hybrid=False, DataDrivenModel=None, BR09=False):
     """
     Build datasets, simulators and initial conditions for all BR experiments.
     """
@@ -25,8 +43,16 @@ def build_experiment(cfg, kin, rP_scenario=0,  hybrid=False, DataDrivenModel=Non
     # else:
     #     dataset_files = [f for f in sorted(glob("data/raw/BR*.xls")) if "BR09" not in f]
 
-    dataset_files = [f for f in sorted(glob("data/raw/BR*.xls"))]
-    datasets = [DatasetStandardization(f) for f in dataset_files]
+    # dataset_files = [f for f in sorted(glob("data/raw/BR*.xls"))]
+    # datasets = [DatasetStandardization(f) for f in dataset_files]
+
+    if df_processed is None:
+        dataset_files = sorted(glob("data/raw/BR*.xls"))
+        datasets = [ DatasetStandardization(f) for f in dataset_files ]
+    else:
+        datasets = []
+        for br_id, df_br in df_processed.groupby("Run_ID"):
+            datasets.append( ProcessedDataset( br_id, df_br.reset_index(drop=True) ) )
 
     simulators = []
     y0s = []

@@ -31,13 +31,15 @@ class DataTreatment:
         self.variable_list = ["X", "S", "V", "P", "T"]
 
         # =================== Data treatment (outlier treatment, smoothing data,  derivative computation) =================== 
-        self.data_sets, _ = outliers_and_smoothing(datasets = self.datasets, time_col = "time", variable_list = self.variable_list, 
+        smoothed_data, _ = outliers_and_smoothing(datasets = self.datasets, time_col = "time", variable_list = self.variable_list, 
                                                             results_root="results/data_analysis/treatment", smooth=True)
+        
+        self.data_sets = smoothed_data
 
         # =================== Computes qP and mu calculation ===================  
     def data_frame(self, yaml_path: str = "src/config/params.yaml"):  # yaml_path = "src/config/default_parameters.yaml"
 
-        df_global, df_induction = processing_data(self.data_sets, yaml_path, t_ind_exp = True) 
+        df_global, df_induction = processing_data(datasets = self.data_sets, yaml_path = yaml_path, t_ind_exp = True) 
         df_induction.to_excel("data/processed/BR_processed_ind.xlsx",index=False,engine="openpyxl")
         df_global.to_excel("data/processed/BR_processed.xlsx",index=False,engine="openpyxl")
         

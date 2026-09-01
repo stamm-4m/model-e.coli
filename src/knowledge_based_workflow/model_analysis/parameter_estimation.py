@@ -13,7 +13,7 @@ from pathlib import Path
 
 class ParameterEstimationWorkflow:
 
-    def __init__(self, config_path="src/config/params.yaml", dataset_pattern="data/processed/BR_processed.xls",param_names=["mu_max_p","mu_max_0"]):
+    def __init__(self, config_path="src/config/params.yaml", dataset_pattern="data/processed/BR_processed.xlsx",param_names=["mu_max_p","mu_max_0"]):
 
         self.config_path = config_path
         self.dataset_pattern = dataset_pattern
@@ -77,7 +77,7 @@ class ParameterEstimationWorkflow:
     def build_experiment(self):
 
         self.kin = Kinetic_Models()
-        self.datasets, self.simulators, self.y0s = build_experiment(self.cfg, self.kin)
+        _, self.simulators, self.y0s = build_experiment(self.cfg, self.kin,df_processed = self.datasets)
 
     # =====================================================
     # Parameter estimation
@@ -193,7 +193,7 @@ class ParameterEstimationWorkflow:
     # Plot fitting
     # =====================================================
 
-    def plot_fits_with_ci(self, n_mc=200, output_path="results/parametric_model"):
+    def plot_fits_with_ci(self, output_path="results/parametric_model", n_mc=200):
 
         # params_opt = self.full_params.copy()
 
@@ -240,21 +240,21 @@ class ParameterEstimationWorkflow:
             # s_low = np.percentile(S_mc, 2.5, axis=0)
             # s_high = np.percentile(S_mc, 97.5, axis=0)
 
-            X_nom, x_low, x_high = self.prediction_band(ds,sim,y0,state_idx=0)
-            S_nom, s_low, s_high = self.prediction_band(ds,sim,y0,state_idx=1)
+            X_nom, x_low, x_high, t_dense_x = self.prediction_band(ds,sim,y0,state_idx=0)
+            S_nom, s_low, s_high, t_dense_s = self.prediction_band(ds,sim,y0,state_idx=1)
 
             ax = axes[0,i]
             ax.scatter( ds.t, ds.data["X"], color="k", s=15 )
             # ax.plot(  ds.t, sol_nom.y[0,:], color="C0" )
-            ax.plot(  ds.t, X_nom, color="C0" )
-            ax.fill_between( ds.t, x_low, x_high, color="C0", alpha=0.3 )
+            ax.plot(  t_dense_x, X_nom, color="C0" )
+            ax.fill_between( t_dense_x, x_low, x_high, color="C0", alpha=0.3 )
             # ax.set_title( Path(ds.filepath).stem )
 
             ax = axes[1,i]
             ax.scatter( ds.t, ds.data["S"], color="k", s=15 )
             # ax.plot(  ds.t, sol_nom.y[1,:], color="C1" )]
-            ax.plot(  ds.t, S_nom, color="C1" )
-            ax.fill_between( ds.t, s_low, s_high, color="C1", alpha=0.3 )
+            ax.plot(  t_dense_s, S_nom, color="C1" )
+            ax.fill_between( t_dense_s, s_low, s_high, color="C1", alpha=0.3 )
 
             tmax = ds.t.max()
             axes[0,i].set_xlim(0, tmax)
@@ -292,7 +292,7 @@ class ParameterEstimationWorkflow:
 
         sol_out = sim.run( t_span=(ds.t[0], ds.t[-1]),  y0=y0, t_eval=ds.t, dense_output=True)
         sol_nom = sol_out.sol(t_eval_dense)
-        y_nom = sol_nom.y[state_idx, :]
+        y_nom = sol_nom[state_idx, :]
 
         n_t = 200 # len(ds.t)
         n_p = len(self.param_names)
@@ -328,8 +328,8 @@ class ParameterEstimationWorkflow:
             sol_out_minus = sim.run(  t_span=(ds.t[0], ds.t[-1]), y0=y0,  t_eval=ds.t, dense_output=True )
             sol_minus = sol_out_minus.sol(t_eval_dense)
 
-            if (  sol_plus.success  and sol_minus.success ):
-                J[:, j] = ( sol_plus.y[state_idx, :]  - sol_minus.y[state_idx, :]  ) / (2 * delta)
+            if (  sol_out_plus.success  and sol_out_minus.success ):
+                J[:, j] = ( sol_plus[state_idx, :]  - sol_minus[state_idx, :]  ) / (2 * delta)
 
         # -------------------------
         # Covariance propagation
@@ -342,7 +342,7 @@ class ParameterEstimationWorkflow:
 
         self.kin.set_params(params_opt)
 
-        return (  y_nom,  y_low,  y_high )
+        return (  y_nom,  y_low,  y_high, t_eval_dense)
 
     # =====================================================
     # Run complete workflow
