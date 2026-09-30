@@ -11,10 +11,10 @@ Date: 01/09/2026
 import pandas as pd
 
 class DatasetStandardization:
-    def __init__(self, filepath, sheet="Feuil1"):
+    def __init__(self, filepath):#, sheet="Feuil1"):
         df = pd.read_excel(
             filepath,
-            sheet_name=sheet,
+            # sheet_name=sheet,
             header=0,
             skiprows=[1]
         )

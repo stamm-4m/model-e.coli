@@ -43,7 +43,8 @@ class ParameterEstimationWorkflow:
 
     def load_datasets(self):
         dataset_files = sorted( glob(self.dataset_pattern) )
-        self.datasets =  [DatasetStandardization(f) for f in dataset_files ]
+        data_sets =  [DatasetStandardization(f) for f in dataset_files ]
+        self.datasets = data_sets[0].df 
 
     def prepare_parameters(self):
 
@@ -77,7 +78,7 @@ class ParameterEstimationWorkflow:
     def build_experiment(self):
 
         self.kin = Kinetic_Models()
-        _, self.simulators, self.y0s = build_experiment(self.cfg, self.kin,df_processed = self.datasets)
+        _, self.simulators, self.y0s = build_experiment(self.cfg, self.kin, df_processed=self.datasets)
 
     # =====================================================
     # Parameter estimation
