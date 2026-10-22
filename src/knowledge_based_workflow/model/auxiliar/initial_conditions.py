@@ -15,10 +15,10 @@ class DatasetInitialState:
         self.dataset = dataset
 
     def __call__(self):
-        X0 = self.dataset.y0[0]
-        S0 = self.dataset.y0[1]
-        P0 = self.dataset.y0[2]
-        V0 = self.dataset.y0[3]
+        X0 = self.dataset.X[0]
+        S0 = self.dataset.S[0]
+        P0 = self.dataset.P[0]
+        V0 = self.dataset.V[0]
 
         return np.array([X0, S0, P0, V0], dtype=float)
 

@@ -4,10 +4,11 @@ from glob import glob
 from scipy.optimize import least_squares
 from src.utils.io import load_yaml, save_yaml
 from src.utils.experiment_factory import build_experiment, run_model_with_parameters
-from src.knowledge_based_workflow.data_treatment.standardization import DatasetStandardization
+from src.knowledge_based_workflow.data_treatment.standardization import ProcessedDataset
 from src.knowledge_based_workflow.model.core.kinetics import Kinetic_Models
 from src.utils.fitting_tools import MultiExperimentObjective, compute_confidence_intervals
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
@@ -42,9 +43,13 @@ class ParameterEstimationWorkflow:
         self.cfg = load_yaml(self.config_path)
 
     def load_datasets(self):
-        dataset_files = sorted( glob(self.dataset_pattern) )
-        data_sets =  [DatasetStandardization(f) for f in dataset_files ]
-        self.datasets = data_sets[0].df 
+        datasets = []
+        filepath = self.dataset_pattern
+        df = pd.read_excel(filepath, # sheet_name=sheet,
+            header=0, skiprows=[1])
+        for br_id, df_br in df.groupby("Run_ID"):
+            datasets.append( ProcessedDataset( br_id, df_br.reset_index(drop=True), filepath=filepath) )
+        self.datasets = datasets
 
     def prepare_parameters(self):
 
@@ -78,7 +83,7 @@ class ParameterEstimationWorkflow:
     def build_experiment(self):
 
         self.kin = Kinetic_Models()
-        _, self.simulators, self.y0s = build_experiment(self.cfg, self.kin, df_processed=self.datasets)
+        _, self.simulators, self.y0s = build_experiment(self.cfg, self.kin, datasets=self.datasets)
 
     # =====================================================
     # Parameter estimation
@@ -263,7 +268,7 @@ class ParameterEstimationWorkflow:
             axes[1,i].set_xlabel("Time [h]")
 
             if i == 0:
-                axes[0,i].legend( ["Fit", "95% CI"],loc="best")
+                axes[0,i].legend( ["Experimental", "Fit", "Confidence Band 95%"], loc="best")
                 axes[0,i].set_ylabel("X [g/L]")
                 axes[1,i].set_ylabel("S [g/L]")
 

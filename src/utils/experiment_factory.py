@@ -4,7 +4,7 @@
 
 import numpy as np
 from glob import glob
-from src.knowledge_based_workflow.data_treatment.standardization import DatasetStandardization
+from src.knowledge_based_workflow.data_treatment.standardization import DatasetStandardization, ProcessedDataset
 from src.knowledge_based_workflow.model.auxiliar.temperature_profile import TemperatureProfile
 from src.knowledge_based_workflow.model.auxiliar.induction import InductionProfile
 from src.knowledge_based_workflow.model.auxiliar.feed_factory import create_feed
@@ -15,50 +15,20 @@ from src.utils.io import get_br_id, timer
 from src.utils.metrics_io import compute_metrics
 from src.utils.io import load_yaml
 
-class ProcessedDataset:
-
-    def __init__(self, br_id, df):
-
-        self.br_id = br_id
-
-        self.df = df
-
-        self.t = df["time"].to_numpy()
-
-        self.X = df["X"].to_numpy()
-        self.S = df["S"].to_numpy()
-        self.P = df["P"].to_numpy()
-        self.V = df["V"].to_numpy()
-        self.T = df["T"].to_numpy()
-
-        self.data = df
-
 @timer
-def build_experiment(cfg, kin,df_processed = None, rP_scenario=0,  hybrid=False, DataDrivenModel=None, BR09=False):
+def build_experiment(cfg, kin, datasets, rP_scenario=0,  hybrid=False, DataDrivenModel=None, BR09=False):
     """
     Build datasets, simulators and initial conditions for all BR experiments.
     """
-    # if BR09:
-    #     dataset_files = [f for f in sorted(glob("data/raw/BR*.xls"))]
-    # else:
-    #     dataset_files = [f for f in sorted(glob("data/raw/BR*.xls")) if "BR09" not in f]
-
-    # dataset_files = [f for f in sorted(glob("data/raw/BR*.xls"))]
-    # datasets = [DatasetStandardization(f) for f in dataset_files]
-
-    if df_processed is None:
-        dataset_files = sorted(glob("data/raw/BR*.xls"))
-        datasets = [ DatasetStandardization(f) for f in dataset_files ]
-    else:
-        datasets = []
-        for br_id, df_br in df_processed.groupby("Run_ID"):
-            datasets.append( ProcessedDataset( br_id, df_br.reset_index(drop=True) ) )
+    # datasets = []
+    # for br_id, df_br in df.groupby("Run_ID"):
+    #     datasets.append( ProcessedDataset( br_id, df_br.reset_index(drop=True) ) )
 
     simulators = []
     y0s = []
 
     for dataset in datasets:
-        br_id = get_br_id(dataset)  
+        br_id = dataset.br_id
 
         T_profile = TemperatureProfile(dataset.t, dataset.T)
 
@@ -141,7 +111,7 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
         else:
             sol_dense = None
 
-        print(f"\nDataset: {dataset.path}")
+        print(f"\nDataset: {dataset.path} ({dataset.br_id})")
         # print("sol.success:", sol.success)
         print("message:", sol.message)
         # print("len(t_eval):", len(t_eval))
@@ -248,7 +218,7 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
         all_y_exp.append(dataset.data["X"])
         all_y_exp.append(dataset.data["S"])
         all_y_exp.append(dataset.data["P"])
-        all_y_exp.append(dataset.data["V"])
+        # all_y_exp.append(dataset.data["V"])
 
         # if kin.PMLmodel == True and kin.hybrid == False:
         #     P_pred = P_ML_values
@@ -258,17 +228,17 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
         all_y_model.append(X_model)
         all_y_model.append(S_model)
         all_y_model.append(P_pred)
-        all_y_model.append(V_model)
+        # all_y_model.append(V_model)
 
         # Regression metrics per variable
         if len(dataset.data["X"]) != len(X_model):
-            print(f"Mismatch en {dataset.path}")
+            print(f"Mismatch en {dataset.path} ({dataset.br_id})")
 
         metrics = {
             "X": compute_metrics(dataset.data["X"], X_model),
             "S": compute_metrics(dataset.data["S"], S_model),
             "P": compute_metrics(dataset.data["P"], P_pred),
-            "V": compute_metrics(dataset.data["V"], V_model)
+            # "V": compute_metrics(dataset.data["V"], V_model)
         }
 
         # Residual vector for IC
@@ -276,16 +246,16 @@ def run_model_with_parameters( datasets, simulators, y0s, kin, theta, param_name
             X_model - dataset.data["X"],
             S_model - dataset.data["S"],
             P_pred - dataset.data["P"],
-            V_model - dataset.data["V"]
+            # V_model - dataset.data["V"]
         ])
 
-        per_dataset_metrics[dataset.path] = {
+        per_dataset_metrics[dataset.path+" ("+dataset.br_id+")"] = {
             "regression": metrics
         }
 
         all_residuals.append(residuals)
         # solutions[dataset.path] = sol
-        solutions[dataset.path] = {
+        solutions[dataset.path+" ("+dataset.br_id+")"] = {
             "sol": sol,
             "dense":sol_dense,
             "mu": mu_values,

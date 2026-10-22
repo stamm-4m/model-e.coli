@@ -56,3 +56,23 @@ class DatasetStandardization:
         ]
 
         self.path = filepath
+
+class ProcessedDataset:
+
+    def __init__(self, br_id, df, filepath):
+
+        self.path = filepath
+
+        self.br_id = br_id
+
+        self.df = df
+
+        self.t = df["time"].to_numpy()
+
+        self.X = df["X"].to_numpy()
+        self.S = df["S"].to_numpy()
+        self.P = df["P"].to_numpy()
+        self.V = df["V"].to_numpy()
+        self.T = df["T"].to_numpy()
+
+        self.data = df

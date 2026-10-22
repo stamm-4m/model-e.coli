@@ -36,6 +36,24 @@ def safe_mape(y_true, y_pred):
     ) * 100
 
 
+def mase(y_true, y_pred, y_train):
+
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+    y_train = np.asarray(y_train)
+
+    mae_forecast = np.mean(np.abs(y_true - y_pred))
+
+    mae_naive = np.mean(np.abs(np.diff(y_train)))
+
+    if mae_naive == 0:
+        raise ValueError(
+            "MASE undefined: all training observations are identical."
+        )
+
+    return mae_forecast / mae_naive
+
+
 def save_metrics_tables_excel(cv_results, filepath):
 
     filepath = Path(filepath)

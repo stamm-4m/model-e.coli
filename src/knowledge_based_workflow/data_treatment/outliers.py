@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from src.utils.io import save_yaml, get_br_id, timer
+from src.utils.metrics_io import compute_metrics, safe_mape, mase
 from src.knowledge_based_workflow.data_treatment.plots_outlier_derivative import plot_outlier_diagnostics, plot_all_derivatives
 from src.knowledge_based_workflow.data_treatment.processing import add_T_ind
 from scipy.signal import savgol_filter
@@ -266,7 +267,9 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
         dxdt_smooth = np.gradient(x_smooth, time, edge_order=2)
         
     # --- Metrics for smoothing and outlier replacement ---
-    mape = np.mean(np.abs((x - x_smooth) / (x + eps))) * 100        
+    # mape = np.mean(np.abs((x - x_smooth) / (x + eps))) * 100    
+    mape = safe_mape(x, x_smooth)
+    mase = mase(x, x_smooth, x)
 
     # --- Metrics dictionary ---
     metrics = {
@@ -296,7 +299,8 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
                 "mean": float(np.mean(x_smooth)) if x_smooth is not None else float(np.mean(x_replaced)),
                 "std": float(np.std(x_smooth)) if x_smooth is not None else float(np.std(x_replaced))
             },
-            "MAPE_raw_vs_treated": float(mape) #,
+            "MAPE_raw_vs_treated": float(mape),
+            "MASE_in-sample_vs_treated": float(mase) #,
         # "outlier_ratio": float(outliers.mean())
         }
     }

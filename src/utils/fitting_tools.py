@@ -54,10 +54,16 @@ class MultiExperimentObjective:
 
         residuals = []
 
-        for dataset, sim, y0 in zip(self.datasets, self.simulators, self.y0s):
+        for i, (dataset, sim, y0) in enumerate ( zip(self.datasets, self.simulators, self.y0s) ):
+
+            # t_eval = np.asarray(dataset.t, dtype=float)
+            # if not np.all(np.diff(t_eval) > 0):
+            #     print(f"\nExperiment {i}")
+            #     print("t_eval =", t_eval)
+            #     raise ValueError("Experimental times are not strictly increasing")
 
             sol = sim.run(
-                t_span=(dataset.t[0], dataset.t[-1]),
+                t_span=(dataset.t.min(), dataset.t.max()),
                 y0=y0,
                 t_eval=dataset.t
             )
