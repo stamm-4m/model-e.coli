@@ -216,7 +216,7 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
         x_in=x_replaced
         t_in=time
 
-        if variable_col in ("X", "P") and len(x) > 0:
+        if variable_col in ("P") and len(x) > 0: # "X"
             monotonicity = "increasing"
             iso = IsotonicRegression(increasing=True)
             if variable_col == "P":
@@ -232,7 +232,7 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
             iso = IsotonicRegression(increasing=False)
             mask = df["S"] > 1e-3
             if mask.any():
-                idx_end = np.where(mask)[0][-1]
+                idx_end = np.where(mask)[0][-2] # 
                 x_in = x_replaced[:idx_end+2]
                 t_in = time[:idx_end+2]
             x_iso = iso.fit_transform(t_in, x_in)
@@ -240,7 +240,8 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
             monotonicity = None
             x_iso = x_in
 
-        output_dic = smooth_and_differentiate( t=t_in, x=x_iso, monotonicity=monotonicity, var=variable_col, x_replaced=x_replaced)
+        output_dic = smooth_and_differentiate( t=t_in, x=x_iso, monotonicity=monotonicity, 
+                                              var=variable_col, x_replaced=x_replaced)
 
         x_smooth = x_replaced.copy()
         dxdt_smooth = dxdt_replaced.copy()
