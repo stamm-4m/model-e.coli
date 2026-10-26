@@ -126,22 +126,22 @@ bioreactor:
       units: h
 kinetics:
   mu_max_p:
-    value: 0.04809266178584739
+    value: 0.047950858577371934
     units: 1/[h*C]
   mu_max_0:
-    value: 0.8684264972666778
+    value: 0.8684293949246321
     units: 1/[h]
   Ks:
-    value: 4.801699264684234e-05
+    value: 4.8083175856782675e-05
     units: g/L
   b:
-    value: 0.18047168852359108
+    value: 0.18034462852745567
     units: 1/h
   m:
-    value: 3.894173384454752e-06
+    value: 3.843632517940503e-06
     units: 1/h
   Y_XS:
-    value: 0.44285762305218623
+    value: 0.4428959304575094
     units: g/g
   alpha:
     value: 0.134

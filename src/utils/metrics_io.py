@@ -36,7 +36,7 @@ def safe_mape(y_true, y_pred):
     ) * 100
 
 
-def mase(y_true, y_pred, y_train):
+def fun_mase(y_true, y_pred, y_train):
 
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)

@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from src.utils.io import save_yaml, get_br_id, timer
-from src.utils.metrics_io import compute_metrics, safe_mape, mase
+from src.utils.metrics_io import compute_metrics, safe_mape, fun_mase
 from src.knowledge_based_workflow.data_treatment.plots_outlier_derivative import plot_outlier_diagnostics, plot_all_derivatives
 from src.knowledge_based_workflow.data_treatment.processing import add_T_ind
 from scipy.signal import savgol_filter
@@ -226,13 +226,13 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
                     x_in = x_replaced[idx_start-1:]
                     t_in = time[idx_start-1:]
             x_iso = iso.fit_transform(t_in, x_in)
-        elif variable_col in ("S") and len(x) > 0:
+        elif variable_col in ("S") and len(x) > 0: #
             # monotonicity = "decreasing"
             monotonicity = None
             iso = IsotonicRegression(increasing=False)
             mask = df["S"] > 1e-3
             if mask.any():
-                idx_end = np.where(mask)[0][-2] # 
+                idx_end = np.where(mask)[0][-2] 
                 x_in = x_replaced[:idx_end+2]
                 t_in = time[:idx_end+2]
             x_iso = iso.fit_transform(t_in, x_in)
@@ -270,7 +270,7 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
     # --- Metrics for smoothing and outlier replacement ---
     # mape = np.mean(np.abs((x - x_smooth) / (x + eps))) * 100    
     mape = safe_mape(x, x_smooth)
-    mase = mase(x, x_smooth, x)
+    # mase = fun_mase(x, x_smooth, x)
 
     # --- Metrics dictionary ---
     metrics = {
@@ -301,7 +301,7 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
                 "std": float(np.std(x_smooth)) if x_smooth is not None else float(np.std(x_replaced))
             },
             "MAPE_raw_vs_treated": float(mape),
-            "MASE_in-sample_vs_treated": float(mase) #,
+            # "MASE_in-sample_vs_treated": float(mase) #,
         # "outlier_ratio": float(outliers.mean())
         }
     }

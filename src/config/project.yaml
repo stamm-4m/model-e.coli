@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------
 
 workflow:
-  data_analysis: false
+  data_analysis: true
   parameter_estimation: true
   simulation: false
 
