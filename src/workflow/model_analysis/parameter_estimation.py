@@ -4,8 +4,8 @@ from glob import glob
 from scipy.optimize import least_squares
 from src.utils.io import load_yaml, save_yaml
 from src.utils.experiment_factory import build_experiment, run_model_with_parameters
-from src.knowledge_based_workflow.data_treatment.standardization import ProcessedDataset
-from src.knowledge_based_workflow.model.core.kinetics import Kinetic_Models
+from src.workflow.data_treatment.standardization import ProcessedDataset
+from src.workflow.model.core.kinetics import Kinetic_Models
 from src.utils.fitting_tools import MultiExperimentObjective, compute_confidence_intervals
 import numpy as np
 import pandas as pd

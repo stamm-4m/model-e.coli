@@ -11,9 +11,9 @@ Date: 01/09/2026
 import numpy as np
 import pandas as pd
 from src.utils.io import load_yaml, get_time_ranges # , timer, get_br_id
-# from src.knowledge_based_workflow.model.core.kinetics import Kinetic_Models
+# from src.workflow.model.core.kinetics import Kinetic_Models
 # from src.utils.experiment_factory import build_experiment, run_model_with_parameters
-# from src.knowledge_based_workflow.model.auxiliar.feed_factory import create_feed
+# from src.workflow.model.auxiliar.feed_factory import create_feed
 
 # ------------------- Computes qP and mu and unifies dataframes --------------
 # @timer

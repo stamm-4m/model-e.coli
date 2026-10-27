@@ -10,7 +10,7 @@ Email: jcastano-san@insa-toulose.fr
 Date: 01/09/2026
 """
 
-from src.knowledge_based_workflow.model.auxiliar.feed_profile import (
+from src.workflow.model.auxiliar.feed_profile import (
     ConstantFeed,
     LinearFeed,
     ExponentialFeed,

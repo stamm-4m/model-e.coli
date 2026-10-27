@@ -4,13 +4,13 @@
 
 import numpy as np
 from glob import glob
-from src.knowledge_based_workflow.data_treatment.standardization import DatasetStandardization, ProcessedDataset
-from src.knowledge_based_workflow.model.auxiliar.temperature_profile import TemperatureProfile
-from src.knowledge_based_workflow.model.auxiliar.induction import InductionProfile
-from src.knowledge_based_workflow.model.auxiliar.feed_factory import create_feed
-from src.knowledge_based_workflow.model.auxiliar.simulator import Simulator
-from src.knowledge_based_workflow.model.auxiliar.initial_conditions import DatasetInitialState, ConfigInitialState
-from src.knowledge_based_workflow.model.core.balances import FedBatchBalances
+from src.workflow.data_treatment.standardization import DatasetStandardization, ProcessedDataset
+from src.workflow.model.auxiliar.temperature_profile import TemperatureProfile
+from src.workflow.model.auxiliar.induction import InductionProfile
+from src.workflow.model.auxiliar.feed_factory import create_feed
+from src.workflow.model.auxiliar.simulator import Simulator
+from src.workflow.model.auxiliar.initial_conditions import DatasetInitialState, ConfigInitialState
+from src.workflow.model.core.balances import FedBatchBalances
 from src.utils.io import get_br_id, timer
 from src.utils.metrics_io import compute_metrics
 from src.utils.io import load_yaml

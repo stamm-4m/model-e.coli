@@ -12,8 +12,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from src.utils.io import save_yaml, get_br_id, timer
 from src.utils.metrics_io import compute_metrics, safe_mape, fun_mase
-from src.knowledge_based_workflow.data_treatment.plots_outlier_derivative import plot_outlier_diagnostics, plot_all_derivatives
-from src.knowledge_based_workflow.data_treatment.processing import add_T_ind
+from src.workflow.data_treatment.plots_outlier_derivative import plot_outlier_diagnostics, plot_all_derivatives
+from src.workflow.data_treatment.processing import add_T_ind
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter1d
 from statsmodels.nonparametric.smoothers_lowess import lowess
