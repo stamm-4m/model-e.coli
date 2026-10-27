@@ -23,8 +23,10 @@ Configuration files expected at:
 """
 
 from src.utils.io import load_yaml
-from src.knowledge_based_workflow.model_analysis.data_analysis import DataAnalysisWorkflow
-from src.knowledge_based_workflow.model_analysis.parameter_estimation import ParameterEstimationWorkflow
+from src.workflow.model_analysis.data_analysis import DataAnalysisWorkflow
+from src.workflow.model_analysis.parameter_estimation import ParameterEstimationWorkflow
+# from src.workflow.model_analysis.sensitivity_analysis import SensitivityAnalysisWorkflow
+from src.workflow.model_analysis.feature_filter import FeaturesFilterWorkflow
 
 # def main():
 #     # ============================================================
@@ -57,11 +59,22 @@ def main():
 
     if cfg["workflow"]["parameter_estimation"]:
 
-        param_names = cfg["estimation"]["fitted_parameters"]  
         ParameterEstimationWorkflow(
             config_path=cfg["paths"]["parameters"], 
-            param_names=param_names
+            param_names=cfg["estimation"]["parameters"]  
         ).run()
+
+    # if cfg["workflow"]["sensitivity_analysis"]:
+    #     SensitivityAnalysisWorkflow().run()
+
+    if cfg["workflow"]["features_filter"]:
+        FeaturesFilterWorkflow(
+            data_path = cfg["paths"]["processed_data"],
+            param_names=cfg["features_filter"]["parameters"]  
+        ).run()
+
+    # if cfg["workflow"]["hybrid_model_selection"]:
+    #     HybridModelSelectionWorkflow().run()
 
     # if cfg["workflow"]["simulation"]:
     #     SimulationWorkflow().run()

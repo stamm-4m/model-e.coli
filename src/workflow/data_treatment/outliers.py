@@ -167,12 +167,14 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
         "lowess": lowess(x, time, frac=window_outlier/len(x), it=3, return_sorted=False),
         "loess": loess_vals,
         "sgolay": savgol_filter(x, window_outlier, polyorder = 2), # window_outlier = 11
-        "mean rlowess sgolay movmedian": (
-            # loess_vals +
+        "mean": (
+            s.rolling(window = window_outlier, center=True, min_periods=1).mean().to_numpy() +
+            s.rolling(window = window_outlier, center=True, min_periods=1).median().to_numpy() +
+            gaussian_filter1d(x, sigma= (window_outlier-1)/6, mode='reflect') +
             lowess(x, time, frac= window_outlier/len(x), it=3, return_sorted=False) + 
-            savgol_filter(x, window_outlier, polyorder = 2) + 
-            s.rolling(window = window_outlier, center=True, min_periods=1).median().to_numpy() 
-            ) / 3
+            loess_vals +
+            savgol_filter(x, window_outlier, polyorder = 2) 
+            ) / 6
     }
 
     # --- Outlier replacement ---
@@ -180,13 +182,13 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
     selected_method_per_outlier = {}
 
     for idx in np.where(outliers)[0]:
-        diffs = {
-            m: abs(candidates[m][idx] - x[idx])
-            for m in candidates
-            if not np.isnan(candidates[m][idx])
-        }
-        best_method = max(diffs, key=diffs.get) 
-        # best_method = "movmedian" # "mean rlowess sgolay movmedian"
+        # diffs = {
+        #     m: abs(candidates[m][idx] - x[idx])
+        #     for m in candidates
+        #     if not np.isnan(candidates[m][idx])
+        # }
+        # best_method = max(diffs, key=diffs.get) 
+        best_method = "mean" # "mean rlowess sgolay movmedian"
         x_replaced[idx] = candidates[best_method][idx]
         selected_method_per_outlier[idx] = best_method
 

@@ -5,6 +5,9 @@
 workflow:
   data_analysis: true
   parameter_estimation: true
+  sensitivity_analysis: false
+  features_filter: false
+  hybrid_model_selection: false
   simulation: false
 
 paths:
@@ -18,10 +21,16 @@ paths:
     plots: "results/plots"
 
 estimation:
-  fitted_parameters: # "alpha", "gamma_1","Ap_1","gamma_2", "Ap_2","sigma"
+  parameters: # "alpha", "gamma_1","Ap_1","gamma_2", "Ap_2","sigma"
     - mu_max_p
     - mu_max_0
     - Ks
     - b
     - m
     - Y_XS
+
+features_filter:
+  parameters: 
+    - qP
+    - qP_2
+    - rP

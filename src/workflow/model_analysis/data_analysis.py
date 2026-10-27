@@ -1,5 +1,5 @@
-from src.knowledge_based_workflow.data_treatment.treatment_main import DataTreatment
-from src.knowledge_based_workflow.data_treatment.ead import compute_ead
+from src.workflow.data_treatment.treatment_main import DataTreatment
+from src.workflow.data_treatment.ead import compute_ead
 
 class DataAnalysisWorkflow:
     def __init__( self, raw_data_path="data/raw", yaml_path="src/config/params.yaml", ead_path="results/data_analysis/ead"):

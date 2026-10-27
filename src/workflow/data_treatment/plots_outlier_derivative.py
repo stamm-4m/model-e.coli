@@ -36,10 +36,7 @@ def plot_outlier_diagnostics(
             "lowess":    {"marker": "o", "color": "#d62728"},
             "loess":     {"marker": "D", "color": "#9467bd"},
             "sgolay":    {"marker": "^", "color": "#8c564b"},
-            "mean rlowess sgolay movmedian": {
-                "marker": "X",
-                "color": "black"
-            }
+            "mean":      {"marker": "X", "color": "black"}
 }
     else:
         METHOD_STYLE = method_style

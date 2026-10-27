@@ -385,4 +385,4 @@ class ParameterEstimationWorkflow:
 
         print("Done.")
 
-        return self.result
+        # return self.result

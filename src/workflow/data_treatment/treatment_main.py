@@ -11,9 +11,9 @@ Date: 01/09/2026
 
 from glob import glob
 from pathlib import Path
-from src.knowledge_based_workflow.data_treatment.standardization import DatasetStandardization
-from src.knowledge_based_workflow.data_treatment.outliers import outliers_and_smoothing # , data_unification
-from src.knowledge_based_workflow.data_treatment.processing import processing_data
+from src.workflow.data_treatment.standardization import DatasetStandardization
+from src.workflow.data_treatment.outliers import outliers_and_smoothing # , data_unification
+from src.workflow.data_treatment.processing import processing_data
 
 class DataTreatment:
     def __init__(self, path):
