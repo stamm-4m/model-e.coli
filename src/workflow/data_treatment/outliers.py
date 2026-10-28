@@ -182,13 +182,16 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
     selected_method_per_outlier = {}
 
     for idx in np.where(outliers)[0]:
-        # diffs = {
-        #     m: abs(candidates[m][idx] - x[idx])
-        #     for m in candidates
-        #     if not np.isnan(candidates[m][idx])
-        # }
-        # best_method = max(diffs, key=diffs.get) 
-        best_method = "mean" # "mean rlowess sgolay movmedian"
+        if idx == len(x) - 1: # último elemento del vector
+            best_method = "mean" # "mean rlowess sgolay movmedian"
+        else:
+            diffs = {
+                m: abs(candidates[m][idx] - x[idx])
+                for m in candidates
+                if not np.isnan(candidates[m][idx])
+            }
+            best_method = max(diffs, key=diffs.get) 
+
         x_replaced[idx] = candidates[best_method][idx]
         selected_method_per_outlier[idx] = best_method
 
@@ -197,7 +200,7 @@ def treat_data(df, time_col, variable_col, file_id=None, results_dir=False,
     # --- Special Outlier replacement (Biomass and Protein titers) --- end of the code if necessary
 
     # --- Smoothing (Savitzky–Golay) ---
-    if smooth == True and variable_col not in ("T", "I"):
+    if smooth == True and variable_col not in ("T", "I", "C"):
 
         # --- Smoothing Savitzky–Golay ---
         # x_smooth = savgol_filter(x_replaced, sg_window, sg_order) # window_outlier // sg_window

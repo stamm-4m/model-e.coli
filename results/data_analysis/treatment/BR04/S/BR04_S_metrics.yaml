@@ -7,14 +7,14 @@ outliers:
   - 10
   - 11
   replacement_methods:
-    10: mean
-    11: mean
+    10: movmedian
+    11: movmedian
 statistics:
   raw:
     mean: 2.752047619047619
     std: 3.7653111358974543
   treated:
     info: if 'smooth = True' refers to smoothed data
-    mean: 2.747321024447185
-    std: 3.7706588779890895
-  MAPE_raw_vs_treated: 127.13063384720947
+    mean: 2.7311305659847793
+    std: 3.77704940564089
+  MAPE_raw_vs_treated: 43.758975932031994

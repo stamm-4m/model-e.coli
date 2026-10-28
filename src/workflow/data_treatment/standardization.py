@@ -25,6 +25,7 @@ class DatasetStandardization:
             "Biomass": "X",
             "Protein": "P",
             "Acetate": "A",
+            "Citrate": "C",
             "Vreal": "V",
             "Temperature": "T",
             "Induction": "I"
@@ -40,6 +41,7 @@ class DatasetStandardization:
             "X": df["X"].values,
             "S": df["S"].values,
             "P": df["P"].values,
+            "C": df["C"].values,
             "V": df["V"].values,
         }
 

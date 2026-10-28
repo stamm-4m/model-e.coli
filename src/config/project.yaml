@@ -3,10 +3,10 @@
 # ------------------------------------------------------------------
 
 workflow:
-  data_analysis: true
-  parameter_estimation: true
+  data_analysis: false
+  parameter_estimation: false
   sensitivity_analysis: false
-  features_filter: false
+  features_filter: true
   hybrid_model_selection: false
   simulation: false
 
@@ -19,6 +19,7 @@ paths:
     ead: "results/data_analysis/ead"
     estimation: "results/estimation"
     plots: "results/plots"
+    filtered_features: "results/filtered_features"
 
 estimation:
   parameters: # "alpha", "gamma_1","Ap_1","gamma_2", "Ap_2","sigma"
@@ -30,7 +31,10 @@ estimation:
     - Y_XS
 
 features_filter:
-  parameters: 
-    - qP
-    - qP_2
+  n_features: 5
+  ignore_data: 
+    - BR08
+  objective_parameter: 
+    - qP 
+    - qP_2 
     - rP

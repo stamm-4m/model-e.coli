@@ -48,20 +48,27 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
         # df_semibatch = df[(df["time"] >= time_sb) & (df["time"] < time_ind)].copy()
         df_induction = df[df["time"] >= time_ind].copy()
-        if df_induction.empty:
-            # print(f"{br_id}: does not have times >= {time_ind}. Dataset ignored.")
-            continue
+
+        # if df_induction.empty:
+        #     # print(f"{br_id}: does not have times >= {time_ind}. Dataset ignored.")
+        #     continue
 
         # mu and qp calculation
-        if t_ind_exp == True:
+        if t_ind_exp:
             df = calc_mu_qp_rp(df, time_ind)
-            df_induction = calc_mu_qp_rp(df_induction, time_ind)
+            if not df_induction.empty:
+                df_induction = calc_mu_qp_rp(df_induction, time_ind)
+
         else:
             df = calc_mu_qp_rp(df, t_ind=None)
-            df_induction = calc_mu_qp_rp(df_induction, t_ind=None)
+            if not df_induction.empty:
+                df_induction = calc_mu_qp_rp(df_induction, t_ind=None)
 
         df_global.append(df)
-        df_induction_all.append(df_induction)
+        if not df_induction.empty:
+            df_induction_all.append(df_induction)
+        # else:
+        #     print(f"{br_id}: no tiene fase de inducción")
 
     # final unification
     df_global_final = pd.concat(df_global, ignore_index=True)

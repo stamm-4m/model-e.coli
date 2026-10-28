@@ -1,0 +1,18 @@
+file: BR03
+variable: C
+outliers:
+  present: true
+  count: 1
+  indices:
+  - 8
+  replacement_methods:
+    8: lowess
+statistics:
+  raw:
+    mean: 3.8798666666666666
+    std: 0.48342139887357993
+  treated:
+    info: if 'smooth = True' refers to smoothed data
+    mean: 3.928272284996424
+    std: 0.36835190625137065
+  MAPE_raw_vs_treated: 5.421935125988893

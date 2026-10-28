@@ -1,0 +1,20 @@
+file: BR08
+variable: C
+outliers:
+  present: true
+  count: 2
+  indices:
+  - 0
+  - 24
+  replacement_methods:
+    0: movmedian
+    24: mean
+statistics:
+  raw:
+    mean: 4.135999999999999
+    std: 1.0332674387592014
+  treated:
+    info: if 'smooth = True' refers to smoothed data
+    mean: 4.16390259692062
+    std: 0.9539610092659423
+  MAPE_raw_vs_treated: 4.421091301375266

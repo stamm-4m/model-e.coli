@@ -46,7 +46,7 @@ class ParameterEstimationWorkflow:
         datasets = []
         filepath = self.dataset_pattern
         df = pd.read_excel(filepath, # sheet_name=sheet,
-            header=0, skiprows=[1])
+            header=0) # , skiprows=[1])
         for br_id, df_br in df.groupby("Run_ID"):
             datasets.append( ProcessedDataset( br_id, df_br.reset_index(drop=True), filepath=filepath) )
         self.datasets = datasets
@@ -263,8 +263,16 @@ class ParameterEstimationWorkflow:
             ax.fill_between( t_dense_s, s_low, s_high, color="C1", alpha=0.3 )
 
             tmax = ds.t.max()
+            # Xmax = ds.data["X"].max()
+            # Smax = ds.data["S"].max()
+
             axes[0,i].set_xlim(0, tmax)
-            axes[1,i].set
+            axes[1,i].set_xlim(0, tmax)
+            # axes[1,i].set
+
+            axes[0,i].set_ylim(-1, 45)
+            axes[1,i].set_ylim(-1, 13)
+
             axes[1,i].set_xlabel("Time [h]")
 
             if i == 0:
@@ -383,6 +391,6 @@ class ParameterEstimationWorkflow:
         print("Saving updated parameters...")
         self.save_updated_parameters()
 
-        print("Done.")
+        print("Parameter estimation workflow completed successfully")
 
         # return self.result

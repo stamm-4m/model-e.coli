@@ -28,7 +28,7 @@ class DataTreatment:
 
         # ===================  =================== 
         self.br_id_list = [file.stem for file in Path(path).iterdir() if file.suffix == ".xls"]
-        self.variable_list = ["X", "S", "V", "P", "T"]
+        self.variable_list = ["X", "S", "V", "P", "C", "T"]
 
         # =================== Data treatment (outlier treatment, smoothing data,  derivative computation) =================== 
         smoothed_data, _ = outliers_and_smoothing(datasets = self.datasets, time_col = "time", variable_list = self.variable_list, 
