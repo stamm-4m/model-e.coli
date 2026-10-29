@@ -29,6 +29,8 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
         df = pd.DataFrame(datasets[br_id])
 
+        Sf = yaml_params["bioreactor"][br_id]["Sf"]["value"]
+
         # if br_id in ["BR07", "BR08"]:
         #     df = df.iloc[:-1]
 
@@ -55,14 +57,14 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
         # mu and qp calculation
         if t_ind_exp:
-            df = calc_mu_qp_rp(df, time_ind)
+            df = calc_mu_qp_rp(df, time_ind, Sf=Sf)
             if not df_induction.empty:
-                df_induction = calc_mu_qp_rp(df_induction, time_ind)
+                df_induction = calc_mu_qp_rp(df_induction, time_ind, Sf=Sf)
 
         else:
-            df = calc_mu_qp_rp(df, t_ind=None)
+            df = calc_mu_qp_rp(df, t_ind=None, Sf=Sf)
             if not df_induction.empty:
-                df_induction = calc_mu_qp_rp(df_induction, t_ind=None)
+                df_induction = calc_mu_qp_rp(df_induction, t_ind=None, Sf=Sf)
 
         df_global.append(df)
         if not df_induction.empty:
@@ -78,7 +80,7 @@ def processing_data(datasets, yaml_path, t_ind_exp = True):
 
 # -------------------------- mu, qp & rp function ---------------------------------------
 
-def calc_mu_qp_rp(df, t_ind=None): # calc_features,
+def calc_mu_qp_rp(df, t_ind=None, Sf=286): # calc_features,
 
     df = df.sort_values("time").copy()
 
@@ -91,10 +93,12 @@ def calc_mu_qp_rp(df, t_ind=None): # calc_features,
 
     t = df["time"].values
     X = df["X"].values
+    S = df["S"].values
     P = df["P"].values
     V = df["V"].values
 
     dXdt = df["dXdt"].values
+    dSdt = df["dSdt"].values
     dVdt = df["dVdt"].values
     dPdt = df["dPdt"].values
 
@@ -105,7 +109,9 @@ def calc_mu_qp_rp(df, t_ind=None): # calc_features,
 
     rx    =  dXdt + (dVdt * X / V)      
     mu = (1/X) * ( dXdt ) + (1/V) * ( dVdt )
-    
+
+    rs = ( dSdt ) + ((S-Sf) / V) * ( dVdt )
+
     if t_ind != None:
         for i in range(n):
             if t[i] < t_ind:
@@ -130,6 +136,7 @@ def calc_mu_qp_rp(df, t_ind=None): # calc_features,
     df["qP_2"] = qp_2
     df["rP"] = rp
     df["rX"] = rx
+    df["rS"] = rs
 
     return df
 

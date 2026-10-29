@@ -105,10 +105,9 @@ def plot_redundancy_graph(G, fs_df, cmi_matrix, out_path):
 
     for u, v in G.edges():
         if (
-            G[u][v]["weight"] > threshold
-            and cmi_matrix.loc[u, v] > 1e-6
+            G[u][v]["redundancy"] > threshold # and cmi_matrix.loc[u, v] > 1e-6
         ):
-            H.add_edge(u, v, weight=G[u][v]["weight"])
+            H.add_edge(u, v, redundancy=G[u][v]["redundancy"], cmi=G[u][v]["cmi"])
 
     # ---- Node importance ----
     mi_values = fs_df.set_index("feature")["mutual_info"]
@@ -124,18 +123,29 @@ def plot_redundancy_graph(G, fs_df, cmi_matrix, out_path):
 
     # ---- Edge weights ----
     if len(H.edges()) > 0:
-        weights = np.array([H[u][v]["weight"] for u, v in H.edges()])
-        cmi_vals = [cmi_matrix.loc[u, v] for u, v in H.edges()]
+        weights = np.array([H[u][v]["redundancy"] for u, v in H.edges()])
+        # cmi_vals = [cmi_matrix.loc[u, v] for u, v in H.edges()]
+        redundancy_vals = weights.copy() # [H[u][v]["redundancy"] for u, v in H.edges()]
     else:
         weights = np.array([0])
-        cmi_vals = [0]
+        # cmi_vals = [0]
+        redundancy_vals = [0]
 
     # ---- Normalize for color ----
-    norm = mpl.colors.Normalize(vmin=min(cmi_vals), vmax=max(cmi_vals))
-    cmap = plt.cm.RdYlGn_r
+    # norm = mpl.colors.Normalize(vmin=min(cmi_vals), vmax=max(cmi_vals))
+    vmin=min(redundancy_vals) 
+    vmax=max(redundancy_vals)
 
-    edge_colors = [cmap(norm(cmi_matrix.loc[u, v])) for u, v in H.edges()]
-    widths = [1 + 3 * w for w in weights]
+    if np.isclose(vmin, vmax):
+        vmax = vmin + 1e-6
+
+    norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
+    # cmap = plt.cm.RdYlGn_r
+    cmap = plt.cm.Reds
+
+    # edge_colors = [cmap(norm(cmi_matrix.loc[u, v])) for u, v in H.edges()]
+    edge_colors = [cmap(norm(H[u][v]["redundancy"])) for u, v in H.edges()]
+    widths = [1 + 4 * w for w in weights]
 
     # ---- Node properties ----
     node_sizes = [100 + 2000 * mi_values.get(n, 0.01) for n in H.nodes()]
@@ -166,8 +176,9 @@ def plot_redundancy_graph(G, fs_df, cmi_matrix, out_path):
 
     # ---- Edge labels ----
     edge_labels = {
-        (u, v): f"{w:.2f}"
-        for (u, v), w in nx.get_edge_attributes(H, "weight").items()
+        (u, v): (f"R={H[u][v]['redundancy']:.2f}\n"
+                  f"CMI={H[u][v]['cmi']:.2f}")
+        for u, v in H.edges()
     }
 
     nx.draw_networkx_edge_labels(
@@ -177,13 +188,13 @@ def plot_redundancy_graph(G, fs_df, cmi_matrix, out_path):
         bbox=dict(facecolor='none', edgecolor='none')
     )
 
-    # ---- Colorbar (CMI) ----
+    # ---- Colorbar (Redundancy) ----
     sm = mpl.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     cbar = fig.colorbar(sm, ax=ax)
-    cbar.set_label("Conditional Information (CMI)")
+    cbar.set_label("Redundancy")
 
-    ax.set_title("Directed redundancy graph (CMI-informed)", pad=20)
+    ax.set_title("Directed redundancy graph", pad=20)
     ax.axis("off")
 
     fig.savefig(out_path / "redundancy.png", dpi=150, bbox_inches="tight")

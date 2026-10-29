@@ -16,5 +16,5 @@ statistics:
   treated:
     info: if 'smooth = True' refers to smoothed data
     mean: 5.625227981488415
-    std: 0.4791574181718473
-  MAPE_raw_vs_treated: 3.8443878831679066
+    std: 0.5416117822912879
+  MAPE_raw_vs_treated: 1.024442513496283

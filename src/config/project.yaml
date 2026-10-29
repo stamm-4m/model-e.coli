@@ -38,3 +38,20 @@ features_filter:
     - qP 
     - qP_2 
     - rP
+  ignore_features:
+    - Run_ID
+    - Run_T
+    - time
+    - P
+    - dPdt
+    - d2Pdt2
+    - dTdt
+    - d2Tdt2
+    - dCdt
+    - d2Cdt2
+    - dVdt
+    - d2Vdt2
+    - dSdt
+    - d2Sdt2
+    - dXdt
+    - d2Xdt2
