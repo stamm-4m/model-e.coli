@@ -46,8 +46,9 @@ class FeaturesFilterWorkflow:
         self.selected_features = {}
         for param in self.obj_param:
             fs = self.selection_results[param]["fs"]
+            cmi = self.selection_results[param]["cmi"]
             graph = self.selection_results[param]["graph"]
-            mrmr_df = mrmr_selection(fs_df=fs, redundancy_graph=graph, n_features=n_features)
+            mrmr_df = mrmr_selection(fs_df=fs, redundancy_graph=graph, mi_feature_matrix=cmi, n_features=n_features)
             self.selected_features[param] = mrmr_df
 
         # return self.selected_features
@@ -57,11 +58,11 @@ class FeaturesFilterWorkflow:
         for target, mrmr_df in self.selected_features.items():
             temp = mrmr_df.copy()
             temp["target"] = target
-            temp["rank"] = range( 1, len(temp) + 1 )
+            # temp["rank"] = range( 1, len(temp) + 1 )
             rows.append(temp)
 
         summary = pd.concat( rows, ignore_index=True )
-        summary = summary[ [ "target", "rank", "feature", "relevance", "redundancy", "score" ] ]
+        summary = summary[ [ "target", "feature", "relevance", "redundancy", "score" ] ] # "rank",
         summary.to_excel( f"{self.filter_path}/mrmr_selected_features.xlsx", index=False, engine="openpyxl" )
 
         return summary

@@ -12,7 +12,7 @@ from src.utils.plots_filter import (
 
 import numpy as np
 
-def mrmr_selection(fs_df, redundancy_graph, n_features=5, lambda_1=0.7, lambda_2=0.3): # cmi_matrix
+def mrmr_selection(fs_df, redundancy_graph=None, mi_feature_matrix=None, n_features=5, lambda_1=1.0, lambda_2=1.0, method='cmi'): # Peng, Long y Ding (2005)
     """
     Select features using a max-relevance min-redundancy criterion
     based on Mutual Information (MI) and redundancy.
@@ -47,7 +47,7 @@ def mrmr_selection(fs_df, redundancy_graph, n_features=5, lambda_1=0.7, lambda_2
         "feature": first_feature,
         "relevance": first_relevance,
         "redundancy": 0.0,
-        "score": first_relevance
+        "score": lambda_1 * first_relevance
     })
 
     remaining = [ f for f in fs_df["feature"] if f not in selected]
@@ -57,13 +57,23 @@ def mrmr_selection(fs_df, redundancy_graph, n_features=5, lambda_1=0.7, lambda_2
         candidate_info = {}
         for feat in remaining:
             relevance = ( fs_df.loc[ fs_df["feature"] == feat, "mi_norm" ].iloc[0] )
-            redundancies = []
 
-            for sel in selected:
-                if redundancy_graph.has_edge(sel, feat):
-                    redundancies.append(redundancy_graph[sel][feat]["redundancy"])
+            if method == 'cmi':
+                redundancies = []
+                for sel in selected:
+                    if redundancy_graph.has_edge(sel, feat):
+                        redundancies.append(redundancy_graph[sel][feat]["redundancy"])
+                redundancy = (np.mean(redundancies) if redundancies else 0.0)
 
-            redundancy = (np.mean(redundancies) if redundancies else 0.0)
+            elif method == 'peng':
+                redundancies = []
+                for sel in selected:
+                    mi_ff_max = np.nanmax(mi_feature_matrix.values)
+                    mi_ff = mi_feature_matrix.loc[sel, feat] / (mi_ff_max + 1e-10)
+                    redundancies.append(mi_ff)
+                redundancy = (np.mean(redundancies) if redundancies else 0.0)
+            else:
+                raise ValueError(f"Unknown method '{method}'" "Choose 'cmi' or 'peng'")
 
             score = (lambda_1 * relevance - lambda_2 * redundancy)
 
@@ -73,12 +83,10 @@ def mrmr_selection(fs_df, redundancy_graph, n_features=5, lambda_1=0.7, lambda_2
                 "score": score
             }
 
+
         best_feature = max(candidate_info, key=lambda f: candidate_info[f]["score"])
-
         selected.append(best_feature)
-
         selection_info.append({ "feature": best_feature, **candidate_info[best_feature] })
-
         remaining.remove(best_feature)
 
     return pd.DataFrame(selection_info)
