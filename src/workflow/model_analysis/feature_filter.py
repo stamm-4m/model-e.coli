@@ -4,7 +4,8 @@ from pathlib import Path
 from src.utils.filter import filter_feature_selection, mrmr_selection
 
 class FeaturesFilterWorkflow:
-    def __init__(self, data_path="data/processed/BR_processed.xlsx", filter_path="results/filtered_features", obj_param=None, ignore_data=None, ignore_features=None):
+    def __init__(self, data_path="data/processed/BR_processed.xlsx", filter_path="results/filtered_features", 
+                 obj_param=None, ignore_data=None, ignore_features=None, method = "cmi_based", n_features=10):
         
         self.data_path = data_path
         self.filter_path = filter_path
@@ -19,6 +20,9 @@ class FeaturesFilterWorkflow:
 
         self.selection_results = {}
         self.selected_features = {}
+
+        self.method = method 
+        self.n_features = n_features
 
     def load_datasets(self):
 
@@ -41,14 +45,15 @@ class FeaturesFilterWorkflow:
             result = filter_feature_selection(self.df, self.features, param, target_dir)
             self.selection_results[param] = result
 
-    def run_mrmr(self, n_features=10):
+    def run_mrmr(self, method, n_features=10):
 
         self.selected_features = {}
         for param in self.obj_param:
-            fs = self.selection_results[param]["fs"]
+            fr_df = self.selection_results[param]["feature_relevance_df"]
+            mi = self.selection_results[param]["mi"]
             cmi = self.selection_results[param]["cmi"]
             graph = self.selection_results[param]["graph"]
-            mrmr_df = mrmr_selection(fs_df=fs, redundancy_graph=graph, mi_feature_matrix=cmi, n_features=n_features)
+            mrmr_df = mrmr_selection(fr_df=fr_df, redundancy_graph=graph, cmi=cmi, mi=mi, n_features=n_features, method=method)
             self.selected_features[param] = mrmr_df
 
         # return self.selected_features
@@ -62,12 +67,12 @@ class FeaturesFilterWorkflow:
             rows.append(temp)
 
         summary = pd.concat( rows, ignore_index=True )
-        summary = summary[ [ "target", "feature", "relevance", "redundancy", "score" ] ] # "rank",
+        summary = summary[ [ "target", "feature", "relevance", "redundancy", "score" , "method"] ] # "rank",
         summary.to_excel( f"{self.filter_path}/mrmr_selected_features.xlsx", index=False, engine="openpyxl" )
 
         return summary
 
-    def run(self, n_features=10):
+    def run(self):
 
         print("Loading datasets...")
         self.load_datasets()
@@ -79,7 +84,7 @@ class FeaturesFilterWorkflow:
         self.compute_relevance()
 
         print("Running mRMR...")
-        self.run_mrmr(n_features=n_features)
+        self.run_mrmr(self.method, self.n_features)
 
         print("Saving results...")
         # summary = self.save_results()

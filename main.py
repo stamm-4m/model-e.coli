@@ -73,8 +73,10 @@ def main():
             filter_path=cfg["paths"]["results"]["filtered_features"],
             obj_param=cfg["features_filter"]["objective_parameter"],
             ignore_data=cfg["features_filter"]["ignore_data"], 
-            ignore_features=cfg["features_filter"]["ignore_features"]
-        ).run(n_features=cfg["features_filter"]["n_features"])
+            ignore_features=cfg["features_filter"]["ignore_features"], 
+            method=cfg["features_filter"]["method"], 
+            n_features=cfg["features_filter"]["n_features"]
+        ).run()
 
     # if cfg["workflow"]["hybrid_model_selection"]:
     #     HybridModelSelectionWorkflow().run()

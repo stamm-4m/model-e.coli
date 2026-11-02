@@ -177,15 +177,18 @@ def plot_redundancy_graph(G, fs_df, cmi_matrix, out_path):
     # ---- Edge labels ----
     edge_labels = {
         (u, v): (f"R={H[u][v]['redundancy']:.2f}\n"
-                  f"CMI={H[u][v]['cmi']:.2f}")
+                f"CMI={H[u][v]['cmi']:.2f}") # \n"
+                #  f"MI={mi_values[v]:.2f}")
         for u, v in H.edges()
     }
 
     nx.draw_networkx_edge_labels(
         H, pos,
         edge_labels=edge_labels,
-        font_size=8,
-        bbox=dict(facecolor='none', edgecolor='none')
+        label_pos=0.35,
+        font_size=5,
+        rotate=True, 
+        bbox=dict(facecolor='white', alpha=0.8, edgecolor='none')
     )
 
     # ---- Colorbar (Redundancy) ----

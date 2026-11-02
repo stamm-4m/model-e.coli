@@ -31,7 +31,7 @@ estimation:
     - Y_XS
 
 features_filter:
-  n_features: 5
+  n_features: 10
   ignore_data: 
     - BR08
   objective_parameter: 
@@ -55,3 +55,4 @@ features_filter:
     - d2Sdt2
     - dXdt
     - d2Xdt2
+  method: "cmi_based" # cmi_based cmim mrm_mid mrmr_miq

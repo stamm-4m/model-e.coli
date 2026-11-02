@@ -12,70 +12,74 @@ from src.utils.plots_filter import (
 
 import numpy as np
 
-def mrmr_selection(fs_df, redundancy_graph=None, mi_feature_matrix=None, n_features=5, lambda_1=1.0, lambda_2=1.0, method='cmi'): # Peng, Long y Ding (2005)
+def mrmr_selection(fr_df, redundancy_graph=None, cmi=None, mi=None, n_features=5, method='cmi_based'): 
     """
-    Select features using a max-relevance min-redundancy criterion
-    based on Mutual Information (MI) and redundancy.
-
-    Parameters
-    ----------
-    fs_df : pd.DataFrame
-        DataFrame containing feature selection results.
-
-    redundancy_graph : nx.DiGraph
-        Directed graph representing redundancy between features.
+    Perform Minimum Redundancy Maximum Relevance (mRMR) feature selection.
+    method="cmi_based"      # proposed method based on conditional mutual information
+    method="cmim"           # Fleuret 2004
+    method="mrmr_mid"       # Peng et al. 2005
+    method="mrmr_miq"       # Peng et al. 2005
     """
 
     # Normalize mutual information
-    fs_df = fs_df.copy()
-
-    mi_min = fs_df["mutual_info"].min()
-    mi_max = fs_df["mutual_info"].max()
-
-    fs_df["mi_norm"] = ( (fs_df["mutual_info"] - mi_min) / (mi_max - mi_min + 1e-10) )
+    fr_df = fr_df.copy()
 
     selected = []
     selection_info = []
 
-    first_feature = ( fs_df.sort_values( "mutual_info", ascending=False ) .iloc[0]["feature"] )
+    first_feature = ( fr_df.sort_values( "mutual_info", ascending=False ) .iloc[0]["feature"] )
 
     selected.append(first_feature)
 
-    first_relevance = ( fs_df.loc[ fs_df["feature"] == first_feature, "mi_norm" ].iloc[0] )
+    first_relevance = ( fr_df.loc[ fr_df["feature"] == first_feature, "mutual_info" ].iloc[0] )
 
     selection_info.append({
         "feature": first_feature,
         "relevance": first_relevance,
         "redundancy": 0.0,
-        "score": lambda_1 * first_relevance
+        "score": first_relevance, 
+        "method": method
     })
 
-    remaining = [ f for f in fs_df["feature"] if f not in selected]
+    remaining = [ f for f in fr_df["feature"] if f not in selected]
 
-    while len(selected) < min(n_features, len(fs_df)):
+    while len(selected) < min(n_features, len(fr_df)):
 
         candidate_info = {}
         for feat in remaining:
-            relevance = ( fs_df.loc[ fs_df["feature"] == feat, "mi_norm" ].iloc[0] )
+            relevance = ( fr_df.loc[ fr_df["feature"] == feat, "mutual_info" ].iloc[0] )
 
-            if method == 'cmi':
+            if method == 'cmi_based':
                 redundancies = []
                 for sel in selected:
                     if redundancy_graph.has_edge(sel, feat):
                         redundancies.append(redundancy_graph[sel][feat]["redundancy"])
                 redundancy = (np.mean(redundancies) if redundancies else 0.0)
+                score = relevance * (1 - redundancy)
 
-            elif method == 'peng':
-                redundancies = []
+            elif method == "cmim":
+                cmi_values = []
                 for sel in selected:
-                    mi_ff_max = np.nanmax(mi_feature_matrix.values)
-                    mi_ff = mi_feature_matrix.loc[sel, feat] / (mi_ff_max + 1e-10)
-                    redundancies.append(mi_ff)
-                redundancy = (np.mean(redundancies) if redundancies else 0.0)
+                    cmi_values.append(cmi.loc[sel, feat])
+                score = np.min(cmi_values) if cmi_values else relevance
+                redundancy = np.nan
+
+            elif method == 'peng_mid':
+                mi_values = []
+                for sel in selected:
+                    mi_values.append(mi.loc[sel, feat])
+                redundancy = (np.mean(mi_values) if mi_values else 0.0)
+                score = relevance - redundancy
+
+            elif method == 'peng_miq':
+                mi_values = []
+                for sel in selected:
+                    mi_values.append(mi.loc[sel, feat])
+                redundancy = (np.mean(mi_values) if mi_values else 0.0)
+                score = relevance / (redundancy + 1e-10)
+
             else:
                 raise ValueError(f"Unknown method '{method}'" "Choose 'cmi' or 'peng'")
-
-            score = (lambda_1 * relevance - lambda_2 * redundancy)
 
             candidate_info[feat] = {
                 "relevance": relevance,
@@ -83,10 +87,13 @@ def mrmr_selection(fs_df, redundancy_graph=None, mi_feature_matrix=None, n_featu
                 "score": score
             }
 
-
         best_feature = max(candidate_info, key=lambda f: candidate_info[f]["score"])
         selected.append(best_feature)
-        selection_info.append({ "feature": best_feature, **candidate_info[best_feature] })
+        selection_info.append({
+            "feature": best_feature,
+            **candidate_info[best_feature], 
+            "method": method
+        })
         remaining.remove(best_feature)
 
     return pd.DataFrame(selection_info)
@@ -96,31 +103,32 @@ def filter_feature_selection(df, X_vars, y_var, out_dir):
 
     # print(f"Starting filter feature selection analysis ... \n")
 
-    fs = (
+    fs_results = (
         spearman_fs(df, X_vars, y_var)
         .merge(eta_fs(df, X_vars, y_var), on="feature")
         .merge(dcor_fs(df, X_vars, y_var), on="feature")
         .merge(mi_fs(df, X_vars, y_var), on="feature")
     )
 
-    fs.sort_values("mutual_info", ascending=False)
+    fs_results.sort_values("mutual_info", ascending=False)
 
-    fs_dict = fs.set_index("feature").to_dict(orient="index")
+    fs_dict = fs_results.set_index("feature").to_dict(orient="index")
 
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     save_yaml(fs_dict,out_dir/"feature.yaml")
 
-    plot_fs_bars(fs, out_dir)
-    plot_fs_heatmap(fs, out_dir)
+    plot_fs_bars(fs_results, out_dir)
+    plot_fs_heatmap(fs_results, out_dir)
 
+    mi_matrix = mi_features_all_vs_all(df, X_vars)
     cmi_matrix = cmi_all_vs_all(df, X_vars, y_var)
-    
+
     plot_cmi_comparison(cmi_matrix, X_vars, out_dir)
 
-    G = build_redundancy_graph(fs, cmi_matrix)
-    plot_redundancy_graph(G, fs, cmi_matrix, out_dir)
+    G = build_redundancy_graph(fs_results, cmi_matrix)
+    plot_redundancy_graph(G, fs_results, cmi_matrix, out_dir)
 
     # to_remove = []
 
@@ -130,7 +138,7 @@ def filter_feature_selection(df, X_vars, y_var, out_dir):
 
     # # Nodes without strong redundancy
     # core = [n for n in G.nodes if G.in_degree(n) > G.out_degree(n)]
-    return { "fs": fs, "cmi": cmi_matrix, "graph": G }
+    return { "feature_relevance_df": fs_results, "cmi": cmi_matrix, "mi": mi_matrix, "graph": G }
 
 # ----------------Spearman---------------------------
 def spearman_fs(df, X_vars, y_var):
@@ -224,6 +232,24 @@ def cmi_all_vs_all(df, features, target):
                 )
 
     return cmi_matrix
+
+def mi_features_all_vs_all(df, features):
+    """
+    Rows: reference feature
+    Columns: evaluated feature
+    Values: I(feature_i ; feature_j)
+    """
+
+    mi_matrix = pd.DataFrame(index=features, columns=features, dtype=float)
+    for i, fi in enumerate(features):
+        for j, fj in enumerate(features[i:], i):
+            if i == j:
+                mi_matrix.loc[fi, fj] = np.nan
+            else:
+                mi_val = mutual_info_regression(df[[fj]].values, df[fi].values, random_state=42)[0]
+                mi_matrix.loc[fi, fj] = mi_val
+                mi_matrix.loc[fj, fi] = mi_val
+    return mi_matrix
 
 
 def build_redundancy_graph(fs_df, cmi_matrix, threshold=0.1):
