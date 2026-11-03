@@ -6,7 +6,7 @@ workflow:
   data_analysis: false
   parameter_estimation: false
   sensitivity_analysis: false
-  features_filter: true
+  features_filter: false
   hybrid_model_selection: false
   simulation: false
 
