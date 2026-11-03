@@ -1,6 +1,5 @@
 
 import pandas as pd
-from pathlib import Path
 from src.utils.filter import filter_feature_selection, mrmr_selection
 
 class FeaturesFilterWorkflow:

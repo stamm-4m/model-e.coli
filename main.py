@@ -23,10 +23,11 @@ Configuration files expected at:
 """
 
 from src.utils.io import load_yaml
-from src.workflow.model_analysis.data_analysis import DataAnalysisWorkflow
+from workflow.data_treatment.data_analysis import DataAnalysisWorkflow
 from src.workflow.model_analysis.parameter_estimation import ParameterEstimationWorkflow
 # from src.workflow.model_analysis.sensitivity_analysis import SensitivityAnalysisWorkflow
-from src.workflow.model_analysis.feature_filter import FeaturesFilterWorkflow
+from workflow.hybrid_selection.feature_filter import FeaturesFilterWorkflow
+from workflow.hybrid_selection.hybrid_model import HybridModelSelectionWorkflow
 
 # def main():
 #     # ============================================================
@@ -78,8 +79,13 @@ def main():
             n_features=cfg["features_filter"]["n_features"]
         ).run()
 
-    # if cfg["workflow"]["hybrid_model_selection"]:
-    #     HybridModelSelectionWorkflow().run()
+    if cfg["workflow"]["hybrid_model_selection"]:
+        HybridModelSelectionWorkflow(
+            data_path=cfg["paths"]["processed_data"],
+            features_objective_path=cfg["paths"]["features_objective"],
+            ignore_data=cfg["hybrid_model_selection"]["ignore_data"],
+            tuning_algorithm=cfg["hybrid_model_selection"]["tuning_algorithm"]
+        ).run()
 
     # if cfg["workflow"]["simulation"]:
     #     SimulationWorkflow().run()

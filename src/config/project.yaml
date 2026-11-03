@@ -15,11 +15,14 @@ paths:
   processed_data: "data/processed/BR_processed.xlsx"
   parameters: "src/config/params.yaml"
   estimation_parameters: "src/config/params.yaml"
+  features_objective: "results/filtered_features"
   results:
+    # data_analysis: "results/data_analysis"
     ead: "results/data_analysis/ead"
     estimation: "results/estimation"
-    plots: "results/plots"
+    # parametric_model: "results/parametric_model"
     filtered_features: "results/filtered_features"
+    hybrid_model: "results/hybrid_model"
 
 estimation:
   parameters: # "alpha", "gamma_1","Ap_1","gamma_2", "Ap_2","sigma"
@@ -56,3 +59,21 @@ features_filter:
     - dXdt
     - d2Xdt2
   method: "cmi_based" # cmi_based cmim mrm_mid mrmr_miq
+
+hybrid_model_selection:
+  ignore_data: 
+    - BR08
+  machine_learning_models:
+    - linear
+    - poisson
+    - tweedie
+    - LASSO
+    - Ridge
+    - elasticnet
+    - rf
+    - gbm
+    - svm_linear
+    - svm_rbf
+    - svm_poly
+    - knn
+  tuning_algorithm: "grid_search" # "grid_search", "random_search", "bayesian_optimization"
