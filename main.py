@@ -83,8 +83,11 @@ def main():
         HybridModelSelectionWorkflow(
             data_path=cfg["paths"]["processed_data"],
             features_objective_path=cfg["paths"]["features_objective"],
+            global_target=cfg["sensitivity_analysis"]["global_target"],
             ignore_data=cfg["hybrid_model_selection"]["ignore_data"],
-            tuning_algorithm=cfg["hybrid_model_selection"]["tuning_algorithm"]
+            tuning_algorithm=cfg["hybrid_model_selection"]["tuning_algorithm"], 
+            n_trainings=cfg["hybrid_model_selection"]["n_trainings"],
+            machine_learning_models=cfg["hybrid_model_selection"]["machine_learning_models"]
         ).run()
 
     # if cfg["workflow"]["simulation"]:

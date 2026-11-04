@@ -24,6 +24,31 @@ paths:
     filtered_features: "results/filtered_features"
     hybrid_model: "results/hybrid_model"
 
+# data_analysis:
+#   variables:
+#     Time: time
+#     Glucose: S
+#     Biomass: X
+#     Protein: P
+#     Acetate: A
+#     Citrate: C
+#     Vreal: V
+#     Temperature: T
+#     Induction: I
+#   states:
+#     - X
+#     - S
+#     - P
+#     - V
+#   inputs:
+#     - I
+#     - T
+#   derivatives:
+#     - X
+#     - S
+#     - P
+#     - V
+
 estimation:
   parameters: # "alpha", "gamma_1","Ap_1","gamma_2", "Ap_2","sigma"
     - mu_max_p
@@ -32,6 +57,10 @@ estimation:
     - b
     - m
     - Y_XS
+
+sensitivity_analysis:
+  global_target: P
+  parameters: []
 
 features_filter:
   n_features: 10
@@ -77,3 +106,4 @@ hybrid_model_selection:
     - svm_poly
     - knn
   tuning_algorithm: "grid_search" # "grid_search", "random_search", "bayesian_optimization"
+  n_trainings: 200

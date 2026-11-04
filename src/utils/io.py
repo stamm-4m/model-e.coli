@@ -376,53 +376,42 @@ def models_dict(model_names):
     from sklearn.neighbors import KNeighborsRegressor
 
     model_definitions  = {
-        "linear": LinearRegression(positive=True),        
-        "poisson": Pipeline([
+        "linear": lambda: LinearRegression(positive=True),        
+        "poisson": lambda: Pipeline([
             ("scaler", StandardScaler()),
             ("model", PoissonRegressor())]),
-        "tweedie": Pipeline([
+        "tweedie": lambda: Pipeline([
             ("scaler", StandardScaler()),
             ("model", TweedieRegressor())]),
-        "LASSO_b": Pipeline([
+        "LASSO": lambda: Pipeline([
             ("scaler", StandardScaler()),
             ("model", Lasso(random_state=42))]),
-        "Ridge_b": Pipeline([
+        "Ridge": lambda: Pipeline([
             ("scaler", StandardScaler()),
             ("model", Ridge(random_state=42))]),
-        "elasticnet_b": Pipeline([
+        "elasticnet": lambda: Pipeline([
             ("scaler", StandardScaler()),
-            ("model", ElasticNet(random_state=42))]),
-        "tree": DecisionTreeRegressor(random_state=42),
-        "rf_b": RandomForestRegressor(random_state=42),
-        "gpm_w": GradientBoostingRegressor(random_state=42),
-        "svm_linear": Pipeline([
+            ("model", ElasticNet(random_state=42))]), 
+        "tree": lambda: DecisionTreeRegressor(random_state=42),
+        "rf": lambda: RandomForestRegressor(random_state=42),
+        "gbm": lambda: GradientBoostingRegressor(random_state=42),
+        "svm_linear": lambda: Pipeline([
             ("scaler", StandardScaler()),
             ("model", SVR(kernel="linear"))]),
-        "LASSO_p": Pipeline([
-            ("scaler", StandardScaler()),
-            ("model", Lasso(random_state=42))]),
-        "Ridge_p": Pipeline([
-            ("scaler", StandardScaler()),
-            ("model", Ridge(random_state=42))]),
-        "elasticnet_p": Pipeline([
-            ("scaler", StandardScaler()),
-            ("model", ElasticNet(random_state=42))]),
-        "svm_rbf": Pipeline([
+        "svm_rbf": lambda: Pipeline([
             ("scaler", StandardScaler()),
             ("model", SVR(kernel = 'rbf'))]),
-        "svm_poly": Pipeline([
+        "svm_poly": lambda: Pipeline([
             ("scaler", StandardScaler()),
             ("model", SVR(kernel = 'poly'))]),
-        "gpr": Pipeline([
+        "gpr": lambda: Pipeline([
             ("scaler", StandardScaler()),
             ("model", GaussianProcessRegressor(random_state=42))]),
-        "rf_p": RandomForestRegressor(random_state=42),
-        "gbm_p": GradientBoostingRegressor(random_state=42),
-        "mlp": Pipeline([
+        "mlp": lambda: Pipeline([
             ("scaler", StandardScaler()),
             ("model", MLPRegressor(random_state=42))]),
-        "knn": Pipeline([
-            ("scaler", StandardScaler()),  
+        "knn": lambda: Pipeline([
+            ("scaler", StandardScaler()),
             ("model", KNeighborsRegressor())]),
     }
 
