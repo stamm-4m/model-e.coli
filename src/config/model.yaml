@@ -1,0 +1,84 @@
+# ------------------------------------------------------------------
+#           Reactor operational mode instructions 
+# ------------------------------------------------------------------
+model_instructions:
+
+  variables:
+    time: Time
+    S: Glucose
+    X: Biomass
+    P: Protein
+    A: Acetate
+    C: Citrate
+    V: Vreal
+    T: Temperature
+    I: Induction
+    S0: Glucose_0
+    SF: Glucose_F
+
+  independent:
+    - time
+  
+  volume:
+    name: V
+    feeds:
+      species:
+        - S
+      flowrate:
+        path: src.model.auxiliar.feed_profile
+      concentration:
+        S: Sf
+
+  states: # reference the variables that can be derivated
+    X: 
+      generation: rX
+      source: function 
+      path: src.model.core.kinetics.rX
+    S:
+      generation: rS
+      source: function
+      path: src.model.core.kinetics.rS
+    P:
+      generation: rP
+      source: function
+      path: src.model.core.kinetics.rP
+      # source: machine_learning
+      # model_path: src/model/machine_learning/rP/model.pkl
+      # features_path: src/model/machine_learning/rP/features.yaml
+
+  inputs: # variable to keep tracking but are not modeled
+    consider:
+      T: 
+        source: function
+        path: src.model.auxiliar.funtions.var_profile
+      I: 
+        source: function
+        path: src.model.auxiliar.funtions.I_profile
+      C: 
+        source: function
+        path: src.model.auxiliar.funtions.var_profile
+      S0: 
+        source: function
+        path: src.model.auxiliar.funtions.var_profile
+      SF:
+        source: function
+        path: src.model.auxiliar.funtions.var_profile
+    ignore:  
+      - A
+
+  kinetic_functions:
+    mu:
+      path: src.model.core.kinetics.mu
+    mu_max:
+      path: src.model.core.kinetics.mu_max
+    qp:
+      path: src.model.core.kinetics.qp
+      # source: machine_learning
+      # model_path: src/model/machine_learning/qP/model.pkl
+      # features_path: src/model/machine_learning/qP/features.yaml
+      
+  kinetic_parameters:
+    path: src/config/params.yaml
+  reactor_functions:
+    feeds:
+      path: src.model.auxiliar.functions.feed_profile

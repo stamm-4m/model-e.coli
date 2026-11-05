@@ -23,11 +23,12 @@ Configuration files expected at:
 """
 
 from src.utils.io import load_yaml
-from workflow.data_treatment.data_analysis import DataAnalysisWorkflow
-from src.workflow.model_analysis.parameter_estimation import ParameterEstimationWorkflow
-# from src.workflow.model_analysis.sensitivity_analysis import SensitivityAnalysisWorkflow
-from workflow.hybrid_selection.feature_filter import FeaturesFilterWorkflow
-from workflow.hybrid_selection.hybrid_model import HybridModelSelectionWorkflow
+from src.workflow.model_analysis.model_builder import ModelBuilderWorkflow
+from src.workflow.data_treatment.data_analysis import DataAnalysisWorkflow
+# from src.workflow.model_analysis.parameter_estimation import ParameterEstimationWorkflow
+# # from src.workflow.model_analysis.sensitivity_analysis import SensitivityAnalysisWorkflow
+# from src.workflow.hybrid_selection.feature_filter import FeaturesFilterWorkflow
+# from src.workflow.hybrid_selection.hybrid_model import HybridModelSelectionWorkflow
 
 # def main():
 #     # ============================================================
@@ -49,46 +50,52 @@ def main():
     print("Starting project workflow...")
     
     cfg = load_yaml("src/config/project.yaml")
-        
-    if cfg["workflow"]["data_analysis"]:
 
-        DataAnalysisWorkflow(
-            raw_data_path = cfg["paths"]["raw_data"],
-            yaml_path = cfg["paths"]["parameters"],
-            ead_path = cfg["paths"]["results"]["ead"]
+    if cfg["workflow"]["model_builder"]:
+        ModelBuilderWorkflow(
+            instructions_path = cfg["paths"]["instructions"],
+            operation_mode = cfg["model_builder"]["operation_mode"]
         ).run()
 
-    if cfg["workflow"]["parameter_estimation"]:
+    # if cfg["workflow"]["data_analysis"]:
 
-        ParameterEstimationWorkflow(
-            config_path=cfg["paths"]["parameters"], 
-            param_names=cfg["estimation"]["parameters"]  
-        ).run()
+    #     DataAnalysisWorkflow(
+    #         raw_data_path = cfg["paths"]["raw_data"],
+    #         yaml_path = cfg["paths"]["parameters"],
+    #         ead_path = cfg["paths"]["results"]["ead"]
+    #     ).run()
 
-    # if cfg["workflow"]["sensitivity_analysis"]:
-    #     SensitivityAnalysisWorkflow().run()
+    # if cfg["workflow"]["parameter_estimation"]:
 
-    if cfg["workflow"]["features_filter"]: 
-        FeaturesFilterWorkflow(
-            data_path=cfg["paths"]["processed_data"],
-            filter_path=cfg["paths"]["results"]["filtered_features"],
-            obj_param=cfg["features_filter"]["objective_parameter"],
-            ignore_data=cfg["features_filter"]["ignore_data"], 
-            ignore_features=cfg["features_filter"]["ignore_features"], 
-            method=cfg["features_filter"]["method"], 
-            n_features=cfg["features_filter"]["n_features"]
-        ).run()
+    #     ParameterEstimationWorkflow(
+    #         config_path=cfg["paths"]["parameters"], 
+    #         param_names=cfg["estimation"]["parameters"]  
+    #     ).run()
 
-    if cfg["workflow"]["hybrid_model_selection"]:
-        HybridModelSelectionWorkflow(
-            data_path=cfg["paths"]["processed_data"],
-            features_objective_path=cfg["paths"]["features_objective"],
-            global_target=cfg["sensitivity_analysis"]["global_target"],
-            ignore_data=cfg["hybrid_model_selection"]["ignore_data"],
-            tuning_algorithm=cfg["hybrid_model_selection"]["tuning_algorithm"], 
-            n_trainings=cfg["hybrid_model_selection"]["n_trainings"],
-            machine_learning_models=cfg["hybrid_model_selection"]["machine_learning_models"]
-        ).run()
+    # # if cfg["workflow"]["sensitivity_analysis"]:
+    # #     SensitivityAnalysisWorkflow().run()
+
+    # if cfg["workflow"]["features_filter"]: 
+    #     FeaturesFilterWorkflow(
+    #         data_path=cfg["paths"]["processed_data"],
+    #         filter_path=cfg["paths"]["results"]["filtered_features"],
+    #         obj_param=cfg["features_filter"]["objective_parameter"],
+    #         ignore_data=cfg["features_filter"]["ignore_data"], 
+    #         ignore_features=cfg["features_filter"]["ignore_features"], 
+    #         method=cfg["features_filter"]["method"], 
+    #         n_features=cfg["features_filter"]["n_features"]
+    #     ).run()
+
+    # if cfg["workflow"]["hybrid_model_selection"]:
+    #     HybridModelSelectionWorkflow(
+    #         data_path=cfg["paths"]["processed_data"],
+    #         features_objective_path=cfg["paths"]["features_objective"],
+    #         global_target=cfg["sensitivity_analysis"]["global_target"],
+    #         ignore_data=cfg["hybrid_model_selection"]["ignore_data"],
+    #         tuning_algorithm=cfg["hybrid_model_selection"]["tuning_algorithm"], 
+    #         n_trainings=cfg["hybrid_model_selection"]["n_trainings"],
+    #         machine_learning_models=cfg["hybrid_model_selection"]["machine_learning_models"]
+    #     ).run()
 
     # if cfg["workflow"]["simulation"]:
     #     SimulationWorkflow().run()

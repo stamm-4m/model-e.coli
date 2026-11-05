@@ -10,7 +10,7 @@ from src.model.auxiliar.induction import InductionProfile
 from src.model.auxiliar.feed_factory import create_feed
 from src.model.auxiliar.simulator import Simulator
 from src.model.auxiliar.initial_conditions import DatasetInitialState, ConfigInitialState
-from src.model.core.balances import FedBatchBalances
+from model.core.delete_balances import FedBatchBalances
 from src.utils.io import get_br_id, timer
 from src.utils.metrics_io import compute_metrics
 from src.utils.io import load_yaml

@@ -1,71 +1,73 @@
-"""
-Nanobody-based Antivenom Production with E. coli Reactor Simulation 
-Class: Kinetic_Models
-
-Author: Juan Camilo Castaño Sanchez
-Email: jcastano-san@insa-toulose.fr
-Date: 01/09/2026
-"""
 
 import numpy as np
 
-class Kinetic_Models:
+def mu_max(features, params):
+    states = features["states"]
+    inputs = features["inputs"]
+    X, S, P, V = states
+    T, I, I_F, C, S0, SF = inputs
+    mu_max_0 = params["mu_max_0"]
+    mu_max_p = params["mu_max_p"]
+    b = params["b"]
+    if I_F == 0:
+        mu_max = mu_max_0
+    else:
+        mu_max = mu_max_p * T + b
+    return mu_max
 
-    """
-    Class for kinetic models used in the fed-batch reactor simulation.
-    """
+def mu(features, params):
+    states = features["states"]
+    inputs = features["inputs"]
+    X, S, P, V = states
+    Ks = params["Ks"]
+    mu_max_val = mu_max(states, inputs, params)
+    mu = mu_max_val * S / (Ks + S)
+    return mu
 
-    def __init__(self):
-        self.params = {} 
+def qp(features, params):
+    states = features["states"]
+    inputs = features["inputs"]
+    X, S, P, V = states
+    T, I, I_F, C, S0, SF = inputs
+    gamma_1 = params["gamma_1"]
+    gamma_2 = params["gamma_2"]
+    Ap_1 = params["Ap_1"]
+    Ap_2 = params["Ap_2"]
+    sigma = params["sigma"]
+    alpha = params["alpha"]
+    if I == 0:
+        qp = 0
+    else:
+        mu_val = mu(states, inputs, params)
+        beta = ( 
+            ( gamma_1 * np.exp(- Ap_1 / T)) -
+            ( gamma_2 * np.exp(- Ap_2 / T)) +
+                sigma
+            )
+        qp = 0 # - (- alpha * mu_val + beta )
+        # qp = abs(- alpha * mu_val + beta )
+    return qp   # [mg Nb * L / (g X * h)]
 
-    def set_params(self, params):
+def rX(features, params):
+    states = features["states"]
+    specific_rates = features["kinetic"]
+    mu_val = specific_rates["mu"]
+    X, S, P, V = states
+    rate = mu_val * X
+    return rate
 
-        if not isinstance(params, dict):
-            raise TypeError("set_params expects a dict {param_name: value}")
-        
-        self.params.update(params)
+def rS(features, params):
+    Y_XS = params["Y_XS"]
+    rX_val = rX(features, params)
+    rate = - rX_val / Y_XS 
+    return rate
 
-        self.mu_max_p = self.params["mu_max_p"]
-        self.mu_max_0 = self.params["mu_max_0"]
-        self.Ks = self.params["Ks"]
-        self.b = self.params["b"]
-        self.m = self.params["m"]
-        self.Y_XS = self.params["Y_XS"]
-        self.alpha = self.params["alpha"]
-        self.gamma_1 = self.params["gamma_1"]
-        self.Ap_1 = self.params["Ap_1"]
-        self.gamma_2 = self.params["gamma_2"]
-        self.Ap_2 = self.params["Ap_2"]
-        self.sigma = self.params["sigma"]
-
-    # ---------------------------------------------------
-    #               kinetic Models
-    # ---------------------------------------------------
-
-    # Monod kinetic
-    def mu_max(self, T, ind_F):
-        if ind_F == 0:
-            mu_max = self.mu_max_0
-        else:
-            mu_max = self.mu_max_p * T + self.b
-        return mu_max
-    
-    def mu(self, S, T, ind_F):
-        mu_max = self.mu_max(T, ind_F)
-        mu = mu_max * S / (self.Ks + S)
-        return mu
-
-    # Modified Luedeking Piret kinetic
-    def qp(self, S, T, induction, ind_F):
-        if induction == 0:
-            qp = 0
-        else:
-            mu = self.mu(S, T, ind_F)
-            beta = ( 
-                ( self.gamma_1 * np.exp(- self.Ap_1 / T)) -
-                ( self.gamma_2 * np.exp(- self.Ap_2 / T)) +
-                  self.sigma
-                )
-            qp = 0 # - (- self.alpha * mu + beta )
-            # qp = abs(- self.alpha * mu + beta )
-        return      qp                                    # [mg Nb * L / (g X * h)]
+def rP(features, params):
+    states = features["states"]
+    specific_rates = features["kinetic"]
+    mu_val = specific_rates["mu"]
+    qp_val = specific_rates["qp"]
+    X, S, P, V = states
+    rate = qp_val * X
+    # rate = qp_val * X + mu_val * P 
+    return rate

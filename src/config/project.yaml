@@ -1,8 +1,34 @@
+# Preguntas: 
+# - código de JCA difiere de tesis para todos los valores de alimentación ?
+# - se defe unificiar el tiempo de inducción con el de cambio de flujo de alimentación ?
+
 # ------------------------------------------------------------------
 #       General information about the configuration file
 # ------------------------------------------------------------------
+Project: Nanobody-based Antivenom Production with E. coli Reactor Simulation 
+Description: 
+Author: Juan Camilo Castaño Sanchez
+Email: jcastano-san@insa-toulouse.fr
+last_update: 05/11/2026
 
+# ------------------------------------------------------------------
+#                     Simulation config
+# ------------------------------------------------------------------
+simulation:
+  method_ode: 
+    type : BDF # Radau # BDF
+  rtol_ode: 
+    value: 1.0e-7 # 1.0e-6
+  max_step:
+    value: 0.05 # 0.5
+  atol_ode: 
+    value: 1.0e-9 # 1.0e-8
+
+# ------------------------------------------------------------------
+#                   Workflow and paths
+# ------------------------------------------------------------------
 workflow:
+  model_builder: true
   data_analysis: false
   parameter_estimation: false
   sensitivity_analysis: false
@@ -13,6 +39,7 @@ workflow:
 paths:
   raw_data: "data/raw"
   processed_data: "data/processed/BR_processed.xlsx"
+  instructions: "src/config/model.yaml"
   parameters: "src/config/params.yaml"
   estimation_parameters: "src/config/params.yaml"
   features_objective: "results/filtered_features"
@@ -24,30 +51,12 @@ paths:
     filtered_features: "results/filtered_features"
     hybrid_model: "results/hybrid_model"
 
-# data_analysis:
-#   variables:
-#     Time: time
-#     Glucose: S
-#     Biomass: X
-#     Protein: P
-#     Acetate: A
-#     Citrate: C
-#     Vreal: V
-#     Temperature: T
-#     Induction: I
-#   states:
-#     - X
-#     - S
-#     - P
-#     - V
-#   inputs:
-#     - I
-#     - T
-#   derivatives:
-#     - X
-#     - S
-#     - P
-#     - V
+# ------------------------------------------------------------------
+#                   Modules config
+# ------------------------------------------------------------------
+
+model_builder:
+  operation_mode: "FedBatch"
 
 estimation:
   parameters: # "alpha", "gamma_1","Ap_1","gamma_2", "Ap_2","sigma"
@@ -60,7 +69,6 @@ estimation:
 
 sensitivity_analysis:
   global_target: P
-  parameters: []
 
 features_filter:
   n_features: 10
@@ -68,7 +76,6 @@ features_filter:
     - BR08
   objective_parameter: 
     - qP 
-    - qP_2 
     - rP
   ignore_features:
     - Run_ID
@@ -87,7 +94,7 @@ features_filter:
     - d2Sdt2
     - dXdt
     - d2Xdt2
-  method: "cmi_based" # cmi_based cmim mrm_mid mrmr_miq
+  method: cmi_based # cmi_based cmim mrm_mid mrmr_miq
 
 hybrid_model_selection:
   ignore_data: 
@@ -105,5 +112,5 @@ hybrid_model_selection:
     - svm_rbf
     - svm_poly
     - knn
-  tuning_algorithm: "grid_search" # "grid_search", "random_search", "bayesian_optimization"
+  tuning_algorithm: grid_search # "grid_search", "random_search", "bayesian_optimization"
   n_trainings: 200
