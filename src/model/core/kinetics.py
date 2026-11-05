@@ -5,7 +5,7 @@ def mu_max(features, params):
     states = features["states"]
     inputs = features["inputs"]
     X, S, P, V = states
-    T, I, I_F, C, S0, SF = inputs
+    T, I, C, S0, SF, I_F = inputs
     mu_max_0 = params["mu_max_0"]
     mu_max_p = params["mu_max_p"]
     b = params["b"]

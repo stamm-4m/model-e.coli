@@ -2,6 +2,15 @@ import numpy as np
 
 from src.utils.io import load_yaml
 from src.utils import import_function
+# from src.model.auxiliar.functions import var_profile
+# from src.model.auxiliar.functions import I_profile
+# from src.model.auxiliar.functions import feed_profile
+# from src.model.core.kinetics import mu
+# from src.model.core.kinetics import mu_max
+# from src.model.core.kinetics import qp
+# from src.model.core.kinetics import rX
+# from src.model.core.kinetics import rS
+# from src.model.core.kinetics import rP
 
 def ODEs(self, t, state):
 
@@ -48,6 +57,8 @@ def ODEs(self, t, state):
 
     feed_profile = import_function('src.model.auxiliar.feed_profile')
     dVdt, I_F = feed_profile(t, self.br_id, 'S')
+
+    # inputs['I_F'] = I_F
 
     kinetics = {}
 
