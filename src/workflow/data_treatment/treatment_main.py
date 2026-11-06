@@ -11,28 +11,34 @@ Date: 01/09/2026
 
 from glob import glob
 from pathlib import Path
+from src.utils.io import load_yaml
 from src.workflow.data_treatment.standardization import DatasetStandardization
 from src.workflow.data_treatment.outliers import outliers_and_smoothing # , data_unification
 from src.workflow.data_treatment.processing import processing_data
 
 class DataTreatment:
-    def __init__(self, path):
+    def __init__(self, data_path, model_path, ignore_vars=None, states_variables=None, non_states_cfg=None):
         
         """
         Generates a DataTreatment object that handles the data treatment process
         """
         # =================== Data Standardization step =================== 
-        self.path = path
-        self.dataset_files = sorted(glob(f"{path}/BR*.xls"))
-        self.datasets = [DatasetStandardization(f) for f in self.dataset_files]
+        self.data_path = data_path
+        self.ignore_vars = ignore_vars
+        self.dataset_files = sorted(glob(f"{data_path}/BR*.xls"))
+        self.datasets = [DatasetStandardization(f, model_path) for f in self.dataset_files]
 
         # ===================  =================== 
-        self.br_id_list = [file.stem for file in Path(path).iterdir() if file.suffix == ".xls"]
-        self.variable_list = ["X", "S", "V", "P", "C", "T"]
+        self.br_id_list = [file.stem for file in Path(data_path).iterdir() if file.suffix == ".xls"]
+        variables = list(load_yaml(model_path)["model_instructions"]["variables"].keys())
+        independent = (load_yaml(model_path)["model_instructions"]["independent"][0])
+        variables_list = (v for v in variables if v != independent)
+        self.variable_list = variables_list
 
         # =================== Data treatment (outlier treatment, smoothing data,  derivative computation) =================== 
-        smoothed_data, _ = outliers_and_smoothing(datasets = self.datasets, time_col = "time", variable_list = self.variable_list, 
-                                                            results_root="results/data_analysis/treatment", smooth=True)
+        smoothed_data, _ = outliers_and_smoothing(datasets = self.datasets, time_col = independent, variable_list = self.variable_list, 
+                                                  ignore_vars = self.ignore_vars, results_root="results/data_analysis/treatment", 
+                                                  smooth=True, states_variables=states_variables, non_states_cfg=non_states_cfg)
         
         self.data_sets = smoothed_data
 

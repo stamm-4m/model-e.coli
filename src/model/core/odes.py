@@ -1,21 +1,14 @@
-import numpy as np
 
+import numpy as np
 from src.utils.io import load_yaml
-from src.utils import import_function
-# from src.model.auxiliar.functions import var_profile
-# from src.model.auxiliar.functions import I_profile
-# from src.model.auxiliar.functions import feed_profile
-# from src.model.core.kinetics import mu
-# from src.model.core.kinetics import mu_max
-# from src.model.core.kinetics import qp
-# from src.model.core.kinetics import rX
-# from src.model.core.kinetics import rS
-# from src.model.core.kinetics import rP
+from src.model.auxiliar.functions import I_mu_profile, I_profile, feed_concentration_profile, feed_profile, var_profile
+from src.model.core.kinetics import mu_fun, mu_max_fun, qp_fun, rP_fun, rS_fun, rX_fun
+
 
 def ODEs(self, t, state):
 
+    # --------- States --------
     X, S, P, V = state
-
     states = {
         'X': X,
         'S': S,
@@ -23,30 +16,31 @@ def ODEs(self, t, state):
         'V': V
     }
 
+    # --------- Parameters --------
     parameters = load_yaml('src/config/params.yaml')
 
+    # --------- Inputs --------
     inputs = {}
 
-    T_func = import_function('src.model.auxiliar.funtions.var_profile')
-    T = T_func(t, self.br_id, 'T')
+    T = var_profile(t, self.br_id, 'T')
     inputs['T'] = T
 
-    I_func = import_function('src.model.auxiliar.funtions.I_profile')
-    I = I_func(t, self.br_id, 'I')
+    I = I_profile(t, self.br_id, 'I')
     inputs['I'] = I
 
-    C_func = import_function('src.model.auxiliar.funtions.var_profile')
-    C = C_func(t, self.br_id, 'C')
+    C = var_profile(t, self.br_id, 'C')
     inputs['C'] = C
 
-    S0_func = import_function('src.model.auxiliar.funtions.var_profile')
-    S0 = S0_func(t, self.br_id, 'S0')
+    S0 = var_profile(t, self.br_id, 'S0')
     inputs['S0'] = S0
 
-    SF_func = import_function('src.model.auxiliar.funtions.var_profile')
-    SF = SF_func(t, self.br_id, 'SF')
+    SF = var_profile(t, self.br_id, 'SF')
     inputs['SF'] = SF
 
+    I_mu = I_mu_profile(t, self.br_id, 'I_mu')
+    inputs['I_mu'] = I_mu
+
+    # --------- Features --------
     features = {}
 
     features.update(states)
@@ -55,38 +49,32 @@ def ODEs(self, t, state):
     features['states'] = states
     features['inputs'] = inputs
 
-    feed_profile = import_function('src.model.auxiliar.feed_profile')
-    dVdt, I_F = feed_profile(t, self.br_id, 'S')
+    # --------- Volume --------
+    dVdt = feed_profile(t, self.br_id, 'S')
+    Sf = feed_concentration_profile(t, self.br_id, 'S')
 
-    # inputs['I_F'] = I_F
-
+    # --------- Kinetics --------
     kinetics = {}
 
-    mu_func = import_function('src.model.core.kinetics.mu')
-    mu = mu_func(features, parameters)
+    mu = mu_fun(features, parameters)
     kinetics['mu'] = mu
 
-    mu_max_func = import_function('src.model.core.kinetics.mu_max')
-    mu_max = mu_max_func(features, parameters)
+    mu_max = mu_max_fun(features, parameters)
     kinetics['mu_max'] = mu_max
 
-    qp_func = import_function('src.model.core.kinetics.qp')
-    qp = qp_func(features, parameters)
+    qp = qp_fun(features, parameters)
     kinetics['qp'] = qp
 
     features['kinetics'] = kinetics
 
-    rX_func = import_function('src.model.core.kinetics.rX')
-    rX = rX_func(features)
+    # --------- Balances --------
+    rX = rX_fun(features, parameters)
     dXdt = rX - (X/V)*dVdt
 
-    rS_func = import_function('src.model.core.kinetics.rS')
-    rS = rS_func(features)
+    rS = rS_fun(features, parameters)
     dSdt = rS - (S/V)*dVdt + (Sf/V)*dVdt
 
-    rP_func = import_function('src.model.core.kinetics.rP')
-    rP = rP_func(features)
+    rP = rP_fun(features, parameters)
     dPdt = rP - (P/V)*dVdt
-
 
     return np.array([dXdt, dSdt, dPdt, dVdt])

@@ -58,6 +58,55 @@ paths:
 model_builder:
   operation_mode: "FedBatch"
 
+data_treatment:
+  ignore:
+    - I
+    - A
+    - S0
+    - SF
+  states:
+    X:
+      smooth_crit:
+        monotonicity: increasing
+        bounds: 
+        - 0.1
+        - 6  # (3, 5)
+        constrains:
+          initial_condition: true
+          lower_bound_initial: true
+          final_maximum: true
+    S:
+      smooth_crit:
+        monotonicity: decreasing
+        positivity_end: true
+        bounds: 
+        - 0.01 
+        - 3   # (0.01, 1)  
+        constrains:
+          initial_condition: true
+    P:
+      smooth_crit:
+        monotonicity: increasing
+        positivity_start: true
+        bounds: 
+        - 0.0001 
+        - 0.01 # (0.00001,0.001)
+    V:
+      smooth_crit:
+        monotonicity: increasing
+        bounds: 
+        - 0.0001 
+        - 0.01 #  (0.0001,0.01)
+        constrains:
+          initial_condition: true
+  non_states:
+    default:
+      smooth_method: savgol
+      window: 11
+      order: 4
+
+
+
 estimation:
   parameters: # "alpha", "gamma_1","Ap_1","gamma_2", "Ap_2","sigma"
     - mu_max_p

@@ -7,7 +7,17 @@ from src.utils.io import load_yaml
 def I_profile(t, br_id, var):
     params = load_yaml("src/config/params.yaml")
     t_ind = params["bioreactor"][br_id]["t_ind"]["value"]
-    return float(t >= t_ind), t_ind
+    return float(t >= t_ind)
+
+def I_mu_profile(t, br_id, var):
+    params = load_yaml("src/config/params.yaml")
+    intervals = params["feeds"][br_id][var]["value"]
+    n = len(intervals)
+    for i, (t_start, t_end, slope, intercept) in enumerate(intervals):
+        if t_start <= t <= t_end:
+            is_last = (i == n - 1)
+            return float(is_last == True)
+    return 0.0
 
 def feed_profile(t, br_id, var):
     params = load_yaml("src/config/params.yaml")
@@ -15,9 +25,12 @@ def feed_profile(t, br_id, var):
     n = len(intervals)
     for i, (t_start, t_end, slope, intercept) in enumerate(intervals):
         if t_start <= t <= t_end:
-            is_last = (i == n - 1)
-            return (slope * t + intercept), float(is_last == True)
-    return 0.0, 0.0  # OFF outside all intervals 
+            return (slope * t + intercept)
+    return 0.0
+
+def feed_concentration_profile(t, br_id, var):
+    params = load_yaml("src/config/params.yaml")
+    return params["bioreactor"][br_id][f"{var}f"]["value"]
 
 def var_profile(t, br_id, var, raw=True):
     cfg = load_yaml("src/config/project.yaml")

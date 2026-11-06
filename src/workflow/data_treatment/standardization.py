@@ -9,55 +9,25 @@ Date: 01/09/2026
 """
 
 import pandas as pd
+from src.utils.io import load_yaml
 
 class DatasetStandardization:
-    def __init__(self, filepath):#, sheet="Feuil1"):
-        df = pd.read_excel(
-            filepath,
-            # sheet_name=sheet,
-            header=0,
-            skiprows=[1]
-        )
+    def __init__(self, filepath, model_path):
 
-        df = df.rename(columns={
-            "Time": "time",
-            "Glucose": "S",
-            "Biomass": "X",
-            "Protein": "P",
-            "Acetate": "A",
-            "Citrate": "C",
-            "Vreal": "V",
-            "Temperature": "T",
-            "Induction": "I"
-        })
+        # self.path = filepath
+        model_cfg = load_yaml(model_path)
+        rename_dict = {v: k for k, v in model_cfg["model_instructions"]["variables"].items()}
 
-        df["t"] = df["time"]
+        df = pd.read_excel(filepath, header=0, skiprows=[1])
+        df = df.rename(columns=rename_dict)
+
         self.df = df 
 
-        self.t = df["t"].values
+        states = model_cfg["model_instructions"]["states"].keys()
+        V = model_cfg["model_instructions"]["volume"]["name"]
 
-        self.data = {
-            "t": df["t"].values,
-            "X": df["X"].values,
-            "S": df["S"].values,
-            "P": df["P"].values,
-            "C": df["C"].values,
-            "V": df["V"].values,
-        }
-
-        self.V = df["V"].values
-        self.X = df["X"].values
-        self.T = df["T"].values
-        self.I = df["I"].values
-
-        self.y0 = [
-            df["X"].iloc[0],
-            df["S"].iloc[0],
-            df["P"].iloc[0],
-            df["V"].iloc[0],
-        ]
-
-        self.path = filepath
+        self.y0 = [df[var].iloc[0]for var in [*states, V]]
+        
 
 class ProcessedDataset:
 

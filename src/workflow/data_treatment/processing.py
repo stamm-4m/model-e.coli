@@ -160,28 +160,3 @@ def add_T_ind(df,n_ultimos=4):
     df["Run_T"] = df["Run_ID"].astype(str) + " T = " + df["T_ind"] + "°C " 
 
     return df 
-
-# # --- Calculate features ---
-# def calculate_features(BR09, in_dir = "src/config/params.yaml"):
-
-#     # Same code as mode_profile.py
-#     cfg = load_yaml(in_dir)
-
-#     kin = Kinetic_Models()
-#     datasets, simulators, y0s = build_experiments(cfg, kin, BR09)
-#     param_names = list(cfg["kinetics"].keys())
-#     full_params = { k: cfg["kinetics"][k]["value"] for k in param_names }
-#     theta = [ cfg["kinetics"][k]["value"] for k in param_names ]
-    
-#     _, _, _, solutions = run_model_with_parameters (
-#         datasets=datasets, simulators=simulators, y0s=y0s, kin=kin, theta=theta, param_names=param_names, full_params=full_params)
-    
-#     results = {}
-
-#     for dataset in datasets:
-#         br_id = get_br_id(dataset)
-#         sol_block = solutions[dataset.path]
-
-#         results[br_id] = { "mu": sol_block["mu"], }
-
-#     return results

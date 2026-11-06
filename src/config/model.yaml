@@ -3,6 +3,19 @@
 # ------------------------------------------------------------------
 model_instructions:
 
+  all_variables:
+    variables:
+      - states
+      - inputs
+      - kinetic_functions
+      - V
+    ignore: 
+      - I_m
+      - mu_max
+      # - S0
+      # - SF
+      # - C
+
   variables:
     time: Time
     S: Glucose
@@ -25,60 +38,70 @@ model_instructions:
       species:
         - S
       flowrate:
-        path: src.model.auxiliar.feed_profile
+        path: src.model.auxiliar.functions
+        function: feed_profile
       concentration:
-        S: Sf
+        S: 
+          name: Sf
+          path: src.model.auxiliar.functions
+          function: feed_concentration_profile
 
   states: # reference the variables that can be derivated
     X: 
       generation: rX
       source: function 
-      path: src.model.core.kinetics.rX
+      path: src.model.core.kinetics
+      function: rX_fun
     S:
       generation: rS
       source: function
-      path: src.model.core.kinetics.rS
+      path: src.model.core.kinetics
+      function: rS_fun
     P:
       generation: rP
       source: function
-      path: src.model.core.kinetics.rP
+      path: src.model.core.kinetics
+      function: rP_fun
       # source: machine_learning
-      # model_path: src/model/machine_learning/rP/model.pkl
+      # path: src/model/machine_learning/rP/model.pkl
       # features_path: src/model/machine_learning/rP/features.yaml
 
   inputs: # variable to keep tracking but are not modeled
-    consider:
-      T: 
-        source: function
-        path: src.model.auxiliar.funtions.var_profile
+      T:
+        path: src.model.auxiliar.functions
+        function: var_profile
       I: 
-        source: function
-        path: src.model.auxiliar.funtions.I_profile
+        path: src.model.auxiliar.functions
+        function: I_profile
       C: 
-        source: function
-        path: src.model.auxiliar.funtions.var_profile
-      S0: 
-        source: function
-        path: src.model.auxiliar.funtions.var_profile
-      SF:
-        source: function
-        path: src.model.auxiliar.funtions.var_profile
-    ignore:  
-      - A
+        path: src.model.auxiliar.functions
+        function: var_profile
+      S0:  
+        path: src.model.auxiliar.functions
+        function: var_profile
+      SF: 
+        path: src.model.auxiliar.functions
+        function: var_profile
+      I_mu: 
+        path: src.model.auxiliar.functions
+        function: I_mu_profile
 
   kinetic_functions:
     mu:
-      path: src.model.core.kinetics.mu
+      source: function
+      path: src.model.core.kinetics
+      function: mu_fun
     mu_max:
-      path: src.model.core.kinetics.mu_max
+      source: function
+      path: src.model.core.kinetics
+      function: mu_max_fun
     qp:
-      path: src.model.core.kinetics.qp
+      source: function
+      path: src.model.core.kinetics
+      function: qp_fun
       # source: machine_learning
-      # model_path: src/model/machine_learning/qP/model.pkl
+      # path: src/model/machine_learning/qP/model.pkl
       # features_path: src/model/machine_learning/qP/features.yaml
       
   kinetic_parameters:
     path: src/config/params.yaml
-  reactor_functions:
-    feeds:
-      path: src.model.auxiliar.functions.feed_profile

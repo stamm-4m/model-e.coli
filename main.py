@@ -41,7 +41,7 @@ from src.workflow.data_treatment.data_analysis import DataAnalysisWorkflow
 #     SIMULATION_FILE = "configs/Simulation.yaml"
 
 #     # ============================================================
-#     # 1. Utility helpers
+#     # 1. Utility helperss
 #     # ============================================================
 #     ...
 
@@ -57,13 +57,17 @@ def main():
             operation_mode = cfg["model_builder"]["operation_mode"]
         ).run()
 
-    # if cfg["workflow"]["data_analysis"]:
+    if cfg["workflow"]["data_analysis"]:
 
-    #     DataAnalysisWorkflow(
-    #         raw_data_path = cfg["paths"]["raw_data"],
-    #         yaml_path = cfg["paths"]["parameters"],
-    #         ead_path = cfg["paths"]["results"]["ead"]
-    #     ).run()
+        DataAnalysisWorkflow(
+            raw_data_path = cfg["paths"]["raw_data"],
+            yaml_path = cfg["paths"]["parameters"],
+            model_path = cfg["paths"]["instructions"],
+            ead_path = cfg["paths"]["results"]["ead"], 
+            ignore_variables = cfg["data_analysis"]["ignore"],
+            states_variables = cfg["data_analysis"]["states"],
+            non_states_cfg = cfg["data_analysis"]["non_states"]
+        ).run()
 
     # if cfg["workflow"]["parameter_estimation"]:
 
