@@ -43,12 +43,11 @@ class DataTreatment:
         self.data_sets = smoothed_data
 
         # =================== Computes qP and mu calculation ===================  
-    def data_frame(self, yaml_path: str = "src/config/params.yaml"):  # yaml_path = "src/config/default_parameters.yaml"
+    def data_frame(self, model_path = "src/config/model.yaml"):  # yaml_path = "src/config/default_parameters.yaml"
 
-        df_global, df_induction = processing_data(datasets = self.data_sets, yaml_path = yaml_path, t_ind_exp = True) 
-        df_induction.to_excel("data/processed/BR_processed_ind.xlsx",index=False,engine="openpyxl")
+        df_global = processing_data(datasets = self.data_sets, model_path = model_path) 
         df_global.to_excel("data/processed/BR_processed.xlsx",index=False,engine="openpyxl")
         
-        return df_global, df_induction
+        return df_global
     
     

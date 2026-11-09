@@ -4,159 +4,76 @@ Nanobody-based Antivenom Production with E. coli Reactor Simulation
 
 Author: Juan Camilo Castaño Sanchez
 Email: jcastano-san@insa-toulose.fr
-Date: 01/09/2026
+Date: 09/11/2026
 
 """
 
+from src.utils.io import load_yaml
 import numpy as np
 import pandas as pd
-from src.utils.io import load_yaml, get_time_ranges # , timer, get_br_id
-# from src.model.core.kinetics import Kinetic_Models
-# from src.utils.experiment_factory import build_experiment, run_model_with_parameters
-# from src.model.auxiliar.feed_factory import create_feed
+from src.model.core import kinetics_residual, ri_residual
+from scipy.optimize import least_squares
 
 # ------------------- Computes qP and mu and unifies dataframes --------------
 # @timer
-def processing_data(datasets, yaml_path, t_ind_exp = True):
-    
-    yaml_params = load_yaml(yaml_path)
+
+def processing_data(self, datasets, model_path):
+
     df_global = []
-    df_induction_all = []
 
-    # df_calc = calculate_features(BR09=True)
+    self.model_ins = load_yaml(model_path)["model_instructions"]
 
-    for br_id in datasets:
+    generation_names = [cfg["generation"]for cfg in self.model_ins["states"].values()]
 
-        df = pd.DataFrame(datasets[br_id])
+    kinetic_names = list(self.model_ins["kinetic_functions"].keys())
 
-        Sf = yaml_params["bioreactor"][br_id]["Sf"]["value"]
-
-        # if br_id in ["BR07", "BR08"]:
-        #     df = df.iloc[:-1]
-
-        # Indicates the dataset name
+    for br_id, data in datasets.items():
+        self.br_id = br_id
+        df = pd.DataFrame(data)
         df["Run_ID"] = br_id
         df.insert(0, "Run_ID", df.pop("Run_ID"))
+        results = []
+        for _, row in df.iterrows():
+            t, state, derivatives = self.build_row_inputs(row)
 
-        # Indicatates dataset numer and T of induction
-        df = add_T_ind(df)
-        df.insert(1, "Run_T", df.pop("Run_T"))
+            # Estimate ri
+            ri_solution = least_squares(ri_residual,x0=np.ones(len(generation_names)),args=(self, t, state, derivatives))
+            ri = ri_solution.x
 
-        # qP and mu calculation
-        _, time_ind = get_time_ranges(yaml_params, br_id)
+            # Estimate kinetic parameters
+            kinetics_solution = least_squares(kinetics_residual, x0=np.ones(len(kinetic_names)),args=(self, state, ri))
 
-         # -- Add calculated features --
-        # calc_features = df_calc[br_id]
+            kinetics = kinetics_solution.x
+            row_result = {}
+            row_result.update(dict(zip(generation_names, ri)))
+            row_result.update(dict(zip(kinetic_names, kinetics)))
 
-        # df_semibatch = df[(df["time"] >= time_sb) & (df["time"] < time_ind)].copy()
-        df_induction = df[df["time"] >= time_ind].copy()
+            results.append(row_result)
 
-        # if df_induction.empty:
-        #     # print(f"{br_id}: does not have times >= {time_ind}. Dataset ignored.")
-        #     continue
+        results_df = pd.DataFrame(results)
 
-        # mu and qp calculation
-        if t_ind_exp:
-            df = calc_mu_qp_rp(df, time_ind, Sf=Sf)
-            if not df_induction.empty:
-                df_induction = calc_mu_qp_rp(df_induction, time_ind, Sf=Sf)
-
-        else:
-            df = calc_mu_qp_rp(df, t_ind=None, Sf=Sf)
-            if not df_induction.empty:
-                df_induction = calc_mu_qp_rp(df_induction, t_ind=None, Sf=Sf)
+        df = pd.concat([df.reset_index(drop=True),results_df.reset_index(drop=True)],axis=1)
 
         df_global.append(df)
-        if not df_induction.empty:
-            df_induction_all.append(df_induction)
-        # else:
-        #     print(f"{br_id}: no tiene fase de inducción")
 
-    # final unification
-    df_global_final = pd.concat(df_global, ignore_index=True)
-    df_induction_final = pd.concat(df_induction_all, ignore_index=True)
+    return pd.concat(df_global,ignore_index=True)
 
-    return df_global_final, df_induction_final 
+def build_row_inputs(self, row):
 
-# -------------------------- mu, qp & rp function ---------------------------------------
+    time_var = self.model_ins["variables"]["time"]
+    state_names = list(self.model_ins["states"].keys())
+    volume_name = self.model_ins["volume"]["name"]
 
-def calc_mu_qp_rp(df, t_ind=None, Sf=286): # calc_features,
+    t = row[time_var]
 
-    df = df.sort_values("time").copy()
+    state = np.array([
+        row[var]
+        for var in state_names + [volume_name]
+    ])
 
-    n = len(df)
+    derivatives = np.array([
+        row[f"d{var}dt"]
+        for var in state_names
+    ])
 
-    mu = np.zeros(n)
-    qp = np.zeros(n)
-    qp_2 = np.zeros(n)
-    rp = np.zeros(n)
-
-    t = df["time"].values
-    X = df["X"].values
-    S = df["S"].values
-    P = df["P"].values
-    V = df["V"].values
-
-    dXdt = df["dXdt"].values
-    dSdt = df["dSdt"].values
-    dVdt = df["dVdt"].values
-    dPdt = df["dPdt"].values
-
-    # low_qp = 0 # 1e-6
-    # low_rp = 0 # 1e-5
-
-    # mu_calc = calc_features["mu"]
-
-    rx    =  dXdt + (dVdt * X / V)      
-    mu = (1/X) * ( dXdt ) + (1/V) * ( dVdt )
-
-    rs = ( dSdt ) + ((S-Sf) / V) * ( dVdt )
-
-    if t_ind != None:
-        for i in range(n):
-            if t[i] < t_ind:
-                qp[i] = qp_2[i] = 0
-                rp[i] = 0
-
-            else:
-                rp[i] = dPdt[i] + (dVdt[i] * P[i] / V[i])
-                qp[i] = rp[i] / X[i]
-                qp_2[i] = (rp[i] - mu[i] * P[i])/ X[i]
-
-    else:
-        rp    =  dPdt + (dVdt * P / V)  
-        qp    = rp / X
-
-    # mu = np.clip(mu, 0, None)
-    # qp = np.clip(qp, low_qp, None)
-    # rp = np.clip(rp, low_rp, None)
-
-    df["mu"] = mu
-    df["qP"] = qp
-    df["qP_2"] = qp_2
-    df["rP"] = rp
-    df["rX"] = rx
-    df["rS"] = rs
-
-    return df
-
-# --------------- Add identification column named Run_T function ---------------
-
-def add_T_ind(df,n_ultimos=4):
-
-    last_T = (
-        df
-        .sort_values("time")
-        .groupby("Run_ID")["T"] 
-        # .last()
-        .apply(lambda s: s.tail(n_ultimos).mean()) # last 4 values
-        .round(1)
-        .astype(int)  
-        .astype(str) 
-    )
-
-    # rows asignation
-    df["T_ind"] = df["Run_ID"].map(last_T)
-    df["Run_T"] = df["Run_ID"].astype(str) + " T = " + df["T_ind"] + "°C " 
-
-    return df 
+    return t, state, derivatives

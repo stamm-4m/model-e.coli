@@ -5,7 +5,7 @@ from src.model.auxiliar.functions import I_mu_profile, I_profile, feed_concentra
 from src.model.core.kinetics import mu_fun, mu_max_fun, qp_fun, rP_fun, rS_fun, rX_fun
 
 
-def ODEs(self, t, state):
+def ODEs(t, state, br_id):
 
     # --------- States --------
     X, S, P, V = state
@@ -22,22 +22,22 @@ def ODEs(self, t, state):
     # --------- Inputs --------
     inputs = {}
 
-    T = var_profile(t, self.br_id, 'T')
+    T = var_profile(t, br_id, 'T')
     inputs['T'] = T
 
-    I = I_profile(t, self.br_id, 'I')
+    I = I_profile(t, br_id, 'I')
     inputs['I'] = I
 
-    C = var_profile(t, self.br_id, 'C')
+    C = var_profile(t, br_id, 'C')
     inputs['C'] = C
 
-    S0 = var_profile(t, self.br_id, 'S0')
+    S0 = var_profile(t, br_id, 'S0')
     inputs['S0'] = S0
 
-    SF = var_profile(t, self.br_id, 'SF')
+    SF = var_profile(t, br_id, 'SF')
     inputs['SF'] = SF
 
-    I_mu = I_mu_profile(t, self.br_id, 'I_mu')
+    I_mu = I_mu_profile(t, br_id, 'I_mu')
     inputs['I_mu'] = I_mu
 
     # --------- Features --------
@@ -50,8 +50,8 @@ def ODEs(self, t, state):
     features['inputs'] = inputs
 
     # --------- Volume --------
-    dVdt = feed_profile(t, self.br_id, 'S')
-    Sf = feed_concentration_profile(t, self.br_id, 'S')
+    dVdt = feed_profile(t, br_id, 'S')
+    Sf = feed_concentration_profile(t, br_id, 'S')
 
     # --------- Kinetics --------
     kinetics = {}

@@ -29,6 +29,7 @@ simulation:
 # ------------------------------------------------------------------
 workflow:
   model_builder: true
+  data_treatment: true
   data_analysis: false
   parameter_estimation: false
   sensitivity_analysis: false
@@ -104,8 +105,6 @@ data_treatment:
       smooth_method: savgol
       window: 11
       order: 4
-
-
 
 estimation:
   parameters: # "alpha", "gamma_1","Ap_1","gamma_2", "Ap_2","sigma"

@@ -11,13 +11,28 @@ class ModelBuilderWorkflow:
         self.model_ins = load_yaml(self.path)["model_instructions"]
 
     def constructor(self):
+
         if self.operation_mode == "FedBatch":
             code = self._build_fedbatch_odes()
+            code_ri_residuals = self._build_fedbatch_ri_residuals()
+            code_kinetics_from_ri = self._build_kinetics_residual()
         else:
             raise ValueError(f"Operation mode '{self.operation_mode}' not implemented.")
-        output_file = Path("src/model/core/odes.py")
-        with open(output_file, "w") as f:f.write(code)
-        print(f"Model generated: {output_file}")
+        
+        output_file_1 = Path("src/model/core/odes.py")
+        output_file_2 = Path("src/model/core/ri_residual.py")
+        output_file_3 = Path("src/model/core/kinetics_residual.py")
+
+        with open(output_file_1, "w") as f:
+            f.write(code)
+        
+        with open(output_file_2, "w") as f:
+            f.write(code_ri_residuals)
+
+        with open(output_file_3, "w") as f:
+            f.write(code_kinetics_from_ri)
+
+        print(f"Model generated: {output_file_1}")
 
     def run(self):
         print("Loading instructions...")
@@ -42,7 +57,7 @@ class ModelBuilderWorkflow:
         code.append("")
 
         # --------- Function definition ------------
-        code.append("def ODEs(self, t, state):")
+        code.append("def ODEs(t, state, br_id):")
         code.append("")
 
         # ------ States unpacking ----------
@@ -88,6 +103,112 @@ class ModelBuilderWorkflow:
         code.append(f"    return np.array([{', '.join(derivatives)}])")
 
         return "\n".join(code)
+    
+    def _build_fedbatch_ri_residuals(self):
+        volume = self.model_ins["volume"]
+        states = self.model_ins["states"]
+
+        code = []
+
+        code.append("import numpy as np")
+        code.extend(self._build_imports())
+
+        code.append("")
+        code.append("def ri_residual(ri, t, state, derivatives, br_id):")
+        code.append("")
+
+        state_names = list(states.keys())
+        code.append(f"    {', '.join(state_names+[volume['name']])} = state")
+        code.append("")
+
+        generation_names = [cfg["generation"]for cfg in states.values()]
+        code.append(f"    {', '.join(generation_names)} = ri")
+        code.append("")
+
+        deriv_names = [f'd{s}dt'for s in state_names]
+        code.append(f"    {', '.join(deriv_names)} = derivatives")
+        code.append("")
+
+        code.extend(self._build_volume_balance(volume))
+        code.append("")
+
+        residuals = []
+        for state_name, state_cfg in states.items():
+            generation = state_cfg["generation"]
+            equation = generation
+            equation += (f" - ({state_name}/{volume['name']})*d{volume['name']}dt")
+            fed_species = volume["feeds"]["species"]
+
+            if state_name in fed_species:
+                concentration = (volume["feeds"]["concentration"][state_name]["name"])
+                equation += (f" + ({concentration}/{volume['name']})*d{volume['name']}dt")
+
+            code.append(f"    d{state_name}dt_calc = {equation}")
+
+            residuals.append(f"d{state_name}dt_calc - d{state_name}dt")
+
+        code.append("")
+
+        code.append(f"    return np.array([{', '.join(residuals)}])")
+
+        return '\n'.join(code)
+    
+    def _build_kinetics_residual(self):
+        states = self.model_ins["states"]
+        kinetics = self.model_ins["kinetic_functions"]
+        volume = self.model_ins["volume"]
+        code = []
+        # -------- Imports --------
+        code.append("")
+        code.append("import numpy as np")
+        code.append("from src.utils.io import load_yaml")
+        code.extend(self._build_imports())
+        code.append("")
+        # -------- Function definition --------
+        code.append("def kinetics_residual(kinetic_values, state, ri, br_id):")
+        code.append("")
+        # -------- State unpacking --------
+        state_names = list(states.keys())
+        code.append(f"    {', '.join(state_names + [volume['name']])} = state")
+        code.append("")
+        # -------- ri unpacking --------
+        generation_names = [cfg["generation"]for cfg in states.values()]
+        code.append(f"    {', '.join(generation_names)} = ri")
+        code.append("")
+        # -------- Parameters --------
+        path = self.model_ins["kinetic_parameters"]["path"]
+        code.append(f"    params = load_yaml('{path}')")
+        code.append("")
+        # -------- Kinetic unpacking --------
+        kinetic_names = list(kinetics.keys())
+        code.append(f"    {', '.join(kinetic_names)} = kinetic_values")
+        code.append("")
+        # -------- Kinetics dictionary --------
+        code.append("    kinetics = {")
+        for kinetic in kinetic_names:code.append(f"        '{kinetic}': {kinetic},")
+        code.append("    }")
+        code.append("")
+        # -------- Features --------
+        code.append("    features = {}")
+        code.append("")
+        code.append("    features['states'] = {")
+        for state in state_names:
+            code.append(f"        '{state}': {state},")
+        code.append("    }")
+        code.append("")
+        code.append("    features['kinetics'] = kinetics")
+        code.append("")
+        # -------- Calculated rates --------
+        residuals = []
+        for _, cfg in states.items():
+            generation = cfg["generation"]
+            function = cfg["function"]
+            code.append(f"    {generation}_calc = {function}(features, params)")
+            residuals.append(f"{generation}_calc - {generation}")
+        code.append("")
+        code.append(f"    return np.array([{', '.join(residuals)}])")
+
+        return '\n'.join(code)
     
     def _build_imports(self):
         imports = {}
@@ -142,7 +263,7 @@ class ModelBuilderWorkflow:
         inputs = self.model_ins["inputs"]
         for var_name, cfg in inputs.items():
             function = cfg["function"]
-            code.append(f"    {var_name} = {function}(t, self.br_id, '{var_name}')")
+            code.append(f"    {var_name} = {function}(t, br_id, '{var_name}')")
             code.append(f"    inputs['{var_name}'] = {var_name}")
             code.append("")
         return code
@@ -153,11 +274,11 @@ class ModelBuilderWorkflow:
         # ----- volume -----
         function = (volume["feeds"]["flowrate"]["function"])
         species = (volume["feeds"]["species"][0])
-        code.append(f"    dVdt = {function}(t, self.br_id, '{species}')")
+        code.append(f"    dVdt = {function}(t, br_id, '{species}')")
         # ----- titer -----
         titer = (volume["feeds"]["concentration"][species]["name"])
         titer_function = (volume["feeds"]["concentration"][species]["function"])
-        code.append(f"    {titer} = {titer_function}(t, self.br_id, '{species}')")
+        code.append(f"    {titer} = {titer_function}(t, br_id, '{species}')")
         code.append("")
         return code
 
@@ -196,6 +317,23 @@ class ModelBuilderWorkflow:
     def _build_state_balance(self,state_name,state_cfg,volume):
         code = []
         code.extend(self._build_generation_term(state_cfg))
+        generation = (state_cfg["generation"])
+        V = volume["name"]
+        equation = generation
+        equation += (f" - ({state_name}/{V})*d{V}dt")
+        fed_species = (volume["feeds"]["species"])
+        if state_name in fed_species:
+            concentration = (volume["feeds"]["concentration"][state_name]["name"])
+            equation += (f" + ({concentration}/{V})*d{V}dt")
+        code.append(f"    d{state_name}dt = {equation}")
+        code.append("")
+
+        return code
+    
+    # ============= BALANCES =========================
+    def _build_state_balance_ri(self,state_name,state_cfg,volume):
+        code = []
+        # code.extend(self._build_generation_term(state_cfg))
         generation = (state_cfg["generation"])
         V = volume["name"]
         equation = generation

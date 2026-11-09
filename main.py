@@ -24,7 +24,7 @@ Configuration files expected at:
 
 from src.utils.io import load_yaml
 from src.workflow.model_analysis.model_builder import ModelBuilderWorkflow
-from src.workflow.data_treatment.data_analysis import DataAnalysisWorkflow
+from src.workflow.data_treatment.data_treatment import DataTreatmentWorkflow # , DataAnalysisWorkflow
 # from src.workflow.model_analysis.parameter_estimation import ParameterEstimationWorkflow
 # # from src.workflow.model_analysis.sensitivity_analysis import SensitivityAnalysisWorkflow
 # from src.workflow.hybrid_selection.feature_filter import FeaturesFilterWorkflow
@@ -57,17 +57,34 @@ def main():
             operation_mode = cfg["model_builder"]["operation_mode"]
         ).run()
 
-    if cfg["workflow"]["data_analysis"]:
+    if cfg["workflow"]["data_treatment"]:
 
-        DataAnalysisWorkflow(
-            raw_data_path = cfg["paths"]["raw_data"],
-            yaml_path = cfg["paths"]["parameters"],
-            model_path = cfg["paths"]["instructions"],
-            ead_path = cfg["paths"]["results"]["ead"], 
-            ignore_variables = cfg["data_analysis"]["ignore"],
-            states_variables = cfg["data_analysis"]["states"],
-            non_states_cfg = cfg["data_analysis"]["non_states"]
-        ).run()
+        df = DataTreatmentWorkflow(
+                raw_data_path = cfg["paths"]["raw_data"],
+                params_path = cfg["paths"]["parameters"],
+                model_path = cfg["paths"]["instructions"],
+                # ead_path = cfg["paths"]["results"]["ead"], 
+                ignore_variables = cfg["data_treatment"]["ignore"],
+                states_variables = cfg["data_treatment"]["states"],
+                non_states_cfg = cfg["data_treatment"]["non_states"]
+            ).run()
+
+    # if cfg["workflow"]["data_analysis"]:
+
+        # for name, df in dfs.items():
+        #     print("Computing EAD...")
+        #     compute_ead(  df, self.vars, results_root=f"{self.ead_path}/{name}" )
+        # print("Data analysis completed.")
+
+    #     DataAnalysisWorkflow(
+    #         raw_data_path = cfg["paths"]["raw_data"],
+    #         yaml_path = cfg["paths"]["parameters"],
+    #         model_path = cfg["paths"]["instructions"],
+    #         ead_path = cfg["paths"]["results"]["ead"], 
+    #         ignore_variables = cfg["data_analysis"]["ignore"],
+    #         states_variables = cfg["data_analysis"]["states"],
+    #         non_states_cfg = cfg["data_analysis"]["non_states"]
+    #     ).run()
 
     # if cfg["workflow"]["parameter_estimation"]:
 
