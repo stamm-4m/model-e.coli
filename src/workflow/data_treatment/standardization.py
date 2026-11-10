@@ -27,6 +27,8 @@ class DatasetStandardization:
         V = model_cfg["model_instructions"]["volume"]["name"]
 
         self.y0 = [df[var].iloc[0]for var in [*states, V]]
+
+        self.br_id = []
         
 
 class ProcessedDataset:
