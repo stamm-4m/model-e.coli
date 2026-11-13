@@ -8,8 +8,8 @@ from src.workflow.data_treatment.standardization import DatasetStandardization, 
 from src.model.auxiliar.temperature_profile import TemperatureProfile
 from src.model.auxiliar.induction import InductionProfile
 from src.model.auxiliar.feed_factory import create_feed
-from src.model.auxiliar.simulator import Simulator
-from src.model.auxiliar.initial_conditions import DatasetInitialState, ConfigInitialState
+from model.auxiliar.delete_simulator import Simulator
+from model.auxiliar.delete_initial_conditions import DatasetInitialState, ConfigInitialState
 from model.core.delete_balances import FedBatchBalances
 from src.utils.io import get_br_id, timer
 from src.utils.metrics_io import compute_metrics
