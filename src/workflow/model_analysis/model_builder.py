@@ -157,6 +157,15 @@ class ModelBuilderWorkflow:
         states = self.model_ins["states"]
         kinetics = self.model_ins["kinetic_functions"]
         volume = self.model_ins["volume"]
+        estimated_kinetics = {name: cfg for name, cfg in kinetics.items() if cfg.get("estimation", False)}
+        used_rates = []
+        for name, cfg in estimated_kinetics.items():
+            if "residual" not in cfg:
+                raise ValueError(f"Kinetic function '{name}' has estimation=True but no residual defined.")
+            rate = cfg["residual"]
+            if rate not in used_rates:
+                used_rates.append(rate)
+        generation_map = {cfg["generation"]: cfg["function"] for cfg in states.values()}
         code = []
         # -------- Imports --------
         code.append("")
@@ -178,14 +187,22 @@ class ModelBuilderWorkflow:
         # -------- Parameters --------
         path = self.model_ins["kinetic_parameters"]["path"]
         code.append(f"    params = load_yaml('{path}')")
+        code.append(f"    params = params['kinetics']")
         code.append("")
         # -------- Kinetic unpacking --------
-        kinetic_names = list(kinetics.keys())
-        code.append(f"    {', '.join(kinetic_names)} = kinetic_values")
+        estimated_names = list(estimated_kinetics.keys())
+        if not estimated_names:
+            raise ValueError("No kinetic functions marked with estimation: true")
+        code.append(f"    {', '.join(estimated_names)} = kinetic_values")
         code.append("")
         # -------- Kinetics dictionary --------
         code.append("    kinetics = {")
-        for kinetic in kinetic_names:code.append(f"        '{kinetic}': {kinetic},")
+        for name in kinetics:
+            if kinetics[name].get("estimation", False):
+                code.append(f"        '{name}': {name},")
+            else:
+                code.append(f"        '{name}': 0.0,") # params['{name}'],")
+                
         code.append("    }")
         code.append("")
         # -------- Features --------
@@ -199,15 +216,15 @@ class ModelBuilderWorkflow:
         code.append("    features['kinetics'] = kinetics")
         code.append("")
         # -------- Calculated rates --------
-        residuals = []
-        for _, cfg in states.items():
-            generation = cfg["generation"]
-            function = cfg["function"]
-            code.append(f"    {generation}_calc = {function}(features, params)")
-            residuals.append(f"{generation}_calc - {generation}")
+        residual_terms = []
+        for rate in used_rates:
+            if rate not in generation_map:
+                raise ValueError(f"Residual '{rate}' not found in state generations.")
+            function_name = generation_map[rate]
+            code.append(f"    {rate}_calc = {function_name}(features, params)")
+            residual_terms.append(f"{rate}_calc - {rate}")
         code.append("")
-        code.append(f"    return np.array([{', '.join(residuals)}])")
-
+        code.append(f"    return np.array([{', '.join(residual_terms)}])")
         return '\n'.join(code)
     
     def _build_imports(self):

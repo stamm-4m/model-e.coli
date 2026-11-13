@@ -12,12 +12,13 @@ def kinetics_residual(kinetic_values, state, ri, br_id):
     rX, rS, rP = ri
 
     params = load_yaml('src/config/params.yaml')
+    params = params['kinetics']
 
-    mu, mu_max, qp = kinetic_values
+    mu, qp = kinetic_values
 
     kinetics = {
         'mu': mu,
-        'mu_max': mu_max,
+        'mu_max': 0.0,
         'qp': qp,
     }
 
@@ -32,7 +33,6 @@ def kinetics_residual(kinetic_values, state, ri, br_id):
     features['kinetics'] = kinetics
 
     rX_calc = rX_fun(features, params)
-    rS_calc = rS_fun(features, params)
     rP_calc = rP_fun(features, params)
 
-    return np.array([rX_calc - rX, rS_calc - rS, rP_calc - rP])
+    return np.array([rX_calc - rX, rP_calc - rP])

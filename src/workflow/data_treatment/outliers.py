@@ -39,16 +39,12 @@ def outliers_and_smoothing(datasets, time_col="time", variable_list=None, ignore
     """
     all_metrics = {}
 
-    # if non_states_cfg is None and :
-    #     continueout_2 = []
-    # else:
-
     smoothed_datasets = {}
     replaced_datasets = {}
 
     for dataset in datasets:
         
-        br_id = get_br_id(dataset)
+        br_id = dataset.br_id
         print(f"Processing dataset: {br_id}")
 
         # if br_id in ("BR06", "BR07", "BR08"):
@@ -62,8 +58,8 @@ def outliers_and_smoothing(datasets, time_col="time", variable_list=None, ignore
         replaced_datasets[br_id] = {time_col: dataset.df[time_col].to_numpy()}
 
         # -------- Process each variable (X, S, P, V) -------- 
-        if variable_list == None:
-            variable_list = dataset.data.keys()
+        # if variable_list == None:
+        variable_list = dataset.df.keys()
 
         plots_dict = {}
 
@@ -114,7 +110,7 @@ def outliers_and_smoothing(datasets, time_col="time", variable_list=None, ignore
         
         plot_variables = list(states_variables.keys())
         if plot_variables != None:
-            plot_all_derivatives(t=time,results=plots_dict,variables=plot_variables,br_id=br_id, out_dir=br_results_dir,)
+            plot_all_derivatives(t=time,results=plots_dict,variables=plot_variables,br_id=br_id, out_dir=br_results_dir)
 
     # -------- Save global metrics --------  
     save_yaml( all_metrics,
@@ -436,14 +432,7 @@ def smooth_and_differentiate(t, x, smooth_crit=None, plot=False,
     dxdt_smooth = np.gradient(x_smooth, t, edge_order=2)
     d2xdt2_smooth = np.gradient(dxdt_smooth, t, edge_order=2)
 
-    fig = plot_derivatives(
-        t=t,
-        x=x,
-        x_smooth=x_smooth,
-        dxdt=dxdt_smooth,
-        d2xdt2=d2xdt2_smooth,
-        show=plot,
-    )
+    fig = plot_derivatives(t=t, x=x, x_smooth=x_smooth, dxdt=dxdt_smooth, d2xdt2=d2xdt2_smooth )
 
     return {
         "x_smooth": x_smooth,

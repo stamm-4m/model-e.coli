@@ -4,8 +4,8 @@ import numpy as np
 def mu_max_fun(features, params):
     T = features["inputs"]["T"]
     I_mu = features["inputs"]["I_mu"]
-    mu_max_0 = params["mu_max_0"]
-    mu_max_p = params["mu_max_p"]
+    mu_max_0 = params["mu_max_0"]["value"]
+    mu_max_p = params["mu_max_p"]["value"]
     b = params["b"]
     if I_mu == 0:
         mu_max = mu_max_0
@@ -15,7 +15,7 @@ def mu_max_fun(features, params):
 
 def mu_fun(features, params):
     S = features["states"]["S"]
-    Ks = params["Ks"]
+    Ks = params["Ks"]["value"]
     mu_max_val = mu_max_fun(features, params)
     mu = mu_max_val * S / (Ks + S)
     return mu
@@ -23,12 +23,12 @@ def mu_fun(features, params):
 def qp_fun(features, params):
     T = features["inputs"]["T"]
     I = features["inputs"]["I"]
-    gamma_1 = params["gamma_1"]
-    gamma_2 = params["gamma_2"]
-    Ap_1 = params["Ap_1"]
-    Ap_2 = params["Ap_2"]
-    sigma = params["sigma"]
-    alpha = params["alpha"]
+    gamma_1 = params["gamma_1"]["value"]
+    gamma_2 = params["gamma_2"]["value"]
+    Ap_1 = params["Ap_1"]["value"]
+    Ap_2 = params["Ap_2"]["value"]
+    sigma = params["sigma"]["value"]
+    alpha = params["alpha"]["value"]
     if I == 0:
         qp = 0
     else:
@@ -44,19 +44,19 @@ def qp_fun(features, params):
 
 def rX_fun(features, params):
     X = features["states"]["X"]
-    mu_val = features["kinetic"]["mu"]
+    mu_val = features["kinetics"]["mu"]
     rate = mu_val * X
     return rate
 
 def rS_fun(features, params):
-    Y_XS = params["Y_XS"]
+    Y_XS = params["Y_XS"]["value"]
     rX_val = rX_fun(features, params)
     rate = - rX_val / Y_XS 
     return rate
 
 def rP_fun(features, params):
-    mu_val = features["kinetic"]["mu"]
-    qp_val = features["kinetic"]["qp"]
+    mu_val = features["kinetics"]["mu"]
+    qp_val = features["kinetics"]["qp"]
     X = features["states"]["X"]
     rate = qp_val * X
     # rate = qp_val * X + mu_val * P 

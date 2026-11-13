@@ -61,6 +61,7 @@ model_builder:
 
 data_treatment:
   ignore:
+    - time
     - I
     - A
     - S0
@@ -94,7 +95,7 @@ data_treatment:
         - 0.01 # (0.00001,0.001)
     V:
       smooth_crit:
-        monotonicity: increasing
+        monotonicity: None # increasing
         bounds: 
         - 0.0001 
         - 0.01 #  (0.0001,0.01)

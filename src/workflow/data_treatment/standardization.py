@@ -9,6 +9,7 @@ Date: 01/09/2026
 """
 
 import pandas as pd
+from pathlib import Path
 from src.utils.io import load_yaml
 
 class DatasetStandardization:
@@ -28,7 +29,7 @@ class DatasetStandardization:
 
         self.y0 = [df[var].iloc[0]for var in [*states, V]]
 
-        self.br_id = []
+        self.br_id = Path(filepath).stem
         
 
 class ProcessedDataset:

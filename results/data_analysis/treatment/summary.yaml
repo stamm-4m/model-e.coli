@@ -1,21 +1,4 @@
 BR01:
-  X:
-    file: BR01
-    variable: X
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 7.2167213261073115
-        std: 6.373763023003184
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 7.2252492822017285
-        std: 6.34630881102274
-      MAPE_raw_vs_treated: 10.68961323976011
   S:
     file: BR01
     variable: S
@@ -30,9 +13,43 @@ BR01:
         std: 3.3110562683512894
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.3953325274111066
-        std: 3.3007216233905603
-      MAPE_raw_vs_treated: 246.78969429014677
+        mean: 2.400895075337102
+        std: 3.286098475819849
+      MAPE_raw_vs_treated: 411.7955140437219
+  X:
+    file: BR01
+    variable: X
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 7.2167213261073115
+        std: 6.373763023003184
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 7.216721326107312
+        std: 6.356171574837745
+      MAPE_raw_vs_treated: 11.779102291193752
+  P:
+    file: BR01
+    variable: P
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 0.0
+        std: 0.0
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 0.0
+        std: 0.0
+      MAPE_raw_vs_treated: .nan
   V:
     file: BR01
     variable: V
@@ -52,40 +69,6 @@ BR01:
         mean: 1.6330142542556458
         std: 0.08433389555251736
       MAPE_raw_vs_treated: 0.46806712114942345
-  P:
-    file: BR01
-    variable: P
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 0.0
-        std: 0.0
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 0.0
-        std: 0.0
-      MAPE_raw_vs_treated: .nan
-  C:
-    file: BR01
-    variable: C
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 3.559263157894737
-        std: 0.5379546881823749
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 3.559263157894737
-        std: 0.5379546881823749
-      MAPE_raw_vs_treated: 0.0
   T:
     file: BR01
     variable: T
@@ -100,13 +83,12 @@ BR01:
         std: 0.014642555519205366
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 36.99473684210527
-        std: 0.014642555519205366
-      MAPE_raw_vs_treated: 0.0
-BR02:
-  X:
-    file: BR02
-    variable: X
+        mean: 36.99448288553759
+        std: 0.009668126366172715
+      MAPE_raw_vs_treated: 0.025038823844733542
+  C:
+    file: BR01
+    variable: C
     outliers:
       present: false
       count: 0
@@ -114,13 +96,14 @@ BR02:
       replacement_methods: {}
     statistics:
       raw:
-        mean: 17.478653187253357
-        std: 10.452026647560286
+        mean: 3.559263157894737
+        std: 0.5379546881823749
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 17.478433018565582
-        std: 10.439839615091543
-      MAPE_raw_vs_treated: 3.236611014102422
+        mean: 3.5579749723962366
+        std: 0.5335133203471337
+      MAPE_raw_vs_treated: 1.8864976335559704
+BR02:
   S:
     file: BR02
     variable: S
@@ -135,9 +118,43 @@ BR02:
         std: 2.9607032971645153
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.388529411764706
-        std: 2.960703297164515
-      MAPE_raw_vs_treated: 3.284683504808155e-15
+        mean: 1.4846928309642757
+        std: 2.869278347367752
+      MAPE_raw_vs_treated: 70.41862788100227
+  X:
+    file: BR02
+    variable: X
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 17.478653187253357
+        std: 10.452026647560286
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 17.47865318725336
+        std: 10.441367166781923
+      MAPE_raw_vs_treated: 4.9574882880601905
+  P:
+    file: BR02
+    variable: P
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 0.4559645527106111
+        std: 0.6823961605570885
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 0.4587469044648865
+        std: 0.6789980242852077
+      MAPE_raw_vs_treated: 3.709366444100311
   V:
     file: BR02
     variable: V
@@ -155,40 +172,6 @@ BR02:
         mean: 1.582800925344012
         std: 0.1022279011053924
       MAPE_raw_vs_treated: 0.6238771957269592
-  P:
-    file: BR02
-    variable: P
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 0.4559645527106111
-        std: 0.6823961605570885
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 0.4560253623051213
-        std: 0.6823290556781848
-      MAPE_raw_vs_treated: 0.9443451421511
-  C:
-    file: BR02
-    variable: C
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 5.613529411764706
-        std: 0.6505489191396537
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 5.613529411764706
-        std: 0.6505489191396537
-      MAPE_raw_vs_treated: 0.0
   T:
     file: BR02
     variable: T
@@ -203,13 +186,12 @@ BR02:
         std: 4.495037055630118
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 32.76352941176471
-        std: 4.495037055630118
-      MAPE_raw_vs_treated: 0.0
-BR03:
-  X:
-    file: BR03
-    variable: X
+        mean: 32.75859317153596
+        std: 4.403358354615647
+      MAPE_raw_vs_treated: 2.6317746315920325
+  C:
+    file: BR02
+    variable: C
     outliers:
       present: false
       count: 0
@@ -217,13 +199,14 @@ BR03:
       replacement_methods: {}
     statistics:
       raw:
-        mean: 16.886646560846557
-        std: 11.854021733290722
+        mean: 5.613529411764706
+        std: 0.6505489191396537
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 16.889106159638505
-        std: 11.829341551905527
-      MAPE_raw_vs_treated: 4.14639924790366
+        mean: 5.611313862608227
+        std: 0.5301182226305671
+      MAPE_raw_vs_treated: 6.062592824891211
+BR03:
   S:
     file: BR03
     variable: S
@@ -238,9 +221,43 @@ BR03:
         std: 3.393682158888123
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.0340592792444827
-        std: 3.396551027940001
-      MAPE_raw_vs_treated: 1.5126496043056765
+        mean: 2.0687334259770176
+        std: 3.337138855338135
+      MAPE_raw_vs_treated: 60.96565701737633
+  X:
+    file: BR03
+    variable: X
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 16.886646560846557
+        std: 11.854021733290722
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 16.88664656084656
+        std: 11.826277175346217
+      MAPE_raw_vs_treated: 6.04539472829382
+  P:
+    file: BR03
+    variable: P
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 0.3581282369858643
+        std: 0.6302550008190669
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 0.3591234764705817
+        std: 0.6294132656331334
+      MAPE_raw_vs_treated: 2.240113185049972
   V:
     file: BR03
     variable: V
@@ -258,9 +275,9 @@ BR03:
         mean: 1.595097408142057
         std: 0.07719275216306751
       MAPE_raw_vs_treated: 1.0679765570565936
-  P:
+  T:
     file: BR03
-    variable: P
+    variable: T
     outliers:
       present: false
       count: 0
@@ -268,13 +285,13 @@ BR03:
       replacement_methods: {}
     statistics:
       raw:
-        mean: 0.3581282369858643
-        std: 0.6302550008190669
+        mean: 34.21
+        std: 3.4334283158382664
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 0.3583763533521878
-        std: 0.6299318572938953
-      MAPE_raw_vs_treated: 1.1156824075854368
+        mean: 34.256027972029365
+        std: 3.2734731564619217
+      MAPE_raw_vs_treated: 1.8443628067932774
   C:
     file: BR03
     variable: C
@@ -291,44 +308,10 @@ BR03:
         std: 0.48342139887357993
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 3.928272284996426
-        std: 0.41440850711166277
-      MAPE_raw_vs_treated: 1.6685838789989231
-  T:
-    file: BR03
-    variable: T
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 34.21
-        std: 3.4334283158382664
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 34.21
-        std: 3.4334283158382664
-      MAPE_raw_vs_treated: 0.0
+        mean: 3.930412380870547
+        std: 0.38775693619169715
+      MAPE_raw_vs_treated: 4.733054075532859
 BR04:
-  X:
-    file: BR04
-    variable: X
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 15.30535870937431
-        std: 13.60015671142236
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 15.301469486937467
-        std: 13.593381543697186
-      MAPE_raw_vs_treated: 7.9952353667095535
   S:
     file: BR04
     variable: S
@@ -347,9 +330,43 @@ BR04:
         std: 3.7653111358974543
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.7311305659847793
-        std: 3.77704940564089
-      MAPE_raw_vs_treated: 43.758975932031994
+        mean: 2.7352017830627924
+        std: 3.7706061280022523
+      MAPE_raw_vs_treated: 161.78163453134843
+  X:
+    file: BR04
+    variable: X
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 15.30535870937431
+        std: 13.60015671142236
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 15.30535870937431
+        std: 13.583366582241265
+      MAPE_raw_vs_treated: 6.150377373363697
+  P:
+    file: BR04
+    variable: P
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 0.06512401722731298
+        std: 0.11457546924246871
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 0.06561952683801954
+        std: 0.11395247675069516
+      MAPE_raw_vs_treated: 6.554684542055419
   V:
     file: BR04
     variable: V
@@ -367,23 +384,25 @@ BR04:
         mean: 1.6069010923098772
         std: 0.07151944931928285
       MAPE_raw_vs_treated: 1.0440595486179507
-  P:
+  T:
     file: BR04
-    variable: P
+    variable: T
     outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
+      present: true
+      count: 1
+      indices:
+      - 8
+      replacement_methods:
+        8: movmean
     statistics:
       raw:
-        mean: 0.06512401722731298
-        std: 0.11457546924246871
+        mean: 35.86142857142857
+        std: 1.8233421320784102
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 0.06522232092731119
-        std: 0.11447950956641702
-      MAPE_raw_vs_treated: 2.9182661680840956
+        mean: 35.88001798202025
+        std: 1.7420110613751485
+      MAPE_raw_vs_treated: 0.7794372296238321
   C:
     file: BR04
     variable: C
@@ -404,48 +423,10 @@ BR04:
         std: 0.4311534495422184
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 5.480048199593398
-        std: 0.4300212836568297
-      MAPE_raw_vs_treated: 0.8053941812082391
-  T:
-    file: BR04
-    variable: T
-    outliers:
-      present: true
-      count: 1
-      indices:
-      - 8
-      replacement_methods:
-        8: movmean
-    statistics:
-      raw:
-        mean: 35.86142857142857
-        std: 1.8233421320784102
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 35.86828571428571
-        std: 1.8274447980160489
-      MAPE_raw_vs_treated: 0.01859060012781108
+        mean: 5.481201688388698
+        std: 0.408335783786415
+      MAPE_raw_vs_treated: 2.039254255236489
 BR05:
-  X:
-    file: BR05
-    variable: X
-    outliers:
-      present: true
-      count: 1
-      indices:
-      - 20
-      replacement_methods:
-        20: mean
-    statistics:
-      raw:
-        mean: 14.527235619682845
-        std: 12.963136881155828
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 14.49963318416546
-        std: 12.920327227581398
-      MAPE_raw_vs_treated: 5.457575966169046
   S:
     file: BR05
     variable: S
@@ -462,9 +443,45 @@ BR05:
         std: 3.800336315228369
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.848497051368213
-        std: 3.779189173228219
-      MAPE_raw_vs_treated: 28.842667568842078
+        mean: 2.8655810784712816
+        std: 3.7665098395691423
+      MAPE_raw_vs_treated: 115.78161183182694
+  X:
+    file: BR05
+    variable: X
+    outliers:
+      present: true
+      count: 1
+      indices:
+      - 20
+      replacement_methods:
+        20: mean
+    statistics:
+      raw:
+        mean: 14.527235619682845
+        std: 12.963136881155828
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 14.50225438213026
+        std: 12.91654795868698
+      MAPE_raw_vs_treated: 7.5146308713505
+  P:
+    file: BR05
+    variable: P
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 0.04770749428804517
+        std: 0.08200262902211054
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 0.050153511060319324
+        std: 0.07790242983156372
+      MAPE_raw_vs_treated: 13.094916955370092
   V:
     file: BR05
     variable: V
@@ -482,23 +499,25 @@ BR05:
         mean: 1.5781060736314696
         std: 0.0724811430116824
       MAPE_raw_vs_treated: 0.9568358905471324
-  P:
+  T:
     file: BR05
-    variable: P
+    variable: T
     outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
+      present: true
+      count: 1
+      indices:
+      - 14
+      replacement_methods:
+        14: movmedian
     statistics:
       raw:
-        mean: 0.04770749428804517
-        std: 0.08200262902211054
+        mean: 36.97500000000001
+        std: 0.10934872133291226
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 0.04771851974677851
-        std: 0.08199470719408512
-      MAPE_raw_vs_treated: 0.48381896966381716
+        mean: 36.995804195806485
+        std: 0.03162921936987826
+      MAPE_raw_vs_treated: 0.10673009417978756
   C:
     file: BR05
     variable: C
@@ -517,46 +536,10 @@ BR05:
         std: 0.5590980223891475
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 5.625227981488415
-        std: 0.5416117822912879
-      MAPE_raw_vs_treated: 1.024442513496283
-  T:
-    file: BR05
-    variable: T
-    outliers:
-      present: true
-      count: 1
-      indices:
-      - 14
-      replacement_methods:
-        14: movmedian
-    statistics:
-      raw:
-        mean: 36.97500000000001
-        std: 0.10934872133291226
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 36.99571428571429
-        std: 0.04354214472608067
-      MAPE_raw_vs_treated: 0.056712623447736685
+        mean: 5.623046729111121
+        std: 0.5311337388346496
+      MAPE_raw_vs_treated: 2.73685005237834
 BR06:
-  X:
-    file: BR06
-    variable: X
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 24.464249133912833
-        std: 14.995263554730942
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 24.480090295407848
-        std: 14.997294492802814
-      MAPE_raw_vs_treated: 3.9911289289451704
   S:
     file: BR06
     variable: S
@@ -571,9 +554,43 @@ BR06:
         std: 4.243663797176844
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.1595513421583545
-        std: 4.241294626414589
-      MAPE_raw_vs_treated: 0.8064923079346319
+        mean: 2.168538559297875
+        std: 4.229320462374485
+      MAPE_raw_vs_treated: 26.00104334948331
+  X:
+    file: BR06
+    variable: X
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 24.464249133912833
+        std: 14.995263554730942
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 24.464249133912833
+        std: 14.988559189361494
+      MAPE_raw_vs_treated: 6.577688924404004
+  P:
+    file: BR06
+    variable: P
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 0.40740295105074625
+        std: 0.5181853345379996
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 0.4077461273347446
+        std: 0.5178941536143941
+      MAPE_raw_vs_treated: 1.0659213703288861
   V:
     file: BR06
     variable: V
@@ -595,40 +612,6 @@ BR06:
         mean: 1.9953260740839558
         std: 0.18157474758589218
       MAPE_raw_vs_treated: 0.4957187990354414
-  P:
-    file: BR06
-    variable: P
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 0.40740295105074625
-        std: 0.5181853345379996
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 0.40769410607719
-        std: 0.5179300216378033
-      MAPE_raw_vs_treated: 1.5734642827861496
-  C:
-    file: BR06
-    variable: C
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 4.092428571428572
-        std: 1.12229393363298
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 4.092428571428572
-        std: 1.12229393363298
-      MAPE_raw_vs_treated: 0.0
   T:
     file: BR06
     variable: T
@@ -643,10 +626,44 @@ BR06:
         std: 3.9427850828042432
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 32.41392857142857
-        std: 3.9427850828042432
-      MAPE_raw_vs_treated: 0.0
+        mean: 32.413359140861594
+        std: 3.858627076333363
+      MAPE_raw_vs_treated: 0.9880549127644714
+  C:
+    file: BR06
+    variable: C
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 4.092428571428572
+        std: 1.12229393363298
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 4.093910089910418
+        std: 1.1218220938971974
+      MAPE_raw_vs_treated: 1.346323012242133
 BR07:
+  S:
+    file: BR07
+    variable: S
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 1.2386296296296295
+        std: 2.538021234889833
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 1.2617134484824037
+        std: 2.516933246607658
+      MAPE_raw_vs_treated: 5.678394739653187
   X:
     file: BR07
     variable: X
@@ -663,26 +680,28 @@ BR07:
         std: 11.42633283562402
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 18.627349452816432
-        std: 11.434708129816775
-      MAPE_raw_vs_treated: 3.696342195388586
-  S:
+        mean: 18.62491181657849
+        std: 11.430222708649268
+      MAPE_raw_vs_treated: 3.6164311082880505
+  P:
     file: BR07
-    variable: S
+    variable: P
     outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
+      present: true
+      count: 1
+      indices:
+      - 26
+      replacement_methods:
+        26: mean
     statistics:
       raw:
-        mean: 1.2386296296296295
-        std: 2.538021234889833
+        mean: 0.17249171996220344
+        std: 0.2064632028778755
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.2416646084554923
-        std: 2.5424955045491324
-      MAPE_raw_vs_treated: 1.398874309884086
+        mean: 0.17012563317038581
+        std: 0.19210281187475778
+      MAPE_raw_vs_treated: 9.025422580102555
   V:
     file: BR07
     variable: V
@@ -702,42 +721,6 @@ BR07:
         mean: 2.076013613005598
         std: 0.2734604763211217
       MAPE_raw_vs_treated: 0.7390279589233583
-  P:
-    file: BR07
-    variable: P
-    outliers:
-      present: true
-      count: 1
-      indices:
-      - 26
-      replacement_methods:
-        26: mean
-    statistics:
-      raw:
-        mean: 0.17249171996220344
-        std: 0.2064632028778755
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 0.16762657611742138
-        std: 0.19570434802875844
-      MAPE_raw_vs_treated: 6.7005432724079075
-  C:
-    file: BR07
-    variable: C
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 3.870888888888889
-        std: 1.108070873964475
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 3.870888888888889
-        std: 1.108070873964475
-      MAPE_raw_vs_treated: 0.0
   T:
     file: BR07
     variable: T
@@ -752,10 +735,44 @@ BR07:
         std: 2.501186508562942
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 34.592777777777776
-        std: 2.501186508562942
-      MAPE_raw_vs_treated: 0.0
+        mean: 34.592552447555036
+        std: 2.4441518135487414
+      MAPE_raw_vs_treated: 0.646695667681082
+  C:
+    file: BR07
+    variable: C
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 3.870888888888889
+        std: 1.108070873964475
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 3.872067340067632
+        std: 1.1069391766720753
+      MAPE_raw_vs_treated: 1.0129907986464113
 BR08:
+  S:
+    file: BR08
+    variable: S
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 1.01112
+        std: 2.451144325738491
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 1.018726339399646
+        std: 2.437676434872395
+      MAPE_raw_vs_treated: 4.970101428250139
   X:
     file: BR08
     variable: X
@@ -772,26 +789,28 @@ BR08:
         std: 12.978327305883456
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 22.580239127613705
-        std: 12.941522185075401
-      MAPE_raw_vs_treated: 5.050767586234093
-  S:
+        mean: 22.5729815454623
+        std: 12.95983516181917
+      MAPE_raw_vs_treated: 4.581805340812685
+  P:
     file: BR08
-    variable: S
+    variable: P
     outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
+      present: true
+      count: 1
+      indices:
+      - 24
+      replacement_methods:
+        24: mean
     statistics:
       raw:
-        mean: 1.01112
-        std: 2.451144325738491
+        mean: 0.16563589970012033
+        std: 0.194333723352243
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.01112
-        std: 2.451144325738491
-      MAPE_raw_vs_treated: 0.0
+        mean: 0.16279520489545962
+        std: 0.17692620077210036
+      MAPE_raw_vs_treated: 6.87017478557158
   V:
     file: BR08
     variable: V
@@ -811,25 +830,23 @@ BR08:
         mean: 2.011006834020617
         std: 0.18988569913687886
       MAPE_raw_vs_treated: 0.5956242233802012
-  P:
+  T:
     file: BR08
-    variable: P
+    variable: T
     outliers:
-      present: true
-      count: 1
-      indices:
-      - 24
-      replacement_methods:
-        24: mean
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
     statistics:
       raw:
-        mean: 0.16563589970012033
-        std: 0.194333723352243
+        mean: 32.5302
+        std: 3.9885712930822734
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 0.16034567034542171
-        std: 0.17996831040197755
-      MAPE_raw_vs_treated: 4.971337163964456
+        mean: 32.52990629370859
+        std: 3.8894390477785112
+      MAPE_raw_vs_treated: 1.1593140707269327
   C:
     file: BR08
     variable: C
@@ -848,44 +865,10 @@ BR08:
         std: 1.0332674387592014
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 4.163902596920621
-        std: 0.9636006292634361
-      MAPE_raw_vs_treated: 2.222002082811647
-  T:
-    file: BR08
-    variable: T
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 32.5302
-        std: 3.9885712930822734
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 32.5302
-        std: 3.9885712930822734
-      MAPE_raw_vs_treated: 0.0
+        mean: 4.164571299148031
+        std: 0.9581161070195874
+      MAPE_raw_vs_treated: 3.883502214401028
 BR09:
-  X:
-    file: BR09
-    variable: X
-    outliers:
-      present: false
-      count: 0
-      indices: []
-      replacement_methods: {}
-    statistics:
-      raw:
-        mean: 19.573712121212147
-        std: 10.243555501159952
-      treated:
-        info: if 'smooth = True' refers to smoothed data
-        mean: 19.571127553689216
-        std: 10.237430843170532
-      MAPE_raw_vs_treated: 1.6584599486097973
   S:
     file: BR09
     variable: S
@@ -900,12 +883,12 @@ BR09:
         std: 2.537699075619487
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 1.02496
-        std: 2.536284798361572
-      MAPE_raw_vs_treated: 1.9816987079352952
-  V:
+        mean: 1.028773978633118
+        std: 2.5212020675862377
+      MAPE_raw_vs_treated: 7.487731304430481
+  X:
     file: BR09
-    variable: V
+    variable: X
     outliers:
       present: false
       count: 0
@@ -913,13 +896,13 @@ BR09:
       replacement_methods: {}
     statistics:
       raw:
-        mean: 2.1183737764099613
-        std: 0.25625543161057607
+        mean: 19.573712121212147
+        std: 10.243555501159952
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 2.118373776409961
-        std: 0.2548948889393837
-      MAPE_raw_vs_treated: 0.4698600297695624
+        mean: 19.57371212121214
+        std: 10.236736700401115
+      MAPE_raw_vs_treated: 1.9072228077022284
   P:
     file: BR09
     variable: P
@@ -937,9 +920,9 @@ BR09:
         mean: 0.0
         std: 0.0
       MAPE_raw_vs_treated: .nan
-  C:
+  V:
     file: BR09
-    variable: C
+    variable: V
     outliers:
       present: false
       count: 0
@@ -947,13 +930,13 @@ BR09:
       replacement_methods: {}
     statistics:
       raw:
-        mean: 4.10168
-        std: 0.9212699374233374
+        mean: 2.1183737764099613
+        std: 0.25625543161057607
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 4.10168
-        std: 0.9212699374233374
-      MAPE_raw_vs_treated: 0.0
+        mean: 2.118373776409961
+        std: 0.2548948889393837
+      MAPE_raw_vs_treated: 0.4698600297695624
   T:
     file: BR09
     variable: T
@@ -968,6 +951,23 @@ BR09:
         std: 3.9797934418760974
       treated:
         info: if 'smooth = True' refers to smoothed data
-        mean: 32.1354
-        std: 3.9797934418760974
-      MAPE_raw_vs_treated: 0.0
+        mean: 32.11975804196029
+        std: 3.819539577690721
+      MAPE_raw_vs_treated: 1.6457176324599179
+  C:
+    file: BR09
+    variable: C
+    outliers:
+      present: false
+      count: 0
+      indices: []
+      replacement_methods: {}
+    statistics:
+      raw:
+        mean: 4.10168
+        std: 0.9212699374233374
+      treated:
+        info: if 'smooth = True' refers to smoothed data
+        mean: 4.101682237762529
+        std: 0.9214288688218585
+      MAPE_raw_vs_treated: 0.8399408437882594

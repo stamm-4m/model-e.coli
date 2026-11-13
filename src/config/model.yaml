@@ -91,17 +91,24 @@ model_instructions:
       source: function
       path: src.model.core.kinetics
       function: mu_fun
+      estimation: true
+      residual: rX
     mu_max:
       source: function
       path: src.model.core.kinetics
       function: mu_max_fun
+      estimation: false
     qp:
       source: function
       path: src.model.core.kinetics
       function: qp_fun
+      estimation: true
+      residual: rP
       # source: machine_learning
       # path: src/model/machine_learning/qP/model.pkl
       # features_path: src/model/machine_learning/qP/features.yaml
       
   kinetic_parameters:
     path: src/config/params.yaml
+
+  

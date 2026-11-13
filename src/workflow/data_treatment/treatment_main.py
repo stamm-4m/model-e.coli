@@ -23,7 +23,7 @@ class DataTreatment:
         Generates a DataTreatment object that handles the data treatment process
         """
         # =================== Data Standardization step =================== 
-        self.data_path = data_path
+        self.data_path = data_path 
         self.ignore_vars = ignore_vars
         self.dataset_files = sorted(glob(f"{data_path}/BR*.xls"))
         self.datasets = [DatasetStandardization(f, model_path) for f in self.dataset_files]
@@ -45,8 +45,9 @@ class DataTreatment:
         # =================== Computes qP and mu calculation ===================  
     def data_frame(self, model_path = "src/config/model.yaml"):  # yaml_path = "src/config/default_parameters.yaml"
 
-        df_global = processing_data(datasets = self.data_sets, model_path = model_path) 
-        df_global.to_excel("data/processed/BR_processed.xlsx",index=False,engine="openpyxl")
+        datasets = self.data_sets
+        df_global = processing_data(datasets = datasets , model_path = model_path) 
+        df_global.to_excel("data/processed/BR_processed.xlsx", index=False, engine="openpyxl")
         
         return df_global
     
