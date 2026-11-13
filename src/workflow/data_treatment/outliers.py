@@ -38,6 +38,11 @@ def outliers_and_smoothing(datasets, time_col="time", variable_list=None, ignore
     - smooth: Boolean indicating whether to apply smoothing to the data after outlier replacement.
     """
     all_metrics = {}
+
+    # if non_states_cfg is None and :
+    #     continueout_2 = []
+    # else:
+
     smoothed_datasets = {}
     replaced_datasets = {}
 
